@@ -2,8 +2,6 @@ package stripe
 
 import (
 	"context"
-	"log"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -21,8 +19,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("STRIPE_API_KEY", nil),
 			},
 		},
-		ResourcesMap:         nil,
-		DataSourcesMap:       map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"stripe_webhook_endpoint": resourceStripeWebhookEndpoint(),
+		},
+		DataSourcesMap: map[string]*schema.Resource{
+			"stripe_webhook_endpoints": dataSourceStripeWebhookEndpoints(),
+		},
 		ProviderMetaSchema:   nil,
 		ConfigureContextFunc: providerConfigure,
 		TerraformVersion:     "",
@@ -30,8 +32,6 @@ func Provider() *schema.Provider {
 }
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	log.Print("configuration called")
-	time.Sleep(time.Second * 30)
 	key := d.Get("api_key").(string)
 	return client.New(key, nil), nil
 }
