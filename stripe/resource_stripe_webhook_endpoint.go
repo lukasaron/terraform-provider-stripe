@@ -40,6 +40,11 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 				Computed:  true,
 				Sensitive: true,
 			},
+			"metadata": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -77,6 +82,7 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		d.Set("status", webhookEndpoint.Status),
 		d.Set("created", time.Unix(webhookEndpoint.Created, 0).Format(time.RFC3339)),
 		d.Set("livemode", webhookEndpoint.Livemode),
+		d.Set("metadata", webhookEndpoint.Metadata),
 	)
 }
 
@@ -87,11 +93,17 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(errors.New("disabled can be set when updating existing webhook only"))
 	}
 
-	webhookEndpoint, err := c.WebhookEndpoints.New(&stripe.WebhookEndpointParams{
+	params := &stripe.WebhookEndpointParams{
 		URL:           stripe.String(String(d, "url")),
 		EnabledEvents: stripe.StringSlice(StringSlice(d, "enabled_events")),
 		Description:   stripe.String(String(d, "description")),
-	})
+	}
+
+	for k, v := range Map(d, "metadata") {
+		params.AddMetadata(k, v.(string))
+	}
+
+	webhookEndpoint, err := c.WebhookEndpoints.New(params)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -125,6 +137,14 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 
 	if d.HasChange("disabled") {
 		params.Disabled = stripe.Bool(Bool(d, "disabled"))
+	}
+
+	if d.HasChange("metadata") {
+		params.Metadata = nil
+		metadata := Map(d, "metadata")
+		for k, v := range metadata {
+			params.AddMetadata(k, v.(string))
+		}
 	}
 
 	_, err := c.WebhookEndpoints.Update(d.Id(), params)

@@ -23,7 +23,7 @@ func Provider() *schema.Provider {
 			"stripe_webhook_endpoint": resourceStripeWebhookEndpoint(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"stripe_webhook_endpoints": dataSourceStripeWebhookEndpoints(),
+			"stripe_balance": dataSourceStripeBalance(),
 		},
 		ProviderMetaSchema:   nil,
 		ConfigureContextFunc: providerConfigure,
