@@ -3,7 +3,6 @@ package stripe
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -19,48 +18,45 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 		DeleteContext: resourceStripeWebhookEndpointDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Unique identifier for the object.",
 			},
 			"enabled_events": {
 				Type:     schema.TypeList,
 				Required: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "The list of events to enable for this endpoint. " +
+					"[’*’] indicates that all events are enabled, except those that require explicit selection.",
 			},
 			"url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The URL of the webhook endpoint.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "An optional description of what the webhook is used for.",
 			},
 			"secret": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Sensitive:   true,
+				Description: "The endpoint’s secret, used to generate webhook signatures. Only returned at creation.",
 			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-			"status": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "Set of key-value pairs that you can attach to an object. " +
+					"This can be useful for storing additional information about the object in a structured format.",
 			},
 			"disabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
-			"created": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"livemode": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Disable the webhook endpoint if set to true.",
 			},
 		},
 	}
@@ -74,14 +70,15 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 
+	disabled := true
+	if webhookEndpoint.Status == "enabled" {
+		disabled = false
+	}
 	return CallSet(
-		d.Set("id", webhookEndpoint.ID),
 		d.Set("enabled_events", webhookEndpoint.EnabledEvents),
 		d.Set("url", webhookEndpoint.URL),
 		d.Set("description", webhookEndpoint.Description),
-		d.Set("status", webhookEndpoint.Status),
-		d.Set("created", time.Unix(webhookEndpoint.Created, 0).Format(time.RFC3339)),
-		d.Set("livemode", webhookEndpoint.Livemode),
+		d.Set("disabled", disabled),
 		d.Set("metadata", webhookEndpoint.Metadata),
 	)
 }
@@ -157,6 +154,7 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 
 func resourceStripeWebhookEndpointDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+
 	_, err := c.WebhookEndpoints.Del(d.Id(), nil)
 	if err != nil {
 		return diag.FromErr(err)

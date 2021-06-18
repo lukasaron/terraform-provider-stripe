@@ -20,11 +20,12 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"stripe_product":          resourceStripeProduct(),
 			"stripe_webhook_endpoint": resourceStripeWebhookEndpoint(),
 		},
-		DataSourcesMap: map[string]*schema.Resource{
-			"stripe_balance": dataSourceStripeBalance(),
-		},
+		//DataSourcesMap: map[string]*schema.Resource{
+		//	"stripe_balance": dataSourceStripeBalance(),
+		//},
 		ProviderMetaSchema:   nil,
 		ConfigureContextFunc: providerConfigure,
 		TerraformVersion:     "",
