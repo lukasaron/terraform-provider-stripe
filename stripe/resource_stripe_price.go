@@ -179,7 +179,6 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 
 	diags := CallSet(
 		d.Set("currency", string(price.Currency)),
-		d.Set("product_id", price.Product.ID),
 		d.Set("unit_amount", int(price.UnitAmount)),
 		d.Set("unit_amount_decimal", price.UnitAmountDecimal),
 		d.Set("active", price.Active),
@@ -192,6 +191,12 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		return diags
 	}
 
+	if price.Product != nil {
+		err := d.Set("product_id", price.Product.ID)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
 	if price.Recurring != nil {
 		err := d.Set("recurring", flattenPriceRecurring(price.Recurring))
 		if err != nil {
@@ -310,7 +315,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	d.SetId(price.ID)
-	return resourceStripeProductRead(ctx, d, m)
+	return resourceStripePriceRead(ctx, d, m)
 }
 
 func resourceStripePriceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
