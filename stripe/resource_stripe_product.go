@@ -17,35 +17,61 @@ func resourceStripeProduct() *schema.Resource {
 		DeleteContext: resourceStripeProductDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Unique identifier for the object.",
 			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The product’s name, meant to be displayable to the customer. " +
+					"Whenever this product is sold via a subscription, " +
+					"name will show up on associated invoice line item descriptions.",
 			},
 			"active": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether the product is currently available for purchase.",
 			},
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Description: "The product’s description, meant to be displayable to the customer. " +
+					"Use this field to optionally store a long form explanation of the product being " +
+					"sold for your own rendering purposes.",
 			},
 			"images": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "A list of up to 8 URLs of images for this product, " +
+					"meant to be displayable to the customer.",
 			},
 			"url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "A URL of a publicly-accessible webpage for this product.",
+			},
+			"statement_descriptor": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Description: "Extra information about a product which will appear on your customer’s credit " +
+					"card statement. In the case that multiple products are billed at once, " +
+					"the first statement descriptor will be used.",
+			},
+			"unit_label": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Description: "A label that represents units of this product in Stripe and on customers’ receipts " +
+					"and invoices. When set, this will be included in associated invoice line item descriptions.",
 			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "Set of key-value pairs that you can attach to an object. " +
+					"This can be useful for storing additional information about the object in a structured format.",
 			},
 		},
 	}
@@ -64,6 +90,8 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 		d.Set("description", p.Description),
 		d.Set("images", p.Images),
 		d.Set("url", p.URL),
+		d.Set("statement_descriptor", p.StatementDescriptor),
+		d.Set("unit_label", p.UnitLabel),
 		d.Set("metadata", p.Metadata),
 	)
 }
@@ -76,23 +104,25 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 		Active: stripe.Bool(Bool(d, "active")),
 	}
 
-	description := String(d, "description")
-	if len(description) > 0 {
-		params.Description = stripe.String(description)
+	if images, set := d.GetOk("images"); set {
+		params.Images = stripe.StringSlice(ToStringSlice(images))
 	}
-
-	images := StringSlice(d, "images")
-	if len(images) > 0 {
-		params.Images = stripe.StringSlice(images)
+	if description, set := d.GetOk("description"); set {
+		params.Description = stripe.String(ToString(description))
 	}
-
-	u := String(d, "url")
-	if len(u) > 0 {
-		params.URL = stripe.String(u)
+	if u, set := d.GetOk("url"); set {
+		params.URL = stripe.String(ToString(u))
 	}
-
-	for k, v := range Map(d, "metadata") {
-		params.AddMetadata(k, v.(string))
+	if uLabel, set := d.GetOk("unit_label"); set {
+		params.UnitLabel = stripe.String(ToString(uLabel))
+	}
+	if sDescriptor, set := d.GetOk("statement_descriptor"); set {
+		params.StatementDescriptor = stripe.String(ToString(sDescriptor))
+	}
+	if meta, set := d.GetOk("metadata"); set {
+		for k, v := range ToMap(meta) {
+			params.AddMetadata(k, v.(string))
+		}
 	}
 
 	product, err := c.Products.New(params)
@@ -112,23 +142,24 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 	if d.HasChange("name") {
 		params.Name = stripe.String(String(d, "name"))
 	}
-
 	if d.HasChange("active") {
 		params.Active = stripe.Bool(Bool(d, "active"))
 	}
-
 	if d.HasChange("description") {
 		params.Description = stripe.String(String(d, "description"))
 	}
-
 	if d.HasChange("images") {
 		params.Images = stripe.StringSlice(StringSlice(d, "images"))
 	}
-
 	if d.HasChange("url") {
 		params.URL = stripe.String(String(d, "url"))
 	}
-
+	if d.HasChange("statement_descriptor") {
+		params.StatementDescriptor = stripe.String(String(d, "statement_descriptor"))
+	}
+	if d.HasChange("unit_label") {
+		params.UnitLabel = stripe.String(String(d, "unit_label"))
+	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
 		metadata := Map(d, "metadata")

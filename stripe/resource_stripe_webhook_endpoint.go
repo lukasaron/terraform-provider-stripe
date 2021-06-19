@@ -45,18 +45,18 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 				Sensitive:   true,
 				Description: "The endpoint’s secret, used to generate webhook signatures. Only returned at creation.",
 			},
+			"disabled": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Disable the webhook endpoint if set to true.",
+			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Description: "Set of key-value pairs that you can attach to an object. " +
 					"This can be useful for storing additional information about the object in a structured format.",
-			},
-			"disabled": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     false,
-				Description: "Disable the webhook endpoint if set to true.",
 			},
 		},
 	}
@@ -86,18 +86,22 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
 
-	if Bool(d, "disabled") {
+	if disabled, set := d.GetOk("disabled"); set && ToBool(disabled) {
 		return diag.FromErr(errors.New("disabled can be set when updating existing webhook only"))
 	}
 
 	params := &stripe.WebhookEndpointParams{
 		URL:           stripe.String(String(d, "url")),
 		EnabledEvents: stripe.StringSlice(StringSlice(d, "enabled_events")),
-		Description:   stripe.String(String(d, "description")),
 	}
 
-	for k, v := range Map(d, "metadata") {
-		params.AddMetadata(k, v.(string))
+	if description, set := d.GetOk("description"); set {
+		params.Description = stripe.String(ToString(description))
+	}
+	if meta, set := d.GetOk("metadata"); set {
+		for k, v := range ToMap(meta) {
+			params.AddMetadata(k, v.(string))
+		}
 	}
 
 	webhookEndpoint, err := c.WebhookEndpoints.New(params)
