@@ -121,7 +121,7 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
-			params.AddMetadata(k, v.(string))
+			params.AddMetadata(k, ToString(v))
 		}
 	}
 

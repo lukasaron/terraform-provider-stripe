@@ -10,15 +10,33 @@ func String(d *schema.ResourceData, key string) string {
 }
 
 func ToString(value interface{}) string {
-	return value.(string)
+	switch value.(type) {
+	case string:
+		return value.(string)
+	case *string:
+		return *(value.(*string))
+	default:
+		return ""
+	}
 }
 
-func Int64(d *schema.ResourceData, key string) int64 {
-	return ToInt64(d.Get(key))
+func Int(d *schema.ResourceData, key string) int {
+	return ToInt(d.Get(key))
 }
 
-func ToInt64(value interface{}) int64 {
-	return int64(value.(int))
+func ToInt(value interface{}) int {
+	switch value.(type) {
+	case int:
+		return value.(int)
+	case *int:
+		return *(value.(*int))
+	case int64:
+		return int(value.(int64))
+	case *int64:
+		return int(*(value.(*int64)))
+	default:
+		return 0
+	}
 }
 
 func Float64(d *schema.ResourceData, key string) float64 {
@@ -26,7 +44,18 @@ func Float64(d *schema.ResourceData, key string) float64 {
 }
 
 func ToFloat64(value interface{}) float64 {
-	return value.(float64)
+	switch value.(type) {
+	case float32:
+		return float64(value.(float32))
+	case *float32:
+		return float64(*(value.(*float32)))
+	case float64:
+		return value.(float64)
+	case *float64:
+		return *(value.(*float64))
+	default:
+		return 0
+	}
 }
 
 func StringSlice(d *schema.ResourceData, key string) []string {
@@ -34,7 +63,11 @@ func StringSlice(d *schema.ResourceData, key string) []string {
 }
 
 func ToStringSlice(value interface{}) []string {
-	slice := value.([]interface{})
+	slice, ok := value.([]interface{})
+	if !ok {
+		return nil
+	}
+
 	stringSlice := make([]string, len(slice), len(slice))
 	for i := range slice {
 		stringSlice[i] = ToString(slice[i])
@@ -47,7 +80,14 @@ func Bool(d *schema.ResourceData, key string) bool {
 }
 
 func ToBool(value interface{}) bool {
-	return value.(bool)
+	switch value.(type) {
+	case bool:
+		return value.(bool)
+	case *bool:
+		return *(value.(*bool))
+	default:
+		return false
+	}
 }
 
 func Map(d *schema.ResourceData, key string) map[string]interface{} {

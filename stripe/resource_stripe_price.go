@@ -14,7 +14,7 @@ func resourceStripePrice() *schema.Resource {
 	return &schema.Resource{
 		ReadContext:   resourceStripePriceRead,
 		CreateContext: resourceStripePriceCreate,
-		UpdateContext: resourceStripePriceRead,
+		UpdateContext: resourceStripePriceUpdate,
 		DeleteContext: resourceStripePriceDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -265,7 +265,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 		unitAmountSet = true
 	}
 	if !unitAmountSet {
-		params.UnitAmount = stripe.Int64(Int64(d, "unit_amount"))
+		params.UnitAmount = stripe.Int64(int64(Int(d, "unit_amount")))
 	}
 	if tiersMode, set := d.GetOk("tiers_mode"); set {
 		params.TiersMode = stripe.String(ToString(tiersMode))
@@ -292,10 +292,10 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 		ms := ToMapSlice(tiers)
 		for _, m := range ms {
 			t := &stripe.PriceTierParams{
-				UpTo:              stripe.Int64(ToInt64(m["up_to"])),
-				FlatAmount:        stripe.Int64(ToInt64(m["flat_amount"])),
+				UpTo:              stripe.Int64(int64(ToInt(m["up_to"]))),
+				FlatAmount:        stripe.Int64(int64(ToInt(m["flat_amount"]))),
 				FlatAmountDecimal: stripe.Float64(ToFloat64(m["flat_amount_decimal"])),
-				UnitAmount:        stripe.Int64(ToInt64(m["unit_amount"])),
+				UnitAmount:        stripe.Int64(int64(ToInt(m["unit_amount"]))),
 				UnitAmountDecimal: stripe.Float64(ToFloat64(m["unit_amount_decimal"])),
 			}
 			params.Tiers = append(params.Tiers, t)
@@ -304,8 +304,13 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	if transformQuantity, set := d.GetOk("transform_quantity"); set {
 		m := ToMap(transformQuantity)
 		params.TransformQuantity = &stripe.PriceTransformQuantityParams{
-			DivideBy: stripe.Int64(ToInt64(m["divide_by"])),
+			DivideBy: stripe.Int64(int64(ToInt(m["divide_by"]))),
 			Round:    stripe.String(ToString(m["round"])),
+		}
+	}
+	if meta, set := d.GetOk("metadata"); set {
+		for k, v := range ToMap(meta) {
+			params.AddMetadata(k, v.(string))
 		}
 	}
 
@@ -317,8 +322,40 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	d.SetId(price.ID)
 	return resourceStripePriceRead(ctx, d, m)
 }
+func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.API)
 
-func resourceStripePriceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	params := &stripe.PriceParams{}
+
+	if d.HasChange("active") {
+		params.Active = stripe.Bool(Bool(d, "active"))
+	}
+	if d.HasChange("nickname") {
+		params.Nickname = stripe.String(String(d, "nickname"))
+	}
+	if d.HasChange("metadata") {
+		for k, v := range Map(d, "metadata") {
+			params.AddMetadata(k, ToString(v))
+		}
+	}
+
+	_, err := c.Prices.Update(d.Id(), params)
+	if err != nil {
+		diag.FromErr(err)
+	}
+
+	return resourceStripePriceRead(ctx, d, m)
+}
+
+func expandPriceRecurring(m map[string]interface{}) *stripe.PriceRecurringParams {
+	params := &stripe.PriceRecurringParams{
+		AggregateUsage: stripe.String(ToString(m["aggregate_usage"])),
+		Interval:       stripe.String(ToString(m["interval"])),
+		IntervalCount:  stripe.Int64(int64(ToInt(m["interval_count"]))),
+	}
+	return params
+}
+func resourceStripePriceDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
 	_, err := c.Prices.Update(d.Id(), &stripe.PriceParams{
 		Active: stripe.Bool(false),
@@ -327,5 +364,6 @@ func resourceStripePriceDelete(ctx context.Context, d *schema.ResourceData, m in
 		return diag.FromErr(err)
 	}
 	d.SetId("")
+	// TODO inform about the price persistence
 	return nil
 }

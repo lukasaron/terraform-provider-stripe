@@ -100,7 +100,7 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 	}
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
-			params.AddMetadata(k, v.(string))
+			params.AddMetadata(k, ToString(v))
 		}
 	}
 
