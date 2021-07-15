@@ -91,8 +91,8 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 	}
 
 	params := &stripe.WebhookEndpointParams{
-		URL:           stripe.String(String(d, "url")),
-		EnabledEvents: stripe.StringSlice(StringSlice(d, "enabled_events")),
+		URL:           stripe.String(ExtractString(d, "url")),
+		EnabledEvents: stripe.StringSlice(ExtractStringSlice(d, "enabled_events")),
 	}
 
 	if description, set := d.GetOk("description"); set {
@@ -125,19 +125,19 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 	params := &stripe.WebhookEndpointParams{}
 
 	if d.HasChange("enabled_events") {
-		params.EnabledEvents = stripe.StringSlice(StringSlice(d, "enabled_events"))
+		params.EnabledEvents = stripe.StringSlice(ExtractStringSlice(d, "enabled_events"))
 	}
 
 	if d.HasChange("url") {
-		params.URL = stripe.String(String(d, "url"))
+		params.URL = stripe.String(ExtractString(d, "url"))
 	}
 
 	if d.HasChange("description") {
-		params.Description = stripe.String(String(d, "description"))
+		params.Description = stripe.String(ExtractString(d, "description"))
 	}
 
 	if d.HasChange("disabled") {
-		params.Disabled = stripe.Bool(Bool(d, "disabled"))
+		params.Disabled = stripe.Bool(ExtractBool(d, "disabled"))
 	}
 
 	if d.HasChange("metadata") {

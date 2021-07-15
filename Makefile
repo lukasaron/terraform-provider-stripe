@@ -2,7 +2,7 @@ HOSTNAME=local
 NAMESPACE=lukasaron
 NAME=stripe
 BINARY=terraform-provider-${NAME}
-VERSION=0.0.5
+VERSION=0.0.1
 OS_ARCH=darwin_amd64
 
 default: install

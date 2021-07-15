@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func String(d *schema.ResourceData, key string) string {
+func ExtractString(d *schema.ResourceData, key string) string {
 	return ToString(d.Get(key))
 }
 
@@ -20,7 +20,7 @@ func ToString(value interface{}) string {
 	}
 }
 
-func Int(d *schema.ResourceData, key string) int {
+func ExtractInt(d *schema.ResourceData, key string) int {
 	return ToInt(d.Get(key))
 }
 
@@ -39,7 +39,7 @@ func ToInt(value interface{}) int {
 	}
 }
 
-func Float64(d *schema.ResourceData, key string) float64 {
+func ExtractFloat64(d *schema.ResourceData, key string) float64 {
 	return ToFloat64(d.Get(key))
 }
 
@@ -58,7 +58,7 @@ func ToFloat64(value interface{}) float64 {
 	}
 }
 
-func StringSlice(d *schema.ResourceData, key string) []string {
+func ExtractStringSlice(d *schema.ResourceData, key string) []string {
 	return ToStringSlice(d.Get(key))
 }
 
@@ -75,7 +75,7 @@ func ToStringSlice(value interface{}) []string {
 	return stringSlice
 }
 
-func Bool(d *schema.ResourceData, key string) bool {
+func ExtractBool(d *schema.ResourceData, key string) bool {
 	return ToBool(d.Get(key))
 }
 
