@@ -22,6 +22,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"stripe_webhook_endpoint": resourceStripeWebhookEndpoint(),
 			"stripe_coupon":           resourceStripeCoupon(),
+			"stripe_card":             resourceStripeCard(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

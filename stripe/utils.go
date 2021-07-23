@@ -54,10 +54,6 @@ func ToInt64(value interface{}) int64 {
 	}
 }
 
-func ExtractFloat64(d *schema.ResourceData, key string) float64 {
-	return ToFloat64(d.Get(key))
-}
-
 func ToFloat64(value interface{}) float64 {
 	switch value.(type) {
 	case float32:
@@ -105,16 +101,12 @@ func ToBool(value interface{}) bool {
 	}
 }
 
-func Map(d *schema.ResourceData, key string) map[string]interface{} {
+func ExtractMap(d *schema.ResourceData, key string) map[string]interface{} {
 	return ToMap(d.Get(key))
 }
 
 func ToMap(value interface{}) map[string]interface{} {
 	return value.(map[string]interface{})
-}
-
-func ToMapSlice(value interface{}) []map[string]interface{} {
-	return value.([]map[string]interface{})
 }
 
 func CallSet(err ...error) (d diag.Diagnostics) {

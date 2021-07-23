@@ -198,7 +198,7 @@ func resourceStripeCouponUpdate(ctx context.Context, d *schema.ResourceData, m i
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := Map(d, "metadata")
+		metadata := ExtractMap(d, "metadata")
 		for k, v := range metadata {
 			params.AddMetadata(k, v.(string))
 		}
@@ -212,7 +212,7 @@ func resourceStripeCouponUpdate(ctx context.Context, d *schema.ResourceData, m i
 	return resourceStripeCouponRead(ctx, d, m)
 }
 
-func resourceStripeCouponDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceStripeCouponDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
 
 	_, err := c.Coupons.Del(d.Id(), nil)
