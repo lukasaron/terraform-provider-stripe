@@ -35,7 +35,7 @@ resource "stripe_coupon" "coupon" {
   duration        = "forever"
 }
 
-// coupon with limitation to a date and applies a product only
+// coupon with limitation to a date and the product only
 resource "stripe_coupon" "coupon" {
   name       = "applies to prod with ID 123 till a date"
   amount_off = 2000
