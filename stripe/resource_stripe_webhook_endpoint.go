@@ -70,15 +70,11 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 
-	disabled := true
-	if webhookEndpoint.Status == "enabled" {
-		disabled = false
-	}
 	return CallSet(
 		d.Set("enabled_events", webhookEndpoint.EnabledEvents),
 		d.Set("url", webhookEndpoint.URL),
 		d.Set("description", webhookEndpoint.Description),
-		d.Set("disabled", disabled),
+		d.Set("disabled", webhookEndpoint.Status != "enabled"),
 		d.Set("metadata", webhookEndpoint.Metadata),
 	)
 }
