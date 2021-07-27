@@ -24,7 +24,7 @@ resource "stripe_product" "product" {
   name        = "full product"
   unit_label  = "piece"
   description = "fantastic product"
-  url         = "https://registry.terraform.io/providers/lukasaron/stripe/latest"
+  url         = "https://www.terraform.io"
 }
 
 ```
