@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"context"
-	"errors"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -81,16 +80,10 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 
 func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-
-	if disabled, set := d.GetOk("disabled"); set && ToBool(disabled) {
-		return diag.FromErr(errors.New("disabled can be set when updating existing webhook only"))
-	}
-
 	params := &stripe.WebhookEndpointParams{
 		URL:           stripe.String(ExtractString(d, "url")),
 		EnabledEvents: stripe.StringSlice(ExtractStringSlice(d, "enabled_events")),
 	}
-
 	if description, set := d.GetOk("description"); set {
 		params.Description = stripe.String(ToString(description))
 	}
@@ -123,19 +116,15 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 	if d.HasChange("enabled_events") {
 		params.EnabledEvents = stripe.StringSlice(ExtractStringSlice(d, "enabled_events"))
 	}
-
 	if d.HasChange("url") {
 		params.URL = stripe.String(ExtractString(d, "url"))
 	}
-
 	if d.HasChange("description") {
 		params.Description = stripe.String(ExtractString(d, "description"))
 	}
-
 	if d.HasChange("disabled") {
 		params.Disabled = stripe.Bool(ExtractBool(d, "disabled"))
 	}
-
 	if d.HasChange("metadata") {
 		params.Metadata = nil
 		metadata := ExtractMap(d, "metadata")

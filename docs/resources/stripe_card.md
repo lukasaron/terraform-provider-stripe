@@ -15,8 +15,6 @@ You can store multiple cards on a customer in order to charge the customer later
 
 ## Example Usage
 
-Arguments accepted by this resource include:
-
 ```hcl
 // card for the customer
 resource "stripe_card" "card" {
@@ -48,6 +46,9 @@ resource "stripe_card" "card" {
 ```
 
 ## Argument Reference
+
+Arguments accepted by this resource include:
+
 * `customer` - (Required) String. The customer that this card belongs to.
 * `number` - (Required) String. The card number, as a string without any separators.
 * `exp_month` - (Required) Int. Number representing the card's expiration month.

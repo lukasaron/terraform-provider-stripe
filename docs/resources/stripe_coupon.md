@@ -17,8 +17,6 @@ For example, an invoice with a subtotal of $100 will have a final total of $0 if
 
 ## Example Usage
 
-Arguments accepted by this resource include:
-
 ```hcl
 // coupon for the amount off discount
 resource "stripe_coupon" "coupon" {
@@ -47,6 +45,9 @@ resource "stripe_coupon" "coupon" {
 ```
 
 ## Argument Reference
+
+Arguments accepted by this resource include:
+
 * `name` - (Optional) String. Name of the coupon displayed to customers on for instance invoices or receipts.
 * `amount_off` - (Optional) Int. Amount (in the currency specified) that will be taken off the subtotal of any invoices for this customer.
 * `currency` - (Optional) String. Required if `amount_off` has been set, the three-letter ISO code for the currency of the amount to take off.

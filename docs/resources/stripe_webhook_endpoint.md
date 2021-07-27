@@ -13,8 +13,6 @@ You can configure webhook endpoints via the API to be notified about events that
 
 ## Example Usage
 
-Arguments accepted by this resource include:
-
 ```hcl
 resource "stripe_webhook_endpoint" "webhook" {
   url            = "https://webhook-url-consumer.com"
@@ -27,6 +25,9 @@ resource "stripe_webhook_endpoint" "webhook" {
 ```
 
 ## Argument Reference
+
+Arguments accepted by this resource include:
+
 * `url` - (Required) String. The URL of the webhook endpoint.
 * `enabled_events` - (Required) List(String). The list of events to enable for this endpoint. `[*]` indicates that all events are enabled, except those that require explicit selection. All supported events listed here: [Stripe event types](https://stripe.com/docs/api/events/types).
 * `description` - (Optional) String. Description of what the webhook is used for.
