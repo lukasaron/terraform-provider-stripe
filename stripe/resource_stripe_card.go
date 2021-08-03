@@ -282,7 +282,7 @@ func resourceStripeCardUpdate(ctx context.Context, d *schema.ResourceData, m int
 		params.Metadata = nil
 		metadata := ExtractMap(d, "metadata")
 		for k, v := range metadata {
-			params.AddMetadata(k, v.(string))
+			params.AddMetadata(k, ToString(v))
 		}
 	}
 

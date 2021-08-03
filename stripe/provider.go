@@ -24,6 +24,7 @@ func Provider() *schema.Provider {
 			"stripe_coupon":           resourceStripeCoupon(),
 			"stripe_card":             resourceStripeCard(),
 			"stripe_product":          resourceStripeProduct(),
+			"stripe_promotion_code":   resourceStripePromotionCode(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

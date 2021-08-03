@@ -106,7 +106,16 @@ func ExtractMap(d *schema.ResourceData, key string) map[string]interface{} {
 }
 
 func ToMap(value interface{}) map[string]interface{} {
-	return value.(map[string]interface{})
+	switch value.(type) {
+	case map[string]interface{}:
+		return value.(map[string]interface{})
+	case []interface{}:
+		sl := value.([]interface{})
+		if len(sl) > 0 {
+			return sl[0].(map[string]interface{})
+		}
+	}
+	return map[string]interface{}{}
 }
 
 func CallSet(err ...error) (d diag.Diagnostics) {

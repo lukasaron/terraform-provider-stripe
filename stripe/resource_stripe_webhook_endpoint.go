@@ -129,7 +129,7 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 		params.Metadata = nil
 		metadata := ExtractMap(d, "metadata")
 		for k, v := range metadata {
-			params.AddMetadata(k, v.(string))
+			params.AddMetadata(k, ToString(v))
 		}
 	}
 

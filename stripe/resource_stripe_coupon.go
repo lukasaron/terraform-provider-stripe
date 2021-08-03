@@ -200,7 +200,7 @@ func resourceStripeCouponUpdate(ctx context.Context, d *schema.ResourceData, m i
 		params.Metadata = nil
 		metadata := ExtractMap(d, "metadata")
 		for k, v := range metadata {
-			params.AddMetadata(k, v.(string))
+			params.AddMetadata(k, ToString(v))
 		}
 	}
 
