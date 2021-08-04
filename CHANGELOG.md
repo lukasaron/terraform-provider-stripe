@@ -8,6 +8,16 @@ BUG FIXES:
 
 NOTES:
 
+* Documentation of Terraform Price Example modified.
+
+## 1.1.2
+
+ENHANCEMENTS:
+
+BUG FIXES:
+
+NOTES:
+
 * Link in the documentation fixed.
 
 ## 1.1.1

@@ -24,7 +24,7 @@ For example, you might have a single "gold" product that has prices for $10/mont
 ```hcl
 // basic price for the product
 resource "stripe_price" "price" {
-  // price needs to be defined
+  // product needs to be defined
   product        = stripe_product.product.id
   currency       = "aud"
   unit_amount    = 100
@@ -32,7 +32,7 @@ resource "stripe_price" "price" {
 
 // basic free price for the product
 resource "stripe_price" "price" {
-  // price needs to be defined
+  // product needs to be defined
   product        = stripe_product.product.id
   currency       = "aud"
   unit_amount    = -1
@@ -40,7 +40,7 @@ resource "stripe_price" "price" {
 
 // recurring price for the product
 resource "stripe_price" "price" {
-  // price needs to be defined
+  // product needs to be defined
   product        = stripe_product.product.id
   currency       = "aud"
   billing_scheme = "per_unit"
@@ -54,6 +54,7 @@ resource "stripe_price" "price" {
 
 // tiered price for the product
 resource "stripe_price" "price" {
+  // product needs to be defined
   product        = stripe_product.product.id
   currency       = "aud"
   billing_scheme = "tiered"
