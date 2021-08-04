@@ -96,7 +96,7 @@ Arguments accepted by this resource include:
 * `lookup_key` - (Optional) String. A lookup key used to retrieve prices dynamically from a static string.
 * `transfer_lookup_key` - (Optional) Bool. If set to `true`, will atomically remove the lookup key from the existing price, and assign it to this price.
 * `tax_behaviour` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it cannot be changed.
-* `transform_quantity` - (Optional) List(Resource). Apply a transformation to the reported usage or set quantity before computing the billed price. Cannot be combined with `tiers`. For details of individual arguments see [Transform Quantity](#transform_quantity).
+* `transform_quantity` - (Optional) List(Resource). Apply a transformation to the reported usage or set quantity before computing the billed price. Cannot be combined with `tiers`. For details of individual arguments see [Transform Quantity](#transform-quantity).
 * `metadata` - (Optional) Map(String). Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
 
 ### Recurring
