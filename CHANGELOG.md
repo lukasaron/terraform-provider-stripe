@@ -1,5 +1,15 @@
 ## Unreleased
 
+## 1.1.3
+
+ENHANCEMENTS:
+
+BUG FIXES:
+
+NOTES:
+
+* Link in the documentation fixed.
+
 ## 1.1.1
 
 ENHANCEMENTS:
