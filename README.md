@@ -9,8 +9,8 @@ The Stripe Terraform Provider documentation can be found on the Terraform Provid
 ```terraform
 terraform {
   required_providers {
-    auth0 = {
-      source  = "lukasaron/stripe"
+    stripe = {
+      source = "lukasaron/stripe"
     }
   }
 }
