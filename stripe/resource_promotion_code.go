@@ -218,7 +218,7 @@ func resourceStripePromotionCodeUpdate(ctx context.Context, d *schema.ResourceDa
 }
 
 func resourceStripePromotionCodeDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe SDK doesn't support Promotion Code deletion through API! Please use Stripe Dashboard instead.")
+	log.Println("[WARN] Stripe SDK doesn't support Promotion Code deletion through API!")
 	d.SetId("")
 	return nil
 }

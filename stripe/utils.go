@@ -69,6 +69,19 @@ func ToFloat64(value interface{}) float64 {
 	}
 }
 
+func ExtractSlice(d *schema.ResourceData, key string) []interface{} {
+	return ToSlice(d.Get(key))
+}
+
+func ToSlice(value interface{}) []interface{} {
+	switch value.(type) {
+	case []interface{}:
+		return value.([]interface{})
+	default:
+		return []interface{}{}
+	}
+}
+
 func ExtractStringSlice(d *schema.ResourceData, key string) []string {
 	return ToStringSlice(d.Get(key))
 }

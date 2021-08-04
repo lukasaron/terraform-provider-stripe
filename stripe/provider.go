@@ -25,12 +25,13 @@ func Provider() *schema.Provider {
 			"stripe_card":             resourceStripeCard(),
 			"stripe_product":          resourceStripeProduct(),
 			"stripe_promotion_code":   resourceStripePromotionCode(),
+			"stripe_price":            resourceStripePrice(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
 }
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	key := d.Get("api_key").(string)
+	key := ExtractString(d, "api_key")
 	return client.New(key, nil), nil
 }

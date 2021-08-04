@@ -2,7 +2,7 @@
 layout: "stripe"
 page_title: "Stripe: stripe_promotion_code"
 description: |-
-The Stripe Promotion Code can be created, modified and configured  by this resource.
+The Stripe Promotion Code can be created, modified and configured by this resource.
 ---
 
 # stripe_promotion_code
@@ -11,7 +11,8 @@ With this resource, you can create promotion code - [Stripe API promotion code d
 
 A Promotion Code represents a customer-redeemable code for a coupon. It can be used to create multiple codes for a single coupon.
 
-~> Removal of the promotion code isn't supported via the Stripe SDK. Therefore, the deletion needs to be done manually in the dashboard.
+~> Removal of the promotion code isn't supported through the Stripe SDK.
+
 ## Example Usage
 
 ```hcl
@@ -63,8 +64,16 @@ Arguments accepted by this resource include:
 * `customer` - (Optional) String. The customer that this promotion code can be used by. If not set, the promotion code can be used by all customers.
 * `max_redemptions` - (Optional) Int. A positive integer specifying the number of times the promotion code can be redeemed. If the coupon has specified a `max_redemptions`, then this value cannot be greater than the coupon’s `max_redemptions`.
 * `expires_at` - (Optional) String. The timestamp at which this promotion code will expire. If the coupon has specified a `redeems_by`, then this value cannot be after the coupon’s `redeems_by`. Expected format is `RFC3339`.
-* `restrictions` - (Optional) (List). Settings that restrict the redemption of the promotion code. All following settings are required when restrictions are in use: `first_time_transaction` - A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices. The `minimum_amount` - Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work) and `minimum_amount_currency` - Three-letter ISO code for minimum_amount.   
+* `restrictions` - (Optional) List(Resource). Settings that restrict the redemption of the promotion code. For details of individual arguments see [Restrictions](#restrictions).   
 * `metadata` - (Optional) Map(String). Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+
+### Restrictions
+
+`restrictions` Supports the following arguments:
+
+* `first_time_transaction` - (Required) Bool. A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices.
+* `minimum_amount` - (Required) Int. Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
+* `minimum_amount_currency` - (Required) String. Three-letter ISO code for `minimum_amount`.
 
 ## Attribute Reference
 
