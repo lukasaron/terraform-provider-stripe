@@ -7,7 +7,7 @@ The Stripe Coupon can be created, modified, configured and removed by this resou
 
 # stripe_coupon
 
-With this resource, you can create coupon - [Stripe API coupon documentation](https://stripe.com/docs/api/coupons).
+With this resource, you can create a coupon - [Stripe API coupon documentation](https://stripe.com/docs/api/coupons).
 
 A coupon contains information about a percent-off or amount-off discount you might want to apply to a customer.
 
@@ -40,7 +40,8 @@ resource "stripe_coupon" "coupon" {
   amount_off = 2000
   duration   = "once"
   redeem_by  = "2025-07-23T03:27:06+00:00"
-  applies_to = ["123"]
+  // the stripe_product.product has to be created separately
+  applies_to = [stripe_product.product.id] 
 }
 ```
 

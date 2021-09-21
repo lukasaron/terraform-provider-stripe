@@ -24,6 +24,10 @@ func ExtractInt(d *schema.ResourceData, key string) int {
 	return ToInt(d.Get(key))
 }
 
+func ExtractInt64(d *schema.ResourceData, key string) int64 {
+	return ToInt64(d.Get(key))
+}
+
 func ToInt(value interface{}) int {
 	switch value.(type) {
 	case int:
@@ -69,9 +73,9 @@ func ToFloat64(value interface{}) float64 {
 	}
 }
 
-func ExtractSlice(d *schema.ResourceData, key string) []interface{} {
-	return ToSlice(d.Get(key))
-}
+//func ExtractSlice(d *schema.ResourceData, key string) []interface{} {
+//	return ToSlice(d.Get(key))
+//}
 
 func ToSlice(value interface{}) []interface{} {
 	switch value.(type) {

@@ -7,7 +7,7 @@ The Stripe Webhook Endpoint can be created, modified, configured and removed by 
 
 # stripe_webhook_endpoint
 
-With this resource, you can create webhook endpoint - [Stripe API webhook endpoint documentation](https://stripe.com/docs/api/webhook_endpoints).
+With this resource, you can create a webhook endpoint - [Stripe API webhook endpoint documentation](https://stripe.com/docs/api/webhook_endpoints).
 
 You can configure webhook endpoints via the API to be notified about events that happen in your Stripe account or connected accounts.
 

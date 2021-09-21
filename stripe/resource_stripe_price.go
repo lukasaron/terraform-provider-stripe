@@ -258,6 +258,7 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 				for _, tier := range price.Tiers {
 					t := map[string]interface{}{
 						"up_to": func() int64 {
+							// update the value to reflect the Terraform input
 							if tier.UpTo == 0 {
 								return -1
 							}
@@ -304,6 +305,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 
 	if unitAmount, set := d.GetOk("unit_amount"); set {
 		amount := ToInt64(unitAmount)
+		// amount is -1 when free price is required
 		if amount < 0 {
 			amount = 0
 		}

@@ -7,7 +7,7 @@ The Stripe Price can be created, modified and configured by this resource.
 
 # stripe_price
 
-With this resource, you can create price - [Stripe API price documentation](https://stripe.com/docs/api/prices).
+With this resource, you can create a price - [Stripe API price documentation](https://stripe.com/docs/api/prices).
 
 Prices define the unit cost, currency, and (optional) billing cycle for both recurring and one-time purchases of 
 products. Products help you track inventory or provisioning, and prices help you track payment terms. 

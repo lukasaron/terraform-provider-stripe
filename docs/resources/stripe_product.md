@@ -49,13 +49,13 @@ Arguments accepted by this resource include:
 Attributes exported by this resource include:
 
 * `id` - String. The unique identifier for the object.
-* `name` - (Required) String. The product’s name, meant to be displayable to the customer. 
-* `active` - (Optional) Bool. Whether the product is currently available for purchase. 
-* `description` - (Optional) String. The product’s description, meant to be displayable to the customer.
-* `images` - (Optional) List(String). A list of up to 8 URLs of images for this product.
-* `package_dimensions` - (Optional) Map(Float). The dimensions of this product for shipping purposes.
-* `shippable` - (Optional) Bool. Whether this product is shipped (i.e., physical goods).
-* `statement_descriptor` - (Optional) String. An arbitrary string to be displayed on your customer’s credit card or bank statement.
-* `unit_label` - (Optional) String. A label that represents units of this product in Stripe and on customers’ receipts and invoices. 
-* `url` - (Optional) String. A URL of a publicly-accessible webpage for this product.
+* `name` - String. The product’s name, meant to be displayable to the customer. 
+* `active` - Bool. Whether the product is currently available for purchase. 
+* `description` - String. The product’s description, meant to be displayable to the customer.
+* `images` - List(String). A list of up to 8 URLs of images for this product.
+* `package_dimensions` - Map(Float). The dimensions of this product for shipping purposes.
+* `shippable` - Bool. Whether this product is shipped (i.e., physical goods).
+* `statement_descriptor` - String. An arbitrary string to be displayed on your customer’s credit card or bank statement.
+* `unit_label` - String. A label that represents units of this product in Stripe and on customers’ receipts and invoices. 
+* `url` - String. A URL of a publicly-accessible webpage for this product.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.

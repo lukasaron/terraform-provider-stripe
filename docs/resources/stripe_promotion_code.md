@@ -7,7 +7,7 @@ The Stripe Promotion Code can be created, modified and configured by this resour
 
 # stripe_promotion_code
 
-With this resource, you can create promotion code - [Stripe API promotion code documentation](https://stripe.com/docs/api/promotion_codes).
+With this resource, you can create a promotion code - [Stripe API promotion code documentation](https://stripe.com/docs/api/promotion_codes).
 
 A Promotion Code represents a customer-redeemable code for a coupon. It can be used to create multiple codes for a single coupon.
 
