@@ -1,5 +1,15 @@
 ## Unreleased
 
+## 1.2.0
+
+ENHANCEMENTS:
+
+* `resource_customer` added
+
+NOTES:
+
+* documentation of HCL language from older resources points to the resource_customer
+
 ## 1.1.3
 
 ENHANCEMENTS:
@@ -12,21 +22,11 @@ NOTES:
 
 ## 1.1.2
 
-ENHANCEMENTS:
-
-BUG FIXES:
-
 NOTES:
 
 * Link in the documentation fixed.
 
 ## 1.1.1
-
-ENHANCEMENTS:
-
-BUG FIXES:
-
-NOTES:
 
 * Renaming file `resource_promotion_code.go` -> `resource_stripe_promotion_code.go`
 
@@ -36,15 +36,7 @@ ENHANCEMENTS:
 
 * `resource/stripe_price` Support for Stripe Price added.
 
-BUG FIXES:
-
-NOTES:
-
 ## 1.0.1
-
-ENHANCEMENTS:
-
-BUG FIXES:
 
 NOTES:
 
@@ -59,8 +51,6 @@ ENHANCEMENTS:
 * `resource/stripe_product` Support for the Stripe Product added.
 * `resource/stripe_promotion_code` Support for the Stripe Promotion Code added.
 * `resource/stripe_webhook_endpoint` Support for the Stripe Webhook Endpoint added.
-
-BUG FIXES:
 
 NOTES:
 
