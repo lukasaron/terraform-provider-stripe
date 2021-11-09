@@ -344,13 +344,13 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 					} else {
 						priceTier.UpTo = stripe.Int64(ToInt64(v))
 					}
-				case k == "flat_amount" && ToInt64(v) != 0:
+				case k == "flat_amount" && v != nil:
 					priceTier.FlatAmount = stripe.Int64(ToInt64(v))
-				case k == "flat_amount_decimal" && ToFloat64(v) != 0:
+				case k == "flat_amount_decimal" && v != nil:
 					priceTier.FlatAmountDecimal = stripe.Float64(ToFloat64(v))
-				case k == "unit_amount" && ToInt64(v) != 0:
+				case k == "unit_amount" && v != nil:
 					priceTier.UnitAmount = stripe.Int64(ToInt64(v))
-				case k == "unit_amount_decimal" && ToFloat64(v) != 0:
+				case k == "unit_amount_decimal" && v != nil:
 					priceTier.UnitAmountDecimal = stripe.Float64(ToFloat64(v))
 				}
 			}
