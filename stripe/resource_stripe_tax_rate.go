@@ -22,7 +22,8 @@ func resourceStripeTaxRate() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"active": &schema.Schema{
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
+				Default: true,
 				Description: "Defaults to true. When set to false, this tax rate cannot be used with new applications or Checkout Sessions," +
 				"but will still work for subscriptions and invoices that already have it set.",
 			},
