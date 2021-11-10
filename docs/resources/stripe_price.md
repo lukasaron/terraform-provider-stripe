@@ -17,7 +17,7 @@ represented by prices. This approach lets you change prices without having to ch
 
 For example, you might have a single "gold" product that has prices for $10/month, $100/year, and €9 once.
 
-~> Removal of the price isn't supported through the Stripe SDK.
+~> Removal of the price isn't supported through the Stripe SDK. If you see Destroy this resource, it's not deleted and nothing is done and the PriceObject remains in Stripe. **Please archive manually**.
 
 ## Example Usage
 
