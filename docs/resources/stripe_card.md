@@ -15,6 +15,9 @@ cards on a recipient in order to transfer to those cards later.
 may have to continue handling full credit card information directly. If this applies to you, you can enable unsafe
 processing in your [dashboard](https://dashboard.stripe.com/settings/integration).
 
+~> Using the stripe_card resource may potentially leak credit card information into your Terraform State.
+Please see these recommendations on how to treat sensitive data in Terraform State.
+
 ## Example Usage
 
 ```hcl
