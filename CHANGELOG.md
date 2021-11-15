@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 1.2.1
+
+BUG FIXES:
+
+* `resource_price` the free amount can be used in tiers.
+
+NOTES:
+
+* warning note added into the `resource_card` related to sensitive data in the state.
+
+
 ## 1.2.0
 
 ENHANCEMENTS:
