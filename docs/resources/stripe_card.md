@@ -12,11 +12,12 @@ You can store multiple cards on a customer in order to charge the customer later
 cards on a recipient in order to transfer to those cards later.
 
 ~> Passing your cardholder’s full credit card number to Stripe’s API isn't a recommended approach. In rare cases, you
-may have to continue handling full credit card information directly. If this applies to you, you can enable unsafe
+may have to continue handling full credit card information directly. If this applies to you, you can enable unsafe 
 processing in your [dashboard](https://dashboard.stripe.com/settings/integration).
 
-~> Using the stripe_card resource may potentially leak credit card information into your Terraform State.
-Please see these recommendations on how to treat sensitive data in Terraform State.
+~> Using the stripe_card resource may potentially leak credit card information into your Terraform State. 
+Please see [these recommendations](https://www.terraform.io/docs/language/state/sensitive-data.html#recommendations) 
+on how to treat sensitive data in Terraform State.
 
 ## Example Usage
 
