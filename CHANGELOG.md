@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 1.2.2
+
+BUG FIXES:
+
+* documentation link in the `resource_card` fixed.
+
+
 ## 1.2.1
 
 BUG FIXES:
