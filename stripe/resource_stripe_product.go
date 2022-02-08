@@ -19,6 +19,7 @@ func resourceStripeProduct() *schema.Resource {
 			"id": {
 				Type:        schema.TypeString,
 				Computed:    true,
+				Optional:    true,
 				Description: "Unique identifier for the object.",
 			},
 			"name": {
@@ -127,6 +128,9 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	c := m.(*client.API)
 	params := &stripe.ProductParams{
 		Name: stripe.String(ExtractString(d, "name")),
+	}
+	if productID, ok := d.GetOk("id"); ok {
+		params.ID = stripe.String(ToString(productID))
 	}
 	if active, set := d.GetOk("active"); set {
 		params.Active = stripe.Bool(ToBool(active))
