@@ -33,6 +33,7 @@ resource "stripe_product" "product" {
 
 Arguments accepted by this resource include:
 
+* `id` - (Optional) String. The bespoke unique identifier for the object.
 * `name` - (Required) String. The product’s name, meant to be displayable to the customer. Whenever this product is sold via a subscription, name will show up on associated invoice line item descriptions.
 * `active` - (Optional) Bool. Whether the product is currently available for purchase. Defaults to `true`.
 * `description` - (Optional) String. The product’s description, meant to be displayable to the customer. Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
