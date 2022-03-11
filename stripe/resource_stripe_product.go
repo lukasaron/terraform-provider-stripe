@@ -160,7 +160,7 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	if shippable, set := d.GetOk("shippable"); set {
 		params.Shippable = stripe.Bool(ToBool(shippable))
 	}
-	if statementDescriptor, set := d.GetOk("statement_description"); set {
+	if statementDescriptor, set := d.GetOk("statement_descriptor"); set {
 		params.StatementDescriptor = stripe.String(ToString(statementDescriptor))
 	}
 	if unitLabel, set := d.GetOk("unit_label"); set {
