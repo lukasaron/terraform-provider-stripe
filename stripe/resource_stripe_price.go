@@ -235,8 +235,17 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 	return CallSet(
 		d.Set("currency", price.Currency),
 		d.Set("product", price.Product.ID),
-		d.Set("unit_amount", price.UnitAmount),
-		d.Set("unit_amount_decimal", price.UnitAmountDecimal),
+		func() error {
+			// We should only every fall into one of these if statements as we have a conflict between them on the schema
+			if d.HasChange("unit_amount") && !d.HasChange("unit_amount_decimal") {
+				d.Set("unit_amount", price.UnitAmount)
+			}
+			if d.HasChange("unit_amount_decimal") && !d.HasChange("unit_amount") {
+				d.Set("unit_amount_decimal", price.UnitAmountDecimal)
+			}
+
+			return nil
+		}(),
 		d.Set("active", price.Active),
 		d.Set("nickname", price.Nickname),
 		func() error {
