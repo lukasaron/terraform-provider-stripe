@@ -58,6 +58,30 @@ func ToInt64(value interface{}) int64 {
 	}
 }
 
+func OptionalInt64(value interface{}) *int64 {
+	valueInt64 := ToInt64(value)
+	switch valueInt64 {
+	case 0:
+		return nil
+	case -1:
+		return new(int64)
+	default:
+		return &valueInt64
+	}
+}
+
+func OptionalFloat64(value interface{}) *float64 {
+	valueFloat64 := ToFloat64(value)
+	switch valueFloat64 {
+	case 0:
+		return nil
+	case -1:
+		return new(float64)
+	default:
+		return &valueFloat64
+	}
+}
+
 func ExtractFloat64(d *schema.ResourceData, key string) float64 {
 	return ToFloat64(d.Get(key))
 }
