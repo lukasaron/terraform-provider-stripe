@@ -452,8 +452,16 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 	return resourceStripePriceRead(ctx, d, m)
 }
 
-func resourceStripePriceDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe SDK doesn't support Price deletion through API!")
+func resourceStripePriceDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.API)
+	params := stripe.PriceParams{
+		Active: stripe.Bool(false),
+	}
+
+	if _, err := c.Prices.Update(d.Id(), &params); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId("")
 	return nil
 }
