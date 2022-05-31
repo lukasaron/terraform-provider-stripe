@@ -1,6 +1,6 @@
 module github.com/lukasaron/terraform-provider-stripe
 
-go 1.17
+go 1.18
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.16.0
