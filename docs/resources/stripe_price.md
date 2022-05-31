@@ -16,7 +16,9 @@ represented by prices. This approach lets you change prices without having to ch
 
 For example, you might have a single "gold" product that has prices for $10/month, $100/year, and €9 once.
 
-~> Removal of the price isn't supported through the Stripe SDK.
+~> Removal of the price isn't supported through the Stripe SDK. The best practice, which this provider follows,
+is to archive the price by marking it as inactive on destroy, which indicates that the price is not longer
+available for purchase.
 
 ## Example Usage
 
@@ -183,3 +185,10 @@ Attributes exported by this resource include:
 * `type` - String. One of `one_time` or `recurring` depending on whether the price is for a one-time purchase or a
   recurring (subscription) purchase.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
+
+## Note on updating prices
+
+Once created, you can update the `active`, `metadata`, `nickname`, `lookup_key`, `tax_behaviour` (only if unspecified)
+and `transfer_lookup_key` attributes.
+
+Other attribute edits will trigger a destroy action (archival) and creation of a new price entry.
