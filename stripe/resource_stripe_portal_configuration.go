@@ -12,6 +12,7 @@ import (
 
 func resourceStripePortalConfiguration() *schema.Resource {
 	return &schema.Resource{
+		ReadContext:   resourceStripePortalConfigurationRead,
 		Schema: map[string]*schema.Schema{
 			"business_profile": {
 				Type:        schema.TypeList,
@@ -224,4 +225,27 @@ func resourceStripePortalConfiguration() *schema.Resource {
 			},
 		},
 	}
+}
+
+func resourceStripePortalConfigurationRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.API)
+	portal, err := c.BillingPortalConfigurations.Get(d.Id(), nil)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return CallSet(
+		d.Set("id", portal.ID),
+		d.Set("object", portal.Object),
+		d.Set("active", portal.Active),
+		d.Set("application", portal.Application),
+		d.Set("business_profile", portal.BusinessProfile),
+		d.Set("created", portal.Created),
+		d.Set("default_return_url", portal.DefaultReturnURL),
+		d.Set("features", portal.Features),
+		d.Set("is_default", portal.IsDefault),
+		d.Set("livemode", portal.Livemode),
+		d.Set("metadata", portal.Metadata),
+		d.Set("updated", portal.Updated),
+	)
 }
