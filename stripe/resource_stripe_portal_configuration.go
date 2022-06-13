@@ -14,6 +14,8 @@ import (
 func resourceStripePortalConfiguration() *schema.Resource {
 	return &schema.Resource{
 		ReadContext:   resourceStripePortalConfigurationRead,
+		CreateContext: resourceStripePortalConfigurationCreate,
+		UpdateContext: resourceStripePortalConfigurationUpdate,
 		DeleteContext: resourceStripePortalConfigurationDelete,
 		Schema: map[string]*schema.Schema{
 			"business_profile": {
@@ -250,6 +252,236 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 		d.Set("metadata", portal.Metadata),
 		d.Set("updated", portal.Updated),
 	)
+}
+
+func expandBusinessProfile(businessProfileI []interface{}) *stripe.BillingPortalConfigurationBusinessProfileParams {
+	businessProfile := &stripe.BillingPortalConfigurationBusinessProfileParams{}
+	for _, v := range businessProfileI {
+		businessProfileMap := v.(map[string]interface{})
+		if privacyPolicyURL, set := businessProfileMap["privacy_policy_url"]; set {
+			businessProfile.PrivacyPolicyURL = stripe.String(ToString(privacyPolicyURL))
+		}
+		if termsOfServiceURL, set := businessProfileMap["terms_of_service_url"]; set {
+			businessProfile.TermsOfServiceURL = stripe.String(ToString(termsOfServiceURL))
+		}
+		if headline, set := businessProfileMap["headline"]; set {
+			businessProfile.Headline = stripe.String(ToString(headline))
+		}
+	}
+	return businessProfile
+}
+
+func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationFeaturesParams {
+	features := &stripe.BillingPortalConfigurationFeaturesParams{}
+	for _, v := range featuresI {
+		featuresMap := v.(map[string]interface{})
+
+		if customerUpdateSettings, set := featuresMap["customer_update"]; set {
+			customerUpdate := &stripe.BillingPortalConfigurationFeaturesCustomerUpdateParams{}
+			cu := customerUpdateSettings.([]interface{})
+			for _, props := range cu {
+				p := props.(map[string]interface{})
+				if allowedUpdates, set := p["allowed_updates"]; set {
+					enumsI := allowedUpdates.([]interface{})
+					enums := []string{}
+					for _, enum := range enumsI {
+						enums = append(enums, ToString(enum))
+					}
+					customerUpdate.AllowedUpdates = stripe.StringSlice(enums)
+				}
+				if enabled, set := p["enabled"]; set {
+					customerUpdate.Enabled = stripe.Bool(ToBool(enabled))
+				}
+			}
+			features.CustomerUpdate = customerUpdate
+		}
+
+		if invoiceHistorySettings, set := featuresMap["invoice_history"]; set {
+			invoiceHistory := &stripe.BillingPortalConfigurationFeaturesInvoiceHistoryParams{}
+			ih := invoiceHistorySettings.([]interface{})
+			for _, props := range ih {
+				p := props.(map[string]interface{})
+				if enabled, set := p["enabled"]; set {
+					invoiceHistory.Enabled = stripe.Bool(ToBool(enabled))
+				}
+			}
+			features.InvoiceHistory = invoiceHistory
+		}
+
+		if paymentMethodUpdateSettings, set := featuresMap["payment_method_update"]; set {
+			paymentMethodUpdate := &stripe.BillingPortalConfigurationFeaturesPaymentMethodUpdateParams{}
+			pmu := paymentMethodUpdateSettings.([]interface{})
+			for _, props := range pmu {
+				p := props.(map[string]interface{})
+				if enabled, set := p["enabled"]; set {
+					paymentMethodUpdate.Enabled = stripe.Bool(ToBool(enabled))
+				}
+			}
+			features.PaymentMethodUpdate = paymentMethodUpdate
+		}
+
+		if subscriptionCancelSettings, set := featuresMap["subscription_cancel"]; set {
+			subscriptionCancel := &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
+			sc := subscriptionCancelSettings.([]interface{})
+			for _, props := range sc {
+				p := props.(map[string]interface{})
+				if cancellationReason, set := p["cancellation_reason"]; set {
+					subscriptionCancelReason := &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelCancellationReasonParams{}
+					scr := cancellationReason.([]interface{})
+					for _, scrProps := range scr {
+						scrP := scrProps.(map[string]interface{})
+						if options, set := scrP["options"]; set {
+							enumsI := options.([]interface{})
+							enums := []string{}
+							for _, enum := range enumsI {
+								enums = append(enums, ToString(enum))
+							}
+							subscriptionCancelReason.Options = stripe.StringSlice(enums)
+						}
+						if enabled, set := scrP["enabled"]; set {
+							subscriptionCancelReason.Enabled = stripe.Bool(ToBool(enabled))
+						}
+					}
+					subscriptionCancel.CancellationReason = subscriptionCancelReason
+				}
+
+				if enabled, set := p["enabled"]; set {
+					subscriptionCancel.Enabled = stripe.Bool(ToBool(enabled))
+				}
+
+				if mode, set := p["mode"]; set {
+					subscriptionCancel.Mode = stripe.String(ToString(mode))
+				}
+
+				if prorationBehavior, set := p["proration_behavior"]; set {
+					subscriptionCancel.ProrationBehavior = stripe.String(ToString(prorationBehavior))
+				}
+			}
+			features.SubscriptionCancel = subscriptionCancel
+		}
+
+		if subscriptionPauseSettings, set := featuresMap["subscription_pause"]; set {
+			subscriptionPause := &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
+			sp := subscriptionPauseSettings.([]interface{})
+			for _, props := range sp {
+				p := props.(map[string]interface{})
+				if enabled, set := p["enabled"]; set {
+					subscriptionPause.Enabled = stripe.Bool(ToBool(enabled))
+				}
+			}
+			features.SubscriptionPause = subscriptionPause
+		}
+
+		if subscriptionUpdateSettings, set := featuresMap["subscription_update"]; set {
+			subscriptionUpdate := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateParams{}
+			sp := subscriptionUpdateSettings.([]interface{})
+			for _, props := range sp {
+				p := props.(map[string]interface{})
+				if defaultAllowedUpdates, set := p["default_allowed_updates"]; set {
+					enumsI := defaultAllowedUpdates.([]interface{})
+					enums := []string{}
+					for _, enum := range enumsI {
+						enums = append(enums, ToString(enum))
+					}
+					subscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(enums)
+				}
+
+				if enabled, set := p["enabled"]; set {
+					subscriptionUpdate.Enabled = stripe.Bool(ToBool(enabled))
+				}
+
+				if products, set := p["products"]; set {
+					var productsParams = []*stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
+					set := products.(*schema.Set)
+					productsList := set.List()
+					for _, i := range productsList {
+						pParams := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
+						finalProduct := i.(map[string]interface{})
+						if product, set := finalProduct["product"]; set {
+							pParams.Product = stripe.String(ToString(product))
+						}
+
+						if prices, set := finalProduct["prices"]; set {
+							pricesI := prices.([]interface{})
+							prices := []string{}
+							for _, price := range pricesI {
+								prices = append(prices, ToString(price))
+							}
+							pParams.Prices = stripe.StringSlice(prices)
+						}
+						productsParams = append(productsParams, pParams)
+					}
+					subscriptionUpdate.Products = productsParams
+				}
+
+				if prorationBehavior, set := p["proration_behavior"]; set {
+					subscriptionUpdate.ProrationBehavior = stripe.String(ToString(prorationBehavior))
+				}
+			}
+			features.SubscriptionUpdate = subscriptionUpdate
+		}
+	}
+	return features
+}
+
+func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.API)
+	params := &stripe.BillingPortalConfigurationParams{}
+	if defaultReturnURL, set := d.GetOk("default_return_url"); set {
+		params.DefaultReturnURL = stripe.String(ToString(defaultReturnURL))
+	}
+	if businessProfile, set := d.GetOk("business_profile"); set {
+		params.BusinessProfile = expandBusinessProfile(businessProfile.([]interface{}))
+	}
+	if features, set := d.GetOk("features"); set {
+		params.Features = expandFeatures(features.([]interface{}))
+	}
+	if meta, set := d.GetOk("metadata"); set {
+		for k, v := range ToMap(meta) {
+			params.AddMetadata(k, ToString(v))
+		}
+	}
+
+	portalConfiguration, err := c.BillingPortalConfigurations.New(params)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(portalConfiguration.ID)
+	return resourceStripePortalConfigurationRead(ctx, d, m)
+}
+
+func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.API)
+	params := &stripe.BillingPortalConfigurationParams{}
+	if d.HasChange("default_return_url") {
+		params.BusinessProfile.Headline = stripe.String(ExtractString(d, "default_return_url"))
+	}
+
+	if d.HasChange("metadata") {
+		params.Metadata = nil
+		metadata := ExtractMap(d, "metadata")
+		for k, v := range metadata {
+			params.AddMetadata(k, ToString(v))
+		}
+	}
+
+	if d.HasChange("business_profile") {
+		_, new := d.GetChange("business_profile")
+		params.BusinessProfile = expandBusinessProfile(new.([]interface{}))
+	}
+
+	if d.HasChange("features") {
+		_, new := d.GetChange("features")
+		params.Features = expandFeatures(new.([]interface{}))
+	}
+
+	_, err := c.BillingPortalConfigurations.Update(d.Id(), params)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceStripePortalConfigurationRead(ctx, d, m)
 }
 
 func resourceStripePortalConfigurationDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
