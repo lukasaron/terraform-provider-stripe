@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,6 +14,7 @@ import (
 func resourceStripePortalConfiguration() *schema.Resource {
 	return &schema.Resource{
 		ReadContext:   resourceStripePortalConfigurationRead,
+		DeleteContext: resourceStripePortalConfigurationDelete,
 		Schema: map[string]*schema.Schema{
 			"business_profile": {
 				Type:        schema.TypeList,
@@ -248,4 +250,10 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 		d.Set("metadata", portal.Metadata),
 		d.Set("updated", portal.Updated),
 	)
+}
+
+func resourceStripePortalConfigurationDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Println("[WARN] Stripe doesn't support deletion of customer portals through the API")
+	d.SetId("")
+	return nil
 }
