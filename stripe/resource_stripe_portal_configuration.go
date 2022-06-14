@@ -257,7 +257,7 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 func expandBusinessProfile(businessProfileI []interface{}) *stripe.BillingPortalConfigurationBusinessProfileParams {
 	businessProfile := &stripe.BillingPortalConfigurationBusinessProfileParams{}
 	for _, v := range businessProfileI {
-		businessProfileMap := v.(map[string]interface{})
+		businessProfileMap := ToMap(v)
 		if privacyPolicyURL, set := businessProfileMap["privacy_policy_url"]; set {
 			businessProfile.PrivacyPolicyURL = stripe.String(ToString(privacyPolicyURL))
 		}
@@ -274,15 +274,15 @@ func expandBusinessProfile(businessProfileI []interface{}) *stripe.BillingPortal
 func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationFeaturesParams {
 	features := &stripe.BillingPortalConfigurationFeaturesParams{}
 	for _, v := range featuresI {
-		featuresMap := v.(map[string]interface{})
+		featuresMap := ToMap(v)
 
 		if customerUpdateSettings, set := featuresMap["customer_update"]; set {
 			customerUpdate := &stripe.BillingPortalConfigurationFeaturesCustomerUpdateParams{}
-			cu := customerUpdateSettings.([]interface{})
+			cu := ToSlice(customerUpdateSettings)
 			for _, props := range cu {
-				p := props.(map[string]interface{})
+				p := ToMap(props)
 				if allowedUpdates, set := p["allowed_updates"]; set {
-					enumsI := allowedUpdates.([]interface{})
+					enumsI := ToSlice(allowedUpdates)
 					enums := []string{}
 					for _, enum := range enumsI {
 						enums = append(enums, ToString(enum))
@@ -298,9 +298,9 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 
 		if invoiceHistorySettings, set := featuresMap["invoice_history"]; set {
 			invoiceHistory := &stripe.BillingPortalConfigurationFeaturesInvoiceHistoryParams{}
-			ih := invoiceHistorySettings.([]interface{})
+			ih := ToSlice(invoiceHistorySettings)
 			for _, props := range ih {
-				p := props.(map[string]interface{})
+				p := ToMap(props)
 				if enabled, set := p["enabled"]; set {
 					invoiceHistory.Enabled = stripe.Bool(ToBool(enabled))
 				}
@@ -310,9 +310,9 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 
 		if paymentMethodUpdateSettings, set := featuresMap["payment_method_update"]; set {
 			paymentMethodUpdate := &stripe.BillingPortalConfigurationFeaturesPaymentMethodUpdateParams{}
-			pmu := paymentMethodUpdateSettings.([]interface{})
+			pmu := ToSlice(paymentMethodUpdateSettings)
 			for _, props := range pmu {
-				p := props.(map[string]interface{})
+				p := ToMap(props)
 				if enabled, set := p["enabled"]; set {
 					paymentMethodUpdate.Enabled = stripe.Bool(ToBool(enabled))
 				}
@@ -322,16 +322,16 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 
 		if subscriptionCancelSettings, set := featuresMap["subscription_cancel"]; set {
 			subscriptionCancel := &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
-			sc := subscriptionCancelSettings.([]interface{})
+			sc := ToSlice(subscriptionCancelSettings)
 			for _, props := range sc {
-				p := props.(map[string]interface{})
+				p := ToMap(props)
 				if cancellationReason, set := p["cancellation_reason"]; set {
 					subscriptionCancelReason := &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelCancellationReasonParams{}
-					scr := cancellationReason.([]interface{})
+					scr := ToSlice(cancellationReason)
 					for _, scrProps := range scr {
-						scrP := scrProps.(map[string]interface{})
+						scrP := ToMap(scrProps)
 						if options, set := scrP["options"]; set {
-							enumsI := options.([]interface{})
+							enumsI := ToSlice(options)
 							enums := []string{}
 							for _, enum := range enumsI {
 								enums = append(enums, ToString(enum))
@@ -362,9 +362,9 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 
 		if subscriptionPauseSettings, set := featuresMap["subscription_pause"]; set {
 			subscriptionPause := &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
-			sp := subscriptionPauseSettings.([]interface{})
+			sp := ToSlice(subscriptionPauseSettings)
 			for _, props := range sp {
-				p := props.(map[string]interface{})
+				p := ToMap(props)
 				if enabled, set := p["enabled"]; set {
 					subscriptionPause.Enabled = stripe.Bool(ToBool(enabled))
 				}
@@ -374,11 +374,11 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 
 		if subscriptionUpdateSettings, set := featuresMap["subscription_update"]; set {
 			subscriptionUpdate := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateParams{}
-			sp := subscriptionUpdateSettings.([]interface{})
+			sp := ToSlice(subscriptionUpdateSettings)
 			for _, props := range sp {
-				p := props.(map[string]interface{})
+				p := ToMap(props)
 				if defaultAllowedUpdates, set := p["default_allowed_updates"]; set {
-					enumsI := defaultAllowedUpdates.([]interface{})
+					enumsI := ToSlice(defaultAllowedUpdates)
 					enums := []string{}
 					for _, enum := range enumsI {
 						enums = append(enums, ToString(enum))
@@ -396,13 +396,13 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 					productsList := set.List()
 					for _, i := range productsList {
 						pParams := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
-						finalProduct := i.(map[string]interface{})
+						finalProduct := ToMap(i)
 						if product, set := finalProduct["product"]; set {
 							pParams.Product = stripe.String(ToString(product))
 						}
 
 						if prices, set := finalProduct["prices"]; set {
-							pricesI := prices.([]interface{})
+							pricesI := ToSlice(prices)
 							prices := []string{}
 							for _, price := range pricesI {
 								prices = append(prices, ToString(price))
@@ -431,10 +431,10 @@ func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.Reso
 		params.DefaultReturnURL = stripe.String(ToString(defaultReturnURL))
 	}
 	if businessProfile, set := d.GetOk("business_profile"); set {
-		params.BusinessProfile = expandBusinessProfile(businessProfile.([]interface{}))
+		params.BusinessProfile = expandBusinessProfile(ToSlice(businessProfile))
 	}
 	if features, set := d.GetOk("features"); set {
-		params.Features = expandFeatures(features.([]interface{}))
+		params.Features = expandFeatures(ToSlice(features))
 	}
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
@@ -468,12 +468,12 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 
 	if d.HasChange("business_profile") {
 		_, new := d.GetChange("business_profile")
-		params.BusinessProfile = expandBusinessProfile(new.([]interface{}))
+		params.BusinessProfile = expandBusinessProfile(ToSlice(new))
 	}
 
 	if d.HasChange("features") {
 		_, new := d.GetChange("features")
-		params.Features = expandFeatures(new.([]interface{}))
+		params.Features = expandFeatures(ToSlice(new))
 	}
 
 	_, err := c.BillingPortalConfigurations.Update(d.Id(), params)
