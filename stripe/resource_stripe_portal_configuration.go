@@ -455,7 +455,7 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 	c := m.(*client.API)
 	params := &stripe.BillingPortalConfigurationParams{}
 	if d.HasChange("default_return_url") {
-		params.BusinessProfile.Headline = stripe.String(ExtractString(d, "default_return_url"))
+		params.DefaultReturnURL = stripe.String(ExtractString(d, "default_return_url"))
 	}
 
 	if d.HasChange("metadata") {
