@@ -499,6 +499,10 @@ func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.Reso
 func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
 	params := &stripe.BillingPortalConfigurationParams{}
+	if d.HasChange("active") {
+		params.Active = stripe.Bool(ExtractBool(d, "active"))
+	}
+
 	if d.HasChange("default_return_url") {
 		params.DefaultReturnURL = stripe.String(ExtractString(d, "default_return_url"))
 	}
