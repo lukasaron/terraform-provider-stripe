@@ -18,6 +18,27 @@ func resourceStripePortalConfiguration() *schema.Resource {
 		UpdateContext: resourceStripePortalConfigurationUpdate,
 		DeleteContext: resourceStripePortalConfigurationDelete,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Unique identifier for the object.",
+			},
+			"object": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "String representing the object's type.",
+			},
+			"active": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether the configuration is active and can be used to create portal sessions.",
+			},
+			"application": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "ID of the Connect Application that created the configuration.",
+			},
 			"business_profile": {
 				Type:        schema.TypeList,
 				Required:    true,
@@ -32,15 +53,27 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"privacy_policy_url": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "A link to the business’s publicly available privacy policy.",
+							Description: "A link to the business's publicly available privacy policy.",
 						},
 						"terms_of_service_url": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "A link to the business’s publicly available terms of service.",
+							Description: "A link to the business's publicly available terms of service.",
 						},
 					},
 				},
+			},
+			"created": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Time at which the object was created. " +
+					"Measured in seconds since the Unix epoch.",
+			},
+			"default_return_url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The default URL to redirect customers to when they click on the portal's " +
+					"link to return to your website. This can be overriden when creating the session.",
 			},
 			"features": {
 				Type:        schema.TypeList,
@@ -214,11 +247,18 @@ func resourceStripePortalConfiguration() *schema.Resource {
 					},
 				},
 			},
-			"default_return_url": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "The default URL to redirect customers to when they click on the portal’s " +
-					"link to return to your website. This can be overriden when creating the session.",
+			"is_default": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Whether the configuration is the default. If true, this configuration can be " +
+				  "managed in the Dashboard and portal sessions will use this configuration unless it is " +
+					"overriden when creating the session.",
+			},
+			"livemode": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Has the value true if the object exists in live mode or the value false if the " +
+				  "object exists in test mode.",
 			},
 			"metadata": {
 				Type:        schema.TypeMap,
@@ -226,6 +266,12 @@ func resourceStripePortalConfiguration() *schema.Resource {
 				Description: "Set of key-value pairs that you can attach to an object. " +
 					"This can be useful for storing additional information about the object in a structured format.",
 				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			"updated": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Time at which the object was last updated. " +
+					"Measured in seconds since the Unix epoch.",
 			},
 		},
 	}
