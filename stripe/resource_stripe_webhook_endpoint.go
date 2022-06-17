@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"context"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v72"
@@ -50,6 +49,14 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 				Default:     false,
 				Description: "Disable the webhook endpoint if set to true.",
 			},
+			"connect": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
+				Description: "Whether this endpoint should receive events from connected accounts (true), " +
+					"or from your account (false). Defaults to false",
+			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
@@ -74,6 +81,8 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		d.Set("url", webhookEndpoint.URL),
 		d.Set("description", webhookEndpoint.Description),
 		d.Set("disabled", webhookEndpoint.Status != "enabled"),
+		// TODO revisit this part in the future - now hardcoded the value from the state
+		d.Set("connect", ExtractBool(d, "connect")),
 		d.Set("metadata", webhookEndpoint.Metadata),
 	)
 }
@@ -87,12 +96,14 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 	if description, set := d.GetOk("description"); set {
 		params.Description = stripe.String(ToString(description))
 	}
+	if connect, set := d.GetOk("connect"); set {
+		params.Connect = stripe.Bool(ToBool(connect))
+	}
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
 			params.AddMetadata(k, ToString(v))
 		}
 	}
-
 	webhookEndpoint, err := c.WebhookEndpoints.New(params)
 	if err != nil {
 		return diag.FromErr(err)
