@@ -173,6 +173,11 @@ func resourceStripeCouponRead(_ context.Context, d *schema.ResourceData, m inter
 		appliesTo = coupon.AppliesTo.Products
 	}
 
+	var redeemBy string
+	if coupon.RedeemBy != 0 {
+		redeemBy = time.Unix(coupon.RedeemBy, 0).Format(time.RFC3339)
+	}
+
 	return CallSet(
 		d.Set("name", coupon.Name),
 		d.Set("amount_off", coupon.AmountOff),
@@ -181,7 +186,7 @@ func resourceStripeCouponRead(_ context.Context, d *schema.ResourceData, m inter
 		d.Set("duration", coupon.Duration),
 		d.Set("duration_in_months", coupon.DurationInMonths),
 		d.Set("max_redemptions", coupon.MaxRedemptions),
-		d.Set("redeem_by", time.Unix(coupon.RedeemBy, 0).Format(time.RFC3339)),
+		d.Set("redeem_by", redeemBy),
 		d.Set("times_redeemed", coupon.TimesRedeemed),
 		d.Set("applies_to", appliesTo),
 		d.Set("metadata", coupon.Metadata),
