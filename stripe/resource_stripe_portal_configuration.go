@@ -534,7 +534,17 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 }
 
 func resourceStripePortalConfigurationDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe doesn't support deletion of customer portals through the API")
+	log.Println("[WARN] Stripe doesn't support deletion of customer portals. Portal will be deactivated but not deleted")
+
+	c := m.(*client.API)
+	params := stripe.BillingPortalConfigurationParams{
+		Active: stripe.Bool(false),
+	}
+
+	if _, err := c.BillingPortalConfigurations.Update(d.Id(), &params); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId("")
 	return nil
 }
