@@ -64,14 +64,7 @@ type CustomerListParams struct {
 // Settings controlling the behavior of the customer's cash balance,
 // such as reconciliation of funds received.
 type CustomerCashBalanceSettingsParams struct {
-	// Method for using the customer balance to pay outstanding
-	// `customer_balance` PaymentIntents. If set to `automatic`, all available
-	// funds will automatically be used to pay any outstanding PaymentIntent.
-	// If set to `manual`, only customer balance funds from bank transfers
-	// with a reference code matching
-	// `payment_intent.next_action.display_bank_transfer_intructions.reference_code` will
-	// automatically be used to pay the corresponding outstanding
-	// PaymentIntent.
+	// Controls how funds transferred by the customer are applied to payment intents and invoices. Valid options are `automatic` or `manual`. For more information about these reconciliation modes, see [Reconciliation](https://stripe.com/docs/payments/customer-balance/reconciliation).
 	ReconciliationMode *string `form:"reconciliation_mode"`
 }
 
@@ -298,6 +291,8 @@ type Customer struct {
 	Created int64 `json:"created"`
 	// Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) the customer can be charged in for recurring billing purposes.
 	Currency Currency `json:"currency"`
+	// The default three-letter [ISO code for the currency](https://stripe.com/docs/currencies) that the customer will be charged in for billing purposes.
+	DefaultCurrency Currency `json:"default_currency"`
 	// ID of the default payment source for the customer.
 	//
 	// If you are using payment methods created via the PaymentMethods API, see the [invoice_settings.default_payment_method](https://stripe.com/docs/api/customers/object#customer_object-invoice_settings-default_payment_method) field instead.
@@ -315,6 +310,8 @@ type Customer struct {
 	Email string `json:"email"`
 	// Unique identifier for the object.
 	ID string `json:"id"`
+	// The current multi-currency balances, if any, being stored on the customer.If positive in a currency, the customer has a credit to apply to their next invoice denominated in that currency.If negative, the customer has an amount owed that will be added to their next invoice denominated in that currency. These balances do not refer to any unpaid invoices.They solely track amounts that have yet to be successfully applied to any invoice. A balance in a particular currency is only applied to any invoice as an invoice in that currency is finalized.
+	InvoiceCreditBalance map[string]int64 `json:"invoice_credit_balance"`
 	// The prefix for the customer used to generate unique invoice numbers.
 	InvoicePrefix   string                   `json:"invoice_prefix"`
 	InvoiceSettings *CustomerInvoiceSettings `json:"invoice_settings"`

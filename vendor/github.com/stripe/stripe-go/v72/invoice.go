@@ -123,6 +123,7 @@ const (
 	InvoicePaymentSettingsPaymentMethodTypeKonbini            InvoicePaymentSettingsPaymentMethodType = "konbini"
 	InvoicePaymentSettingsPaymentMethodTypeLink               InvoicePaymentSettingsPaymentMethodType = "link"
 	InvoicePaymentSettingsPaymentMethodTypePayNow             InvoicePaymentSettingsPaymentMethodType = "paynow"
+	InvoicePaymentSettingsPaymentMethodTypePromptPay          InvoicePaymentSettingsPaymentMethodType = "promptpay"
 	InvoicePaymentSettingsPaymentMethodTypeSepaCreditTransfer InvoicePaymentSettingsPaymentMethodType = "sepa_credit_transfer"
 	InvoicePaymentSettingsPaymentMethodTypeSepaDebit          InvoicePaymentSettingsPaymentMethodType = "sepa_debit"
 	InvoicePaymentSettingsPaymentMethodTypeSofort             InvoicePaymentSettingsPaymentMethodType = "sofort"
@@ -172,7 +173,7 @@ type InvoiceListParams struct {
 
 // Settings for automatic tax lookup for this invoice.
 type InvoiceAutomaticTaxParams struct {
-	// Controls whether Stripe will automatically compute tax on this invoice.
+	// Whether Stripe automatically computes tax on this invoice. Note that incompatible invoice items (invoice items with manually specified [tax rates](https://stripe.com/docs/api/tax_rates), negative amounts, or `tax_behavior=unspecified`) cannot be added to automatic tax invoices.
 	Enabled *bool `form:"enabled"`
 }
 
@@ -212,8 +213,34 @@ type InvoicePaymentSettingsPaymentMethodOptionsBancontactParams struct {
 	PreferredLanguage *string `form:"preferred_language"`
 }
 
+// The selected installment plan to use for this invoice.
+type InvoicePaymentSettingsPaymentMethodOptionsCardInstallmentsPlanParams struct {
+	// For `fixed_count` installment plans, this is the number of installment payments your customer will make to their credit card.
+	Count *int64 `form:"count"`
+	// For `fixed_count` installment plans, this is the interval between installment payments your customer will make to their credit card.
+	// One of `month`.
+	Interval *string `form:"interval"`
+	// Type of installment plan, one of `fixed_count`.
+	Type *string `form:"type"`
+}
+
+// Installment configuration for payments attempted on this invoice (Mexico Only).
+//
+// For more information, see the [installments integration guide](https://stripe.com/docs/payments/installments).
+type InvoicePaymentSettingsPaymentMethodOptionsCardInstallmentsParams struct {
+	// Setting to true enables installments for this invoice.
+	// Setting to false will prevent any selected plan from applying to a payment.
+	Enabled *bool `form:"enabled"`
+	// The selected installment plan to use for this invoice.
+	Plan *InvoicePaymentSettingsPaymentMethodOptionsCardInstallmentsPlanParams `form:"plan"`
+}
+
 // If paying by `card`, this sub-hash contains details about the Card payment method options to pass to the invoice's PaymentIntent.
 type InvoicePaymentSettingsPaymentMethodOptionsCardParams struct {
+	// Installment configuration for payments attempted on this invoice (Mexico Only).
+	//
+	// For more information, see the [installments integration guide](https://stripe.com/docs/payments/installments).
+	Installments *InvoicePaymentSettingsPaymentMethodOptionsCardInstallmentsParams `form:"installments"`
 	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 	RequestThreeDSecure *string `form:"request_three_d_secure"`
 }
@@ -275,10 +302,18 @@ type InvoicePaymentSettingsPaymentMethodOptionsParams struct {
 
 // Configuration settings for the PaymentIntent that is generated when the invoice is finalized.
 type InvoicePaymentSettingsParams struct {
+	// ID of the mandate to be used for this invoice. It must correspond to the payment method used to pay the invoice, including the invoice's default_payment_method or default_source, if set.
+	DefaultMandate *string `form:"default_mandate"`
 	// Payment-method-specific configuration to provide to the invoice's PaymentIntent.
 	PaymentMethodOptions *InvoicePaymentSettingsPaymentMethodOptionsParams `form:"payment_method_options"`
 	// The list of payment method types (e.g. card) to provide to the invoice's PaymentIntent. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice's default payment method, the subscription's default payment method, the customer's default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice).
 	PaymentMethodTypes []*string `form:"payment_method_types"`
+}
+
+// Options for invoice PDF rendering.
+type InvoiceRenderingOptionsParams struct {
+	// How line-item prices and amounts will be displayed with respect to tax on invoice PDFs. One of `exclude_tax` or `include_inclusive_tax`. `include_inclusive_tax` will include inclusive tax (and exclude exclusive tax) in invoice PDF amounts. `exclude_tax` will exclude all tax (inclusive and exclusive alike) from invoice PDF amounts.
+	AmountTaxDisplay *string `form:"amount_tax_display"`
 }
 
 // If specified, the funds from the invoice will be transferred to the destination and the ID of the resulting transfer will be found on the invoice's charge.
@@ -302,6 +337,8 @@ type InvoiceParams struct {
 	AutomaticTax *InvoiceAutomaticTaxParams `form:"automatic_tax"`
 	// Either `charge_automatically` or `send_invoice`. This field can be updated only on `draft` invoices.
 	CollectionMethod *string `form:"collection_method"`
+	// The currency to preview this invoice in. Defaults to that of `customer` if not specified.
+	Currency *string `form:"currency"`
 	// The identifier of the customer whose upcoming invoice you'd like to retrieve.
 	Customer *string `form:"customer"`
 	// A list of up to 4 custom fields to be displayed on the invoice. If a value for `custom_fields` is specified, the list specified will replace the existing custom field list on this invoice. Pass an empty string to remove previously-defined fields.
@@ -329,6 +366,8 @@ type InvoiceParams struct {
 	PaymentSettings *InvoicePaymentSettingsParams `form:"payment_settings"`
 	// How to handle pending invoice items on invoice creation. One of `include`, `exclude`, or `include_and_require`. `include` will include any pending invoice items, and will create an empty draft invoice if no pending invoice items exist. `include_and_require` will include any pending invoice items, if no pending invoice items exist then the request will fail. `exclude` will always create an empty invoice draft regardless if there are pending invoice items or not. Defaults to `include_and_require` if the parameter is omitted.
 	PendingInvoiceItemsBehavior *string `form:"pending_invoice_items_behavior"`
+	// Options for invoice PDF rendering.
+	RenderingOptions *InvoiceRenderingOptionsParams `form:"rendering_options"`
 	// The identifier of the unstarted schedule whose upcoming invoice you'd like to retrieve. Cannot be used with subscription or subscription fields.
 	Schedule *string `form:"schedule"`
 	// Extra information about a charge for the customer's credit card statement. It must contain at least one letter. If not specified and this invoice is part of a subscription, the default `statement_descriptor` will be set to the first subscription item's product's `statement_descriptor`.
@@ -476,6 +515,8 @@ type InvoicePayParams struct {
 	//
 	// Passing `forgive=false` will fail the charge if the source hasn't been pre-funded with the right amount. An example for this case is with ACH Credit Transfers and wires: if the amount wired is less than the amount due by a small amount, you might want to forgive the difference. Defaults to `false`.
 	Forgive *bool `form:"forgive"`
+	// ID of the mandate to be used for this invoice. It must correspond to the payment method used to pay the invoice, including the payment_method param or the invoice's default_payment_method or default_source, if set.
+	Mandate *string `form:"mandate"`
 	// Indicates if a customer is on or off-session while an invoice payment is attempted. Defaults to `true` (off-session).
 	OffSession *bool `form:"off_session"`
 	// Boolean representing whether an invoice is paid outside of Stripe. This will result in no charge being made. Defaults to `false`.
@@ -519,7 +560,7 @@ type InvoiceLineListParams struct {
 	Subscription *string `form:"subscription"`
 }
 type InvoiceAutomaticTax struct {
-	// Whether Stripe automatically computes tax on this invoice.
+	// Whether Stripe automatically computes tax on this invoice. Note that incompatible invoice items (invoice items with manually specified [tax rates](https://stripe.com/docs/api/tax_rates), negative amounts, or `tax_behavior=unspecified`) cannot be added to automatic tax invoices.
 	Enabled bool `json:"enabled"`
 	// The status of the most recent automated tax calculation for this invoice.
 	Status InvoiceAutomaticTaxStatus `json:"status"`
@@ -557,9 +598,14 @@ type InvoicePaymentSettingsPaymentMethodOptionsBancontact struct {
 	// Preferred language of the Bancontact authorization page that the customer is redirected to.
 	PreferredLanguage string `json:"preferred_language"`
 }
+type InvoicePaymentSettingsPaymentMethodOptionsCardInstallments struct {
+	// Whether Installments are enabled for this Invoice.
+	Enabled bool `json:"enabled"`
+}
 
 // If paying by `card`, this sub-hash contains details about the Card payment method options to pass to the invoice's PaymentIntent.
 type InvoicePaymentSettingsPaymentMethodOptionsCard struct {
+	Installments *InvoicePaymentSettingsPaymentMethodOptionsCardInstallments `json:"installments"`
 	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 	RequestThreeDSecure InvoicePaymentSettingsPaymentMethodOptionsCardRequestThreeDSecure `json:"request_three_d_secure"`
 }
@@ -610,6 +656,8 @@ type InvoicePaymentSettingsPaymentMethodOptions struct {
 	USBankAccount *InvoicePaymentSettingsPaymentMethodOptionsUSBankAccount `json:"us_bank_account"`
 }
 type InvoicePaymentSettings struct {
+	// ID of the mandate to be used for this invoice. It must correspond to the payment method used to pay the invoice, including the invoice's default_payment_method or default_source, if set.
+	DefaultMandate string `json:"default_mandate"`
 	// Payment-method-specific configuration to provide to the invoice's PaymentIntent.
 	PaymentMethodOptions *InvoicePaymentSettingsPaymentMethodOptions `json:"payment_method_options"`
 	// The list of payment method types (e.g. card) to provide to the invoice's PaymentIntent. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice's default payment method, the subscription's default payment method, the customer's default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice).
@@ -832,6 +880,8 @@ type Invoice struct {
 	SubscriptionProrationDate int64 `json:"subscription_proration_date"`
 	// Total of all subscriptions, invoice items, and prorations on the invoice before any invoice level discount or exclusive tax is applied. Item discounts are already incorporated
 	Subtotal int64 `json:"subtotal"`
+	// The integer amount in %s representing the subtotal of the invoice before any invoice level discount or tax is applied. Item discounts are already incorporated
+	SubtotalExcludingTax int64 `json:"subtotal_excluding_tax"`
 	// The amount of tax on this invoice. This is the sum of all the tax amounts on this invoice.
 	Tax int64 `json:"tax"`
 	// ID of the test clock this invoice belongs to.
@@ -841,6 +891,8 @@ type Invoice struct {
 	Total int64 `json:"total"`
 	// The aggregate amounts calculated per discount across all line items.
 	TotalDiscountAmounts []*InvoiceDiscountAmount `json:"total_discount_amounts"`
+	// The integer amount in %s representing the total amount of the invoice including all discounts but excluding all tax.
+	TotalExcludingTax int64 `json:"total_excluding_tax"`
 	// The aggregate amounts calculated per tax rate for all line items.
 	TotalTaxAmounts []*InvoiceTaxAmount `json:"total_tax_amounts"`
 	// The account (if any) the payment will be attributed to for tax reporting, and where funds from the payment will be transferred to for the invoice.

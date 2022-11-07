@@ -32,6 +32,7 @@ type PaymentLinkConsentCollectionPromotions string
 // List of values that PaymentLinkConsentCollectionPromotions can take
 const (
 	PaymentLinkConsentCollectionPromotionsAuto PaymentLinkConsentCollectionPromotions = "auto"
+	PaymentLinkConsentCollectionPromotionsNone PaymentLinkConsentCollectionPromotions = "none"
 )
 
 // Configuration for Customer creation during checkout.
@@ -66,7 +67,30 @@ type PaymentLinkPaymentMethodType string
 
 // List of values that PaymentLinkPaymentMethodType can take
 const (
-	PaymentLinkPaymentMethodTypeCard PaymentLinkPaymentMethodType = "card"
+	PaymentLinkPaymentMethodTypeAffirm           PaymentLinkPaymentMethodType = "affirm"
+	PaymentLinkPaymentMethodTypeAfterpayClearpay PaymentLinkPaymentMethodType = "afterpay_clearpay"
+	PaymentLinkPaymentMethodTypeAlipay           PaymentLinkPaymentMethodType = "alipay"
+	PaymentLinkPaymentMethodTypeAUBECSDebit      PaymentLinkPaymentMethodType = "au_becs_debit"
+	PaymentLinkPaymentMethodTypeBACSDebit        PaymentLinkPaymentMethodType = "bacs_debit"
+	PaymentLinkPaymentMethodTypeBancontact       PaymentLinkPaymentMethodType = "bancontact"
+	PaymentLinkPaymentMethodTypeBLIK             PaymentLinkPaymentMethodType = "blik"
+	PaymentLinkPaymentMethodTypeBoleto           PaymentLinkPaymentMethodType = "boleto"
+	PaymentLinkPaymentMethodTypeCard             PaymentLinkPaymentMethodType = "card"
+	PaymentLinkPaymentMethodTypeEPS              PaymentLinkPaymentMethodType = "eps"
+	PaymentLinkPaymentMethodTypeFPX              PaymentLinkPaymentMethodType = "fpx"
+	PaymentLinkPaymentMethodTypeGiropay          PaymentLinkPaymentMethodType = "giropay"
+	PaymentLinkPaymentMethodTypeGrabpay          PaymentLinkPaymentMethodType = "grabpay"
+	PaymentLinkPaymentMethodTypeIdeal            PaymentLinkPaymentMethodType = "ideal"
+	PaymentLinkPaymentMethodTypeKlarna           PaymentLinkPaymentMethodType = "klarna"
+	PaymentLinkPaymentMethodTypeKonbini          PaymentLinkPaymentMethodType = "konbini"
+	PaymentLinkPaymentMethodTypeOXXO             PaymentLinkPaymentMethodType = "oxxo"
+	PaymentLinkPaymentMethodTypeP24              PaymentLinkPaymentMethodType = "p24"
+	PaymentLinkPaymentMethodTypePayNow           PaymentLinkPaymentMethodType = "paynow"
+	PaymentLinkPaymentMethodTypePromptPay        PaymentLinkPaymentMethodType = "promptpay"
+	PaymentLinkPaymentMethodTypeSepaDebit        PaymentLinkPaymentMethodType = "sepa_debit"
+	PaymentLinkPaymentMethodTypeSofort           PaymentLinkPaymentMethodType = "sofort"
+	PaymentLinkPaymentMethodTypeUSBankAccount    PaymentLinkPaymentMethodType = "us_bank_account"
+	PaymentLinkPaymentMethodTypeWechatPay        PaymentLinkPaymentMethodType = "wechat_pay"
 )
 
 // Indicates the type of transaction being performed which customizes relevant text on the page, such as the submit button.
@@ -226,6 +250,8 @@ type PaymentLinkParams struct {
 	BillingAddressCollection *string `form:"billing_address_collection"`
 	// Configure fields to gather active consent from customers.
 	ConsentCollection *PaymentLinkConsentCollectionParams `form:"consent_collection"`
+	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies) and supported by each line item's price.
+	Currency *string `form:"currency"`
 	// Configures whether [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link create a [Customer](https://stripe.com/docs/api/customers).
 	CustomerCreation *string `form:"customer_creation"`
 	// The line items representing what is being sold. Each line item represents an item being sold. Up to 20 line items are supported.
@@ -234,7 +260,7 @@ type PaymentLinkParams struct {
 	OnBehalfOf *string `form:"on_behalf_of"`
 	// A subset of parameters to be passed to PaymentIntent creation for Checkout Sessions in `payment` mode.
 	PaymentIntentData *PaymentLinkPaymentIntentDataParams `form:"payment_intent_data"`
-	// The list of payment method types that customers can use. Only `card` is supported. Pass an empty string to enable automatic payment methods that use your [payment method settings](https://dashboard.stripe.com/settings/payment_methods).
+	// The list of payment method types that customers can use. Pass an empty string to enable automatic payment methods that use your [payment method settings](https://dashboard.stripe.com/settings/payment_methods).
 	PaymentMethodTypes []*string `form:"payment_method_types"`
 	// Controls phone number collection settings during checkout.
 	//
@@ -244,7 +270,7 @@ type PaymentLinkParams struct {
 	ShippingAddressCollection *PaymentLinkShippingAddressCollectionParams `form:"shipping_address_collection"`
 	// The shipping rate options to apply to [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link.
 	ShippingOptions []*PaymentLinkShippingOptionParams `form:"shipping_options"`
-	// Describes the type of transaction being performed in order to customize relevant text on the page, such as the submit button.
+	// Describes the type of transaction being performed in order to customize relevant text on the page, such as the submit button. Changing this value will also affect the hostname in the [url](https://stripe.com/docs/api/payment_links/payment_links/object#url) property (example: `donate.stripe.com`).
 	SubmitType *string `form:"submit_type"`
 	// When creating a subscription, the specified configuration data will be used. There must be at least one line item with a recurring price to use `subscription_data`.
 	SubscriptionData *PaymentLinkSubscriptionDataParams `form:"subscription_data"`

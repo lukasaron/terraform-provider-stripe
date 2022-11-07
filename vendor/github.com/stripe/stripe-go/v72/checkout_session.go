@@ -45,6 +45,7 @@ type CheckoutSessionConsentCollectionPromotions string
 // List of values that CheckoutSessionConsentCollectionPromotions can take
 const (
 	CheckoutSessionConsentCollectionPromotionsAuto CheckoutSessionConsentCollectionPromotions = "auto"
+	CheckoutSessionConsentCollectionPromotionsNone CheckoutSessionConsentCollectionPromotions = "none"
 )
 
 // Configure whether a Checkout Session creates a Customer when the Checkout Session completes.
@@ -56,7 +57,7 @@ const (
 	CheckoutSessionCustomerCreationIfRequired CheckoutSessionCustomerCreation = "if_required"
 )
 
-// The customer's tax exempt status at time of checkout.
+// The customer's tax exempt status after a completed Checkout Session.
 type CheckoutSessionCustomerDetailsTaxExempt string
 
 // List of values that CheckoutSessionCustomerDetailsTaxExempt can take
@@ -284,6 +285,51 @@ const (
 	CheckoutSessionPaymentMethodOptionsCardSetupFutureUsageOnSession  CheckoutSessionPaymentMethodOptionsCardSetupFutureUsage = "on_session"
 )
 
+// List of address types that should be returned in the financial_addresses response. If not specified, all valid types will be returned.
+//
+// Permitted values include: `sort_code`, `zengin`, `iban`, or `spei`.
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType string
+
+// List of values that CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType can take
+const (
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressTypeIban     CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType = "iban"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressTypeSepa     CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType = "sepa"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressTypeSortCode CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType = "sort_code"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressTypeSpei     CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType = "spei"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressTypeZengin   CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType = "zengin"
+)
+
+// The bank transfer type that this PaymentIntent is allowed to use for funding Permitted values include: `eu_bank_transfer`, `gb_bank_transfer`, `jp_bank_transfer`, or `mx_bank_transfer`.
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType string
+
+// List of values that CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType can take
+const (
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferTypeEUBankTransfer CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType = "eu_bank_transfer"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferTypeGBBankTransfer CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType = "gb_bank_transfer"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferTypeJPBankTransfer CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType = "jp_bank_transfer"
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferTypeMXBankTransfer CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType = "mx_bank_transfer"
+)
+
+// The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`.
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceFundingType string
+
+// List of values that CheckoutSessionPaymentMethodOptionsCustomerBalanceFundingType can take
+const (
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceFundingTypeBankTransfer CheckoutSessionPaymentMethodOptionsCustomerBalanceFundingType = "bank_transfer"
+)
+
+// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+//
+// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+//
+// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceSetupFutureUsage string
+
+// List of values that CheckoutSessionPaymentMethodOptionsCustomerBalanceSetupFutureUsage can take
+const (
+	CheckoutSessionPaymentMethodOptionsCustomerBalanceSetupFutureUsageNone CheckoutSessionPaymentMethodOptionsCustomerBalanceSetupFutureUsage = "none"
+)
+
 // Indicates that you intend to make future payments with this PaymentIntent's payment method.
 //
 // Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
@@ -501,9 +547,19 @@ const (
 	CheckoutSessionSubmitTypePay    CheckoutSessionSubmitType = "pay"
 )
 
+// Only return the Checkout Sessions for the Customer details specified.
+type CheckoutSessionListCustomerDetailsParams struct {
+	// Customer's email address.
+	Email *string `form:"email"`
+}
+
 // Returns a list of Checkout Sessions.
 type CheckoutSessionListParams struct {
 	ListParams `form:"*"`
+	// Only return the Checkout Sessions for the Customer specified.
+	Customer *string `form:"customer"`
+	// Only return the Checkout Sessions for the Customer details specified.
+	CustomerDetails *CheckoutSessionListCustomerDetailsParams `form:"customer_details"`
 	// Only return the Checkout Session for the PaymentIntent specified.
 	PaymentIntent *string `form:"payment_intent"`
 	// Only return the Checkout Session for the subscription specified.
@@ -813,8 +869,33 @@ type CheckoutSessionPaymentMethodOptionsBoletoParams struct {
 	SetupFutureUsage *string `form:"setup_future_usage"`
 }
 
+// The selected installment plan to use for this payment attempt.
+// This parameter can only be provided during confirmation.
+type CheckoutSessionPaymentMethodOptionsCardInstallmentsPlanParams struct {
+	// For `fixed_count` installment plans, this is the number of installment payments your customer will make to their credit card.
+	Count *int64 `form:"count"`
+	// For `fixed_count` installment plans, this is the interval between installment payments your customer will make to their credit card.
+	// One of `month`.
+	Interval *string `form:"interval"`
+	// Type of installment plan, one of `fixed_count`.
+	Type *string `form:"type"`
+}
+
+// Installment options for card payments
+type CheckoutSessionPaymentMethodOptionsCardInstallmentsParams struct {
+	// Setting to true enables installments for this PaymentIntent.
+	// This will cause the response to contain a list of available installment plans.
+	// Setting to false will prevent any selected plan from applying to a charge.
+	Enabled *bool `form:"enabled"`
+	// The selected installment plan to use for this payment attempt.
+	// This parameter can only be provided during confirmation.
+	Plan *CheckoutSessionPaymentMethodOptionsCardInstallmentsPlanParams `form:"plan"`
+}
+
 // contains details about the Card payment method options.
 type CheckoutSessionPaymentMethodOptionsCardParams struct {
+	// Installment options for card payments
+	Installments *CheckoutSessionPaymentMethodOptionsCardInstallmentsParams `form:"installments"`
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
 	//
 	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
@@ -825,6 +906,35 @@ type CheckoutSessionPaymentMethodOptionsCardParams struct {
 	StatementDescriptorSuffixKana *string `form:"statement_descriptor_suffix_kana"`
 	// Provides information about a card payment that customers see on their statements. Concatenated with the Kanji prefix (shortened Kanji descriptor) or Kanji statement descriptor that's set on the account to form the complete statement descriptor. Maximum 17 characters. On card statements, the *concatenation* of both prefix and suffix (including separators) will appear truncated to 17 characters.
 	StatementDescriptorSuffixKanji *string `form:"statement_descriptor_suffix_kanji"`
+}
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferEUBankTransferParams struct {
+	// The desired country code of the bank account information. Permitted values include: `DE`, `ES`, `FR`, `IE`, or `NL`.
+	Country *string `form:"country"`
+}
+
+// Configuration for the bank transfer funding type, if the `funding_type` is set to `bank_transfer`.
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferParams struct {
+	EUBankTransfer *CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferEUBankTransferParams `form:"eu_bank_transfer"`
+	// List of address types that should be returned in the financial_addresses response. If not specified, all valid types will be returned.
+	//
+	// Permitted values include: `sort_code`, `zengin`, `iban`, or `spei`.
+	RequestedAddressTypes []*string `form:"requested_address_types"`
+	// The list of bank transfer types that this PaymentIntent is allowed to use for funding. Permitted values include: `us_bank_account`, `eu_bank_account`, `id_bank_account`, `gb_bank_account`, `jp_bank_account`, `mx_bank_account`, `eu_bank_transfer`, `gb_bank_transfer`, `id_bank_transfer`, `jp_bank_transfer`, `mx_bank_transfer`, or `us_bank_transfer`.
+	Type *string `form:"type"`
+}
+
+// contains details about the Customer Balance payment method options.
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceParams struct {
+	// Configuration for the bank transfer funding type, if the `funding_type` is set to `bank_transfer`.
+	BankTransfer *CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferParams `form:"bank_transfer"`
+	// The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`.
+	FundingType *string `form:"funding_type"`
+	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+	//
+	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+	//
+	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+	SetupFutureUsage *string `form:"setup_future_usage"`
 }
 
 // contains details about the EPS payment method options.
@@ -1009,6 +1119,8 @@ type CheckoutSessionPaymentMethodOptionsParams struct {
 	Boleto *CheckoutSessionPaymentMethodOptionsBoletoParams `form:"boleto"`
 	// contains details about the Card payment method options.
 	Card *CheckoutSessionPaymentMethodOptionsCardParams `form:"card"`
+	// contains details about the Customer Balance payment method options.
+	CustomerBalance *CheckoutSessionPaymentMethodOptionsCustomerBalanceParams `form:"customer_balance"`
 	// contains details about the EPS payment method options.
 	EPS *CheckoutSessionPaymentMethodOptionsEPSParams `form:"eps"`
 	// contains details about the EPS payment method options.
@@ -1088,12 +1200,22 @@ type CheckoutSessionShippingOptionShippingRateDataDeliveryEstimateParams struct 
 	Minimum *CheckoutSessionShippingOptionShippingRateDataDeliveryEstimateMinimumParams `form:"minimum"`
 }
 
+// Shipping rates defined in each available currency option. Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).
+type CheckoutSessionShippingOptionShippingRateDataFixedAmountCurrencyOptionsParams struct {
+	// A non-negative integer in cents representing how much to charge.
+	Amount *int64 `form:"amount"`
+	// Specifies whether the rate is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`.
+	TaxBehavior *string `form:"tax_behavior"`
+}
+
 // Describes a fixed amount to charge for shipping. Must be present if type is `fixed_amount`.
 type CheckoutSessionShippingOptionShippingRateDataFixedAmountParams struct {
 	// A non-negative integer in cents representing how much to charge.
 	Amount *int64 `form:"amount"`
 	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
 	Currency *string `form:"currency"`
+	// Shipping rates defined in each available currency option. Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).
+	CurrencyOptions map[string]*CheckoutSessionShippingOptionShippingRateDataFixedAmountCurrencyOptionsParams `form:"currency_options"`
 }
 
 // Parameters to be passed to Shipping Rate creation for this shipping option
@@ -1198,6 +1320,8 @@ type CheckoutSessionParams struct {
 	ClientReferenceID *string `form:"client_reference_id"`
 	// Configure fields for the Checkout Session to gather active consent from customers.
 	ConsentCollection *CheckoutSessionConsentCollectionParams `form:"consent_collection"`
+	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
+	Currency *string `form:"currency"`
 	// ID of an existing Customer, if one exists. In `payment` mode, the customer's most recent card
 	// payment method will be used to prefill the email, name, card details, and billing address
 	// on the Checkout page. In `subscription` mode, the customer's [default payment method](https://stripe.com/docs/api/customers/update#update_customer-invoice_settings-default_payment_method)
@@ -1230,7 +1354,7 @@ type CheckoutSessionParams struct {
 	CustomerUpdate *CheckoutSessionCustomerUpdateParams `form:"customer_update"`
 	// The coupon or promotion code to apply to this Session. Currently, only up to one may be specified.
 	Discounts []*CheckoutSessionDiscountParams `form:"discounts"`
-	// The Epoch time in seconds at which the Checkout Session will expire. It can be anywhere from 1 to 24 hours after Checkout Session creation. By default, this value is 24 hours from creation.
+	// The Epoch time in seconds at which the Checkout Session will expire. It can be anywhere from 30 minutes to 24 hours after Checkout Session creation. By default, this value is 24 hours from creation.
 	ExpiresAt *int64 `form:"expires_at"`
 	// A list of items the customer is purchasing. Use this parameter to pass one-time or recurring [Prices](https://stripe.com/docs/api/prices).
 	//
@@ -1340,7 +1464,7 @@ type CheckoutSessionConsentCollection struct {
 	Promotions CheckoutSessionConsentCollectionPromotions `json:"promotions"`
 }
 
-// The customer's tax IDs at time of checkout.
+// The customer's tax IDs after a completed Checkout Session.
 type CheckoutSessionCustomerDetailsTaxIDs struct {
 	// The type of the tax ID, one of `eu_vat`, `br_cnpj`, `br_cpf`, `eu_oss_vat`, `gb_vat`, `nz_gst`, `au_abn`, `au_arn`, `in_gst`, `no_vat`, `za_vat`, `ch_vat`, `mx_rfc`, `sg_uen`, `ru_inn`, `ru_kpp`, `ca_bn`, `hk_br`, `es_cif`, `tw_vat`, `th_vat`, `jp_cn`, `jp_rn`, `li_uid`, `my_itn`, `us_ein`, `kr_brn`, `ca_qst`, `ca_gst_hst`, `ca_pst_bc`, `ca_pst_mb`, `ca_pst_sk`, `my_sst`, `sg_gst`, `ae_trn`, `cl_tin`, `sa_vat`, `id_npwp`, `my_frp`, `il_vat`, `ge_vat`, `ua_vat`, `is_vat`, `bg_uic`, `hu_tin`, `si_tin`, or `unknown`
 	Type CheckoutSessionCustomerDetailsTaxIDsType `json:"type"`
@@ -1348,20 +1472,20 @@ type CheckoutSessionCustomerDetailsTaxIDs struct {
 	Value string `json:"value"`
 }
 
-// The customer details including the customer's tax exempt status and the customer's tax IDs. Only present on Sessions in `payment` or `subscription` mode.
+// The customer details including the customer's tax exempt status and the customer's tax IDs. Only the customer's email is present on Sessions in `setup` mode.
 type CheckoutSessionCustomerDetails struct {
-	// The customer's address at the time of checkout. Note: This property is populated only for sessions on or after March 30, 2022.
+	// The customer's address after a completed Checkout Session. Note: This property is populated only for sessions on or after March 30, 2022.
 	Address *Address `json:"address"`
-	// The email associated with the Customer, if one exists, on the Checkout Session at the time of checkout or at time of session expiry.
+	// The email associated with the Customer, if one exists, on the Checkout Session after a completed Checkout Session or at time of session expiry.
 	// Otherwise, if the customer has consented to promotional content, this value is the most recent valid email provided by the customer on the Checkout form.
 	Email string `json:"email"`
-	// The customer's name at the time of checkout. Note: This property is populated only for sessions on or after March 30, 2022.
+	// The customer's name after a completed Checkout Session. Note: This property is populated only for sessions on or after March 30, 2022.
 	Name string `json:"name"`
-	// The customer's phone number at the time of checkout
+	// The customer's phone number after a completed Checkout Session.
 	Phone string `json:"phone"`
-	// The customer's tax exempt status at time of checkout.
+	// The customer's tax exempt status after a completed Checkout Session.
 	TaxExempt CheckoutSessionCustomerDetailsTaxExempt `json:"tax_exempt"`
-	// The customer's tax IDs at time of checkout.
+	// The customer's tax IDs after a completed Checkout Session.
 	TaxIDs []*CheckoutSessionCustomerDetailsTaxIDs `json:"tax_ids"`
 }
 type CheckoutSessionPaymentMethodOptionsACSSDebitMandateOptions struct {
@@ -1446,7 +1570,12 @@ type CheckoutSessionPaymentMethodOptionsBoleto struct {
 	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
 	SetupFutureUsage CheckoutSessionPaymentMethodOptionsBoletoSetupFutureUsage `json:"setup_future_usage"`
 }
+type CheckoutSessionPaymentMethodOptionsCardInstallments struct {
+	// Indicates if installments are enabled
+	Enabled bool `json:"enabled"`
+}
 type CheckoutSessionPaymentMethodOptionsCard struct {
+	Installments *CheckoutSessionPaymentMethodOptionsCardInstallments `json:"installments"`
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
 	//
 	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
@@ -1457,6 +1586,30 @@ type CheckoutSessionPaymentMethodOptionsCard struct {
 	StatementDescriptorSuffixKana string `json:"statement_descriptor_suffix_kana"`
 	// Provides information about a card payment that customers see on their statements. Concatenated with the Kanji prefix (shortened Kanji descriptor) or Kanji statement descriptor that's set on the account to form the complete statement descriptor. Maximum 17 characters. On card statements, the *concatenation* of both prefix and suffix (including separators) will appear truncated to 17 characters.
 	StatementDescriptorSuffixKanji string `json:"statement_descriptor_suffix_kanji"`
+}
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferEUBankTransfer struct {
+	// The desired country code of the bank account information. Permitted values include: `DE`, `ES`, `FR`, `IE`, or `NL`.
+	Country string `json:"country"`
+}
+type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransfer struct {
+	EUBankTransfer *CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferEUBankTransfer `json:"eu_bank_transfer"`
+	// List of address types that should be returned in the financial_addresses response. If not specified, all valid types will be returned.
+	//
+	// Permitted values include: `sort_code`, `zengin`, `iban`, or `spei`.
+	RequestedAddressTypes []CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferRequestedAddressType `json:"requested_address_types"`
+	// The bank transfer type that this PaymentIntent is allowed to use for funding Permitted values include: `eu_bank_transfer`, `gb_bank_transfer`, `jp_bank_transfer`, or `mx_bank_transfer`.
+	Type CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransferType `json:"type"`
+}
+type CheckoutSessionPaymentMethodOptionsCustomerBalance struct {
+	BankTransfer *CheckoutSessionPaymentMethodOptionsCustomerBalanceBankTransfer `json:"bank_transfer"`
+	// The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`.
+	FundingType CheckoutSessionPaymentMethodOptionsCustomerBalanceFundingType `json:"funding_type"`
+	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+	//
+	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+	//
+	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+	SetupFutureUsage CheckoutSessionPaymentMethodOptionsCustomerBalanceSetupFutureUsage `json:"setup_future_usage"`
 }
 type CheckoutSessionPaymentMethodOptionsEPS struct {
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
@@ -1587,6 +1740,7 @@ type CheckoutSessionPaymentMethodOptions struct {
 	Bancontact       *CheckoutSessionPaymentMethodOptionsBancontact       `json:"bancontact"`
 	Boleto           *CheckoutSessionPaymentMethodOptionsBoleto           `json:"boleto"`
 	Card             *CheckoutSessionPaymentMethodOptionsCard             `json:"card"`
+	CustomerBalance  *CheckoutSessionPaymentMethodOptionsCustomerBalance  `json:"customer_balance"`
 	EPS              *CheckoutSessionPaymentMethodOptionsEPS              `json:"eps"`
 	FPX              *CheckoutSessionPaymentMethodOptionsFPX              `json:"fpx"`
 	Giropay          *CheckoutSessionPaymentMethodOptionsGiropay          `json:"giropay"`
@@ -1711,7 +1865,7 @@ type CheckoutSession struct {
 	Customer *Customer `json:"customer"`
 	// Configure whether a Checkout Session creates a Customer when the Checkout Session completes.
 	CustomerCreation CheckoutSessionCustomerCreation `json:"customer_creation"`
-	// The customer details including the customer's tax exempt status and the customer's tax IDs. Only present on Sessions in `payment` or `subscription` mode.
+	// The customer details including the customer's tax exempt status and the customer's tax IDs. Only the customer's email is present on Sessions in `setup` mode.
 	CustomerDetails *CheckoutSessionCustomerDetails `json:"customer_details"`
 	// If provided, this value will be used when the Customer object is created.
 	// If not provided, customers will be asked to enter their email address.

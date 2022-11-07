@@ -73,6 +73,7 @@ const (
 	PaymentMethodTypeAUBECSDebit      PaymentMethodType = "au_becs_debit"
 	PaymentMethodTypeBACSDebit        PaymentMethodType = "bacs_debit"
 	PaymentMethodTypeBancontact       PaymentMethodType = "bancontact"
+	PaymentMethodTypeBLIK             PaymentMethodType = "blik"
 	PaymentMethodTypeBoleto           PaymentMethodType = "boleto"
 	PaymentMethodTypeCard             PaymentMethodType = "card"
 	PaymentMethodTypeCardPresent      PaymentMethodType = "card_present"
@@ -89,6 +90,7 @@ const (
 	PaymentMethodTypeOXXO             PaymentMethodType = "oxxo"
 	PaymentMethodTypeP24              PaymentMethodType = "p24"
 	PaymentMethodTypePayNow           PaymentMethodType = "paynow"
+	PaymentMethodTypePromptPay        PaymentMethodType = "promptpay"
 	PaymentMethodTypeSepaDebit        PaymentMethodType = "sepa_debit"
 	PaymentMethodTypeSofort           PaymentMethodType = "sofort"
 	PaymentMethodTypeUSBankAccount    PaymentMethodType = "us_bank_account"
@@ -171,6 +173,9 @@ type BillingDetailsParams struct {
 	// Billing phone number (including extension).
 	Phone *string `form:"phone"`
 }
+
+// If this is a `blik` PaymentMethod, this hash contains details about the BLIK payment method.
+type PaymentMethodBLIKParams struct{}
 
 // If this is a `boleto` PaymentMethod, this hash contains details about the Boleto payment method.
 type PaymentMethodBoletoParams struct {
@@ -258,6 +263,9 @@ type PaymentMethodP24Params struct {
 // If this is a `paynow` PaymentMethod, this hash contains details about the PayNow payment method.
 type PaymentMethodPayNowParams struct{}
 
+// If this is a `promptpay` PaymentMethod, this hash contains details about the PromptPay payment method.
+type PaymentMethodPromptPayParams struct{}
+
 // Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 type PaymentMethodRadarOptionsParams struct {
 	// A [Radar Session](https://stripe.com/docs/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
@@ -314,6 +322,8 @@ type PaymentMethodParams struct {
 	Bancontact *PaymentMethodBancontactParams `form:"bancontact"`
 	// Billing information associated with the PaymentMethod that may be used or required by particular types of payment methods.
 	BillingDetails *BillingDetailsParams `form:"billing_details"`
+	// This is a legacy parameter that will be removed in the future. It is a hash that does not accept any keys.
+	BLIK *PaymentMethodBLIKParams `form:"blik"`
 	// If this is a `boleto` PaymentMethod, this hash contains details about the Boleto payment method.
 	Boleto *PaymentMethodBoletoParams `form:"boleto"`
 	// If this is a `card` PaymentMethod, this hash contains the user's card details. For backwards compatibility, you can alternatively provide a Stripe token (e.g., for Apple Pay, Amex Express Checkout, or legacy Checkout) into the card hash with format `card: {token: "tok_visa"}`. When providing a card number, you must meet the requirements for [PCI compliance](https://stripe.com/docs/security#validating-pci-compliance). We strongly recommend using Stripe.js instead of interacting with this API directly.
@@ -344,6 +354,8 @@ type PaymentMethodParams struct {
 	P24 *PaymentMethodP24Params `form:"p24"`
 	// If this is a `paynow` PaymentMethod, this hash contains details about the PayNow payment method.
 	PayNow *PaymentMethodPayNowParams `form:"paynow"`
+	// If this is a `promptpay` PaymentMethod, this hash contains details about the PromptPay payment method.
+	PromptPay *PaymentMethodPromptPayParams `form:"promptpay"`
 	// Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 	RadarOptions *PaymentMethodRadarOptionsParams `form:"radar_options"`
 	// This is a legacy parameter that will be removed in the future. It is a hash that does not accept any keys.
@@ -435,6 +447,7 @@ type BillingDetails struct {
 	// Billing phone number (including extension).
 	Phone string `json:"phone"`
 }
+type PaymentMethodBLIK struct{}
 type PaymentMethodBoleto struct {
 	// Uniquely identifies the customer tax id (CNPJ or CPF)
 	TaxID string `json:"tax_id"`
@@ -584,6 +597,7 @@ type PaymentMethodP24 struct {
 	Bank string `json:"bank"`
 }
 type PaymentMethodPayNow struct{}
+type PaymentMethodPromptPay struct{}
 
 // Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 type PaymentMethodRadarOptions struct {
@@ -659,6 +673,7 @@ type PaymentMethod struct {
 	BACSDebit        *PaymentMethodBACSDebit        `json:"bacs_debit"`
 	Bancontact       *PaymentMethodBancontact       `json:"bancontact"`
 	BillingDetails   *BillingDetails                `json:"billing_details"`
+	BLIK             *PaymentMethodBLIK             `json:"blik"`
 	Boleto           *PaymentMethodBoleto           `json:"boleto"`
 	Card             *PaymentMethodCard             `json:"card"`
 	CardPresent      *PaymentMethodCardPresent      `json:"card_present"`
@@ -683,10 +698,11 @@ type PaymentMethod struct {
 	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
 	Metadata map[string]string `json:"metadata"`
 	// String representing the object's type. Objects of the same type share the same value.
-	Object string               `json:"object"`
-	OXXO   *PaymentMethodOXXO   `json:"oxxo"`
-	P24    *PaymentMethodP24    `json:"p24"`
-	PayNow *PaymentMethodPayNow `json:"paynow"`
+	Object    string                  `json:"object"`
+	OXXO      *PaymentMethodOXXO      `json:"oxxo"`
+	P24       *PaymentMethodP24       `json:"p24"`
+	PayNow    *PaymentMethodPayNow    `json:"paynow"`
+	PromptPay *PaymentMethodPromptPay `json:"promptpay"`
 	// Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 	RadarOptions *PaymentMethodRadarOptions `json:"radar_options"`
 	SepaDebit    *PaymentMethodSepaDebit    `json:"sepa_debit"`
