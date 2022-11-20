@@ -17,6 +17,9 @@ func resourceStripePromotionCode() *schema.Resource {
 		CreateContext: resourceStripePromotionCodeCreate,
 		UpdateContext: resourceStripePromotionCodeUpdate,
 		DeleteContext: resourceStripePromotionCodeDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

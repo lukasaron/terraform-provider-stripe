@@ -16,6 +16,9 @@ func resourceStripeCoupon() *schema.Resource {
 		CreateContext: resourceStripeCouponCreate,
 		UpdateContext: resourceStripeCouponUpdate,
 		DeleteContext: resourceStripeCouponDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
