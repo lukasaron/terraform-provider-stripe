@@ -16,6 +16,9 @@ func resourceStripeTaxRate() *schema.Resource {
 		CreateContext: resourceStripeTaxRateCreate,
 		UpdateContext: resourceStripeTaxRateUpdate,
 		DeleteContext: resourceStripeTaxRateDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

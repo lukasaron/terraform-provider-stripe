@@ -16,6 +16,9 @@ func resourceStripeCard() *schema.Resource {
 		CreateContext: resourceStripeCardCreate,
 		UpdateContext: resourceStripeCardUpdate,
 		DeleteContext: resourceStripeCardDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
