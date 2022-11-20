@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v72"
@@ -14,6 +15,9 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 		CreateContext: resourceStripeWebhookEndpointCreate,
 		UpdateContext: resourceStripeWebhookEndpointUpdate,
 		DeleteContext: resourceStripeWebhookEndpointDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

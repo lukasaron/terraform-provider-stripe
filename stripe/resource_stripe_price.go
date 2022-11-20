@@ -15,6 +15,9 @@ func resourceStripePrice() *schema.Resource {
 		CreateContext: resourceStripePriceCreate,
 		UpdateContext: resourceStripePriceUpdate,
 		DeleteContext: resourceStripePriceDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

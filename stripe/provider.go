@@ -28,6 +28,7 @@ func Provider() *schema.Provider {
 			"stripe_price":                resourceStripePrice(),
 			"stripe_customer":             resourceStripeCustomer(),
 			"stripe_tax_rate":             resourceStripeTaxRate(),
+			"stripe_shipping_rate":        resourceStripeShippingRate(),
 			"stripe_portal_configuration": resourceStripePortalConfiguration(),
 		},
 		ConfigureContextFunc: providerConfigure,
