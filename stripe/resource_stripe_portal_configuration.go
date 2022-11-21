@@ -17,6 +17,9 @@ func resourceStripePortalConfiguration() *schema.Resource {
 		CreateContext: resourceStripePortalConfigurationCreate,
 		UpdateContext: resourceStripePortalConfigurationUpdate,
 		DeleteContext: resourceStripePortalConfigurationDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
@@ -64,14 +67,14 @@ func resourceStripePortalConfiguration() *schema.Resource {
 				},
 			},
 			"created": {
-				Type:        schema.TypeInt,
-				Computed:    true,
+				Type:     schema.TypeInt,
+				Computed: true,
 				Description: "Time at which the object was created. " +
 					"Measured in seconds since the Unix epoch.",
 			},
 			"default_return_url": {
-				Type:        schema.TypeString,
-				Optional:    true,
+				Type:     schema.TypeString,
+				Optional: true,
 				Description: "The default URL to redirect customers to when they click on the portal's " +
 					"link to return to your website. This can be overriden when creating the session.",
 			},
@@ -169,13 +172,13 @@ func resourceStripePortalConfiguration() *schema.Resource {
 									"mode": {
 										Type:         schema.TypeString,
 										Optional:     true,
-										Description: "Whether to cancel subscriptions immediately or at the end of the billing period.",
+										Description:  "Whether to cancel subscriptions immediately or at the end of the billing period.",
 										ValidateFunc: validation.StringInSlice([]string{"immediately", "at_period_end"}, false),
 									},
 									"proration_behavior": {
 										Type:         schema.TypeString,
 										Optional:     true,
-										Description: "Whether to create prorations when canceling subscriptions.",
+										Description:  "Whether to create prorations when canceling subscriptions.",
 										ValidateFunc: validation.StringInSlice([]string{"none", "create_prorations"}, false),
 									},
 								},
@@ -225,9 +228,9 @@ func resourceStripePortalConfiguration() *schema.Resource {
 													Type:        schema.TypeList,
 													Required:    true,
 													Description: "The list of price IDs for the product that a subscription can be updated to.",
-													Elem:     &schema.Schema{Type: schema.TypeString},
+													Elem:        &schema.Schema{Type: schema.TypeString},
 												},
-												"product":{
+												"product": {
 													Type:        schema.TypeString,
 													Required:    true,
 													Description: "The product id.",
@@ -248,28 +251,28 @@ func resourceStripePortalConfiguration() *schema.Resource {
 				},
 			},
 			"is_default": {
-				Type:        schema.TypeBool,
-				Computed:    true,
+				Type:     schema.TypeBool,
+				Computed: true,
 				Description: "Whether the configuration is the default. If true, this configuration can be " +
-				  "managed in the Dashboard and portal sessions will use this configuration unless it is " +
+					"managed in the Dashboard and portal sessions will use this configuration unless it is " +
 					"overriden when creating the session.",
 			},
 			"livemode": {
-				Type:        schema.TypeBool,
-				Computed:    true,
+				Type:     schema.TypeBool,
+				Computed: true,
 				Description: "Has the value true if the object exists in live mode or the value false if the " +
-				  "object exists in test mode.",
+					"object exists in test mode.",
 			},
 			"metadata": {
-				Type:        schema.TypeMap,
-				Optional:    true,
+				Type:     schema.TypeMap,
+				Optional: true,
 				Description: "Set of key-value pairs that you can attach to an object. " +
 					"This can be useful for storing additional information about the object in a structured format.",
-				Elem:        &schema.Schema{Type: schema.TypeString},
+				Elem: &schema.Schema{Type: schema.TypeString},
 			},
 			"updated": {
-				Type:        schema.TypeInt,
-				Computed:    true,
+				Type:     schema.TypeInt,
+				Computed: true,
 				Description: "Time at which the object was last updated. " +
 					"Measured in seconds since the Unix epoch.",
 			},
