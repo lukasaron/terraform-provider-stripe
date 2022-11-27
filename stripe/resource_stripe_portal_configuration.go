@@ -285,23 +285,21 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 	portal, err := c.BillingPortalConfigurations.Get(d.Id(), nil)
 	if err != nil {
 		return diag.FromErr(err)
-	} else {
-		CallSet(
-			d.Set("id", portal.ID),
-			d.Set("object", portal.Object),
-			d.Set("active", portal.Active),
-			d.Set("application", portal.Application),
-			d.Set("business_profile", portal.BusinessProfile),
-			d.Set("created", portal.Created),
-			d.Set("default_return_url", portal.DefaultReturnURL),
-			d.Set("features", portal.Features),
-			d.Set("is_default", portal.IsDefault),
-			d.Set("livemode", portal.Livemode),
-			d.Set("metadata", portal.Metadata),
-			d.Set("updated", portal.Updated),
-		)
 	}
-	return diag.FromErr(err)
+	return CallSet(
+		d.Set("id", portal.ID),
+		d.Set("object", portal.Object),
+		d.Set("active", portal.Active),
+		d.Set("application", portal.Application),
+		d.Set("business_profile", portal.BusinessProfile),
+		d.Set("created", portal.Created),
+		d.Set("default_return_url", portal.DefaultReturnURL),
+		d.Set("features", portal.Features),
+		d.Set("is_default", portal.IsDefault),
+		d.Set("livemode", portal.Livemode),
+		d.Set("metadata", portal.Metadata),
+		d.Set("updated", portal.Updated),
+	)
 }
 
 func expandBusinessProfile(businessProfileI []interface{}) *stripe.BillingPortalConfigurationBusinessProfileParams {
@@ -332,12 +330,7 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 			for _, props := range cu {
 				p := ToMap(props)
 				if allowedUpdates, set := p["allowed_updates"]; set {
-					enumsI := ToSlice(allowedUpdates)
-					enums := []string{}
-					for _, enum := range enumsI {
-						enums = append(enums, ToString(enum))
-					}
-					customerUpdate.AllowedUpdates = stripe.StringSlice(enums)
+					customerUpdate.AllowedUpdates = stripe.StringSlice(ToStringSlice(ToSlice(allowedUpdates)))
 				}
 				if enabled, set := p["enabled"]; set {
 					customerUpdate.Enabled = stripe.Bool(ToBool(enabled))
@@ -381,12 +374,7 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 					for _, scrProps := range scr {
 						scrP := ToMap(scrProps)
 						if options, set := scrP["options"]; set {
-							enumsI := ToSlice(options)
-							enums := []string{}
-							for _, enum := range enumsI {
-								enums = append(enums, ToString(enum))
-							}
-							subscriptionCancelReason.Options = stripe.StringSlice(enums)
+							subscriptionCancelReason.Options = stripe.StringSlice(ToStringSlice(ToSlice(options)))
 						}
 						if enabled, set := scrP["enabled"]; set {
 							subscriptionCancelReason.Enabled = stripe.Bool(ToBool(enabled))
@@ -428,12 +416,7 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 			for _, props := range sp {
 				p := ToMap(props)
 				if defaultAllowedUpdates, set := p["default_allowed_updates"]; set {
-					enumsI := ToSlice(defaultAllowedUpdates)
-					enums := []string{}
-					for _, enum := range enumsI {
-						enums = append(enums, ToString(enum))
-					}
-					subscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(enums)
+					subscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(ToStringSlice(ToSlice(defaultAllowedUpdates)))
 				}
 
 				if enabled, set := p["enabled"]; set {
@@ -441,9 +424,9 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 				}
 
 				if products, set := p["products"]; set {
-					var productsParams = []*stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
-					set := products.(*schema.Set)
-					productsList := set.List()
+					var productsParams []*stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams
+					schemaSet := products.(*schema.Set)
+					productsList := schemaSet.List()
 					for _, i := range productsList {
 						pParams := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
 						finalProduct := ToMap(i)
@@ -452,12 +435,7 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 						}
 
 						if prices, set := finalProduct["prices"]; set {
-							pricesI := ToSlice(prices)
-							prices := []string{}
-							for _, price := range pricesI {
-								prices = append(prices, ToString(price))
-							}
-							pParams.Prices = stripe.StringSlice(prices)
+							pParams.Prices = stripe.StringSlice(ToStringSlice(ToSlice(prices)))
 						}
 						productsParams = append(productsParams, pParams)
 					}
