@@ -16,7 +16,7 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 		UpdateContext: resourceStripeWebhookEndpointUpdate,
 		DeleteContext: resourceStripeWebhookEndpointDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {

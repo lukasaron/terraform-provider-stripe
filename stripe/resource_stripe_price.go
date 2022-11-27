@@ -16,7 +16,7 @@ func resourceStripePrice() *schema.Resource {
 		UpdateContext: resourceStripePriceUpdate,
 		DeleteContext: resourceStripePriceDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -240,10 +240,14 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		func() error {
 			// We should only every fall into one of these if statements as we have a conflict between them on the schema
 			if d.HasChange("unit_amount") && !d.HasChange("unit_amount_decimal") {
-				d.Set("unit_amount", price.UnitAmount)
+				if err = d.Set("unit_amount", price.UnitAmount); err != nil {
+					return err
+				}
 			}
 			if d.HasChange("unit_amount_decimal") && !d.HasChange("unit_amount") {
-				d.Set("unit_amount_decimal", price.UnitAmountDecimal)
+				if err = d.Set("unit_amount_decimal", price.UnitAmountDecimal); err != nil {
+					return err
+				}
 			}
 
 			return nil

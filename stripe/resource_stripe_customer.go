@@ -16,7 +16,7 @@ func resourceStripeCustomer() *schema.Resource {
 		UpdateContext: resourceStripeCustomerUpdate,
 		DeleteContext: resourceStripeCustomerDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
