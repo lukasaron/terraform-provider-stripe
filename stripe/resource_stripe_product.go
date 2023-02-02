@@ -91,6 +91,11 @@ func resourceStripeProduct() *schema.Resource {
 				Description: "Set of key-value pairs that you can attach to an object. " +
 					"This can be useful for storing additional information about the object in a structured format.",
 			},
+			"tax_code": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "A tax code ID. Supported values are listed in the TaxCode resource and at https://stripe.com/docs/tax/tax-categories.",
+			},
 		},
 	}
 }
@@ -123,6 +128,7 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 		d.Set("unit_label", product.UnitLabel),
 		d.Set("url", product.URL),
 		d.Set("metadata", product.Metadata),
+		d.Set("tax_code", product.TaxCode),
 	)
 }
 
@@ -175,6 +181,9 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 		for k, v := range ToMap(meta) {
 			params.AddMetadata(k, ToString(v))
 		}
+	}
+	if taxCode, set := d.GetOk("tax_code"); set {
+		params.TaxCode = stripe.String(ToString(taxCode))
 	}
 
 	product, err := c.Products.New(params)
@@ -240,6 +249,9 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 		for k, v := range metadata {
 			params.AddMetadata(k, ToString(v))
 		}
+	}
+	if d.HasChange("tax_code") {
+		params.TaxCode = stripe.String(ExtractString(d, "tax_code"))
 	}
 
 	_, err := c.Products.Update(d.Id(), params)
