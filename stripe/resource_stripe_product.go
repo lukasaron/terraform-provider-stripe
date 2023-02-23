@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/client"
 )
 
@@ -144,7 +145,7 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 		params.Images = stripe.StringSlice(ToStringSlice(images))
 	}
 	if packageDimensions, set := d.GetOk("package_dimensions"); set {
-		params.PackageDimensions = &stripe.PackageDimensionsParams{}
+		params.PackageDimensions = &stripe.ProductPackageDimensionsParams{}
 		dimensions := ToMap(packageDimensions)
 		for k, v := range dimensions {
 			switch k {
@@ -207,7 +208,7 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 		params.Images = stripe.StringSlice(ExtractStringSlice(d, "images"))
 	}
 	if d.HasChange("package_dimensions") {
-		params.PackageDimensions = &stripe.PackageDimensionsParams{}
+		params.PackageDimensions = &stripe.ProductPackageDimensionsParams{}
 		dimensions := ExtractMap(d, "package_dimensions")
 		for k, v := range dimensions {
 			switch k {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/client"
 )
 
@@ -208,7 +209,7 @@ func resourceStripeCustomerRead(_ context.Context, d *schema.ResourceData, m int
 					invoiceSettingsMap["default_payment_method"] = customer.InvoiceSettings.DefaultPaymentMethod.ID
 				}
 				for _, field := range customer.InvoiceSettings.CustomFields {
-					invoiceSettingsMap[*field.Name] = *field.Value
+					invoiceSettingsMap[field.Name] = field.Value
 				}
 
 				return d.Set("invoice_settings", invoiceSettingsMap)
@@ -259,7 +260,7 @@ func resourceStripeCustomerCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if shipping, set := d.GetOk("shipping"); set {
-		params.Shipping = &stripe.CustomerShippingDetailsParams{
+		params.Shipping = &stripe.CustomerShippingParams{
 			Address: &stripe.AddressParams{},
 		}
 		shippingMap := ToMap(shipping)
@@ -303,7 +304,7 @@ func resourceStripeCustomerCreate(ctx context.Context, d *schema.ResourceData, m
 				params.InvoiceSettings.Footer = value
 			default:
 				params.InvoiceSettings.CustomFields = append(params.InvoiceSettings.CustomFields,
-					&stripe.CustomerInvoiceCustomFieldParams{
+					&stripe.CustomerInvoiceSettingsCustomFieldParams{
 						Name:  stripe.String(k),
 						Value: value,
 					})
@@ -369,7 +370,7 @@ func resourceStripeCustomerUpdate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if d.HasChange("shipping") {
-		params.Shipping = &stripe.CustomerShippingDetailsParams{
+		params.Shipping = &stripe.CustomerShippingParams{
 			Address: &stripe.AddressParams{},
 		}
 		shippingMap := ExtractMap(d, "shipping")
@@ -413,7 +414,7 @@ func resourceStripeCustomerUpdate(ctx context.Context, d *schema.ResourceData, m
 				params.InvoiceSettings.Footer = value
 			default:
 				params.InvoiceSettings.CustomFields = append(params.InvoiceSettings.CustomFields,
-					&stripe.CustomerInvoiceCustomFieldParams{
+					&stripe.CustomerInvoiceSettingsCustomFieldParams{
 						Name:  stripe.String(k),
 						Value: value,
 					})
