@@ -1,0 +1,388 @@
+# github.com/agext/levenshtein v1.2.3
+## explicit
+github.com/agext/levenshtein
+# github.com/apparentlymart/go-textseg/v13 v13.0.0
+## explicit; go 1.16
+github.com/apparentlymart/go-textseg/v13/textseg
+# github.com/fatih/color v1.14.1
+## explicit; go 1.17
+github.com/fatih/color
+# github.com/golang/protobuf v1.5.2
+## explicit; go 1.9
+github.com/golang/protobuf/jsonpb
+github.com/golang/protobuf/proto
+github.com/golang/protobuf/ptypes
+github.com/golang/protobuf/ptypes/any
+github.com/golang/protobuf/ptypes/duration
+github.com/golang/protobuf/ptypes/empty
+github.com/golang/protobuf/ptypes/timestamp
+# github.com/google/go-cmp v0.5.9
+## explicit; go 1.13
+github.com/google/go-cmp/cmp
+github.com/google/go-cmp/cmp/internal/diff
+github.com/google/go-cmp/cmp/internal/flags
+github.com/google/go-cmp/cmp/internal/function
+github.com/google/go-cmp/cmp/internal/value
+# github.com/hashicorp/errwrap v1.1.0
+## explicit
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
+## explicit; go 1.12
+github.com/hashicorp/go-cty/cty
+github.com/hashicorp/go-cty/cty/convert
+github.com/hashicorp/go-cty/cty/gocty
+github.com/hashicorp/go-cty/cty/json
+github.com/hashicorp/go-cty/cty/msgpack
+github.com/hashicorp/go-cty/cty/set
+# github.com/hashicorp/go-hclog v1.4.0
+## explicit; go 1.13
+github.com/hashicorp/go-hclog
+# github.com/hashicorp/go-multierror v1.1.1
+## explicit; go 1.13
+github.com/hashicorp/go-multierror
+# github.com/hashicorp/go-plugin v1.4.8
+## explicit; go 1.17
+github.com/hashicorp/go-plugin
+github.com/hashicorp/go-plugin/internal/plugin
+# github.com/hashicorp/go-uuid v1.0.3
+## explicit
+github.com/hashicorp/go-uuid
+# github.com/hashicorp/go-version v1.6.0
+## explicit
+github.com/hashicorp/go-version
+# github.com/hashicorp/hcl/v2 v2.16.1
+## explicit; go 1.18
+github.com/hashicorp/hcl/v2
+github.com/hashicorp/hcl/v2/ext/customdecode
+github.com/hashicorp/hcl/v2/hclsyntax
+# github.com/hashicorp/logutils v1.0.0
+## explicit
+github.com/hashicorp/logutils
+# github.com/hashicorp/terraform-plugin-go v0.14.3
+## explicit; go 1.18
+github.com/hashicorp/terraform-plugin-go/internal/logging
+github.com/hashicorp/terraform-plugin-go/tfprotov5
+github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/diag
+github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/fromproto
+github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/tf5serverlogging
+github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/tfplugin5
+github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/toproto
+github.com/hashicorp/terraform-plugin-go/tfprotov5/tf5server
+github.com/hashicorp/terraform-plugin-go/tfprotov6
+github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/diag
+github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/fromproto
+github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/tf6serverlogging
+github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/tfplugin6
+github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/toproto
+github.com/hashicorp/terraform-plugin-go/tfprotov6/tf6server
+github.com/hashicorp/terraform-plugin-go/tftypes
+# github.com/hashicorp/terraform-plugin-log v0.8.0
+## explicit; go 1.18
+github.com/hashicorp/terraform-plugin-log/internal/fieldutils
+github.com/hashicorp/terraform-plugin-log/internal/hclogutils
+github.com/hashicorp/terraform-plugin-log/internal/logging
+github.com/hashicorp/terraform-plugin-log/tflog
+github.com/hashicorp/terraform-plugin-log/tfsdklog
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.25.0
+## explicit; go 1.18
+github.com/hashicorp/terraform-plugin-sdk/v2/diag
+github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging
+github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema
+github.com/hashicorp/terraform-plugin-sdk/v2/helper/structure
+github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/configschema
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/hcl2shim
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/helper/hashcode
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/logging
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/plans/objchange
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/plugin/convert
+github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags
+github.com/hashicorp/terraform-plugin-sdk/v2/meta
+github.com/hashicorp/terraform-plugin-sdk/v2/plugin
+github.com/hashicorp/terraform-plugin-sdk/v2/terraform
+# github.com/hashicorp/terraform-registry-address v0.1.0
+## explicit; go 1.14
+github.com/hashicorp/terraform-registry-address
+# github.com/hashicorp/terraform-svchost v0.1.0
+## explicit; go 1.19
+github.com/hashicorp/terraform-svchost
+# github.com/hashicorp/yamux v0.1.1
+## explicit; go 1.15
+github.com/hashicorp/yamux
+# github.com/mattn/go-colorable v0.1.13
+## explicit; go 1.15
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.17
+## explicit; go 1.15
+github.com/mattn/go-isatty
+# github.com/mitchellh/copystructure v1.2.0
+## explicit; go 1.15
+github.com/mitchellh/copystructure
+# github.com/mitchellh/go-testing-interface v1.14.1
+## explicit; go 1.14
+github.com/mitchellh/go-testing-interface
+# github.com/mitchellh/go-wordwrap v1.0.1
+## explicit; go 1.14
+github.com/mitchellh/go-wordwrap
+# github.com/mitchellh/mapstructure v1.5.0
+## explicit; go 1.14
+github.com/mitchellh/mapstructure
+# github.com/mitchellh/reflectwalk v1.0.2
+## explicit
+github.com/mitchellh/reflectwalk
+# github.com/oklog/run v1.1.0
+## explicit; go 1.13
+github.com/oklog/run
+# github.com/stripe/stripe-go/v74 v74.8.0
+## explicit; go 1.13
+github.com/stripe/stripe-go/v74
+github.com/stripe/stripe-go/v74/account
+github.com/stripe/stripe-go/v74/accountlink
+github.com/stripe/stripe-go/v74/applepaydomain
+github.com/stripe/stripe-go/v74/applicationfee
+github.com/stripe/stripe-go/v74/apps/secret
+github.com/stripe/stripe-go/v74/balance
+github.com/stripe/stripe-go/v74/balancetransaction
+github.com/stripe/stripe-go/v74/bankaccount
+github.com/stripe/stripe-go/v74/billingportal/configuration
+github.com/stripe/stripe-go/v74/billingportal/session
+github.com/stripe/stripe-go/v74/capability
+github.com/stripe/stripe-go/v74/card
+github.com/stripe/stripe-go/v74/cashbalance
+github.com/stripe/stripe-go/v74/charge
+github.com/stripe/stripe-go/v74/checkout/session
+github.com/stripe/stripe-go/v74/client
+github.com/stripe/stripe-go/v74/countryspec
+github.com/stripe/stripe-go/v74/coupon
+github.com/stripe/stripe-go/v74/creditnote
+github.com/stripe/stripe-go/v74/customer
+github.com/stripe/stripe-go/v74/customerbalancetransaction
+github.com/stripe/stripe-go/v74/customercashbalancetransaction
+github.com/stripe/stripe-go/v74/dispute
+github.com/stripe/stripe-go/v74/ephemeralkey
+github.com/stripe/stripe-go/v74/event
+github.com/stripe/stripe-go/v74/feerefund
+github.com/stripe/stripe-go/v74/file
+github.com/stripe/stripe-go/v74/filelink
+github.com/stripe/stripe-go/v74/financialconnections/account
+github.com/stripe/stripe-go/v74/financialconnections/session
+github.com/stripe/stripe-go/v74/form
+github.com/stripe/stripe-go/v74/identity/verificationreport
+github.com/stripe/stripe-go/v74/identity/verificationsession
+github.com/stripe/stripe-go/v74/invoice
+github.com/stripe/stripe-go/v74/invoiceitem
+github.com/stripe/stripe-go/v74/issuing/authorization
+github.com/stripe/stripe-go/v74/issuing/card
+github.com/stripe/stripe-go/v74/issuing/cardholder
+github.com/stripe/stripe-go/v74/issuing/dispute
+github.com/stripe/stripe-go/v74/issuing/transaction
+github.com/stripe/stripe-go/v74/loginlink
+github.com/stripe/stripe-go/v74/mandate
+github.com/stripe/stripe-go/v74/oauth
+github.com/stripe/stripe-go/v74/paymentintent
+github.com/stripe/stripe-go/v74/paymentlink
+github.com/stripe/stripe-go/v74/paymentmethod
+github.com/stripe/stripe-go/v74/paymentsource
+github.com/stripe/stripe-go/v74/payout
+github.com/stripe/stripe-go/v74/person
+github.com/stripe/stripe-go/v74/plan
+github.com/stripe/stripe-go/v74/price
+github.com/stripe/stripe-go/v74/product
+github.com/stripe/stripe-go/v74/promotioncode
+github.com/stripe/stripe-go/v74/quote
+github.com/stripe/stripe-go/v74/radar/earlyfraudwarning
+github.com/stripe/stripe-go/v74/radar/valuelist
+github.com/stripe/stripe-go/v74/radar/valuelistitem
+github.com/stripe/stripe-go/v74/refund
+github.com/stripe/stripe-go/v74/reporting/reportrun
+github.com/stripe/stripe-go/v74/reporting/reporttype
+github.com/stripe/stripe-go/v74/review
+github.com/stripe/stripe-go/v74/setupattempt
+github.com/stripe/stripe-go/v74/setupintent
+github.com/stripe/stripe-go/v74/shippingrate
+github.com/stripe/stripe-go/v74/sigma/scheduledqueryrun
+github.com/stripe/stripe-go/v74/source
+github.com/stripe/stripe-go/v74/sourcetransaction
+github.com/stripe/stripe-go/v74/subscription
+github.com/stripe/stripe-go/v74/subscriptionitem
+github.com/stripe/stripe-go/v74/subscriptionschedule
+github.com/stripe/stripe-go/v74/taxcode
+github.com/stripe/stripe-go/v74/taxid
+github.com/stripe/stripe-go/v74/taxrate
+github.com/stripe/stripe-go/v74/terminal/configuration
+github.com/stripe/stripe-go/v74/terminal/connectiontoken
+github.com/stripe/stripe-go/v74/terminal/location
+github.com/stripe/stripe-go/v74/terminal/reader
+github.com/stripe/stripe-go/v74/testhelpers/customer
+github.com/stripe/stripe-go/v74/testhelpers/issuing/card
+github.com/stripe/stripe-go/v74/testhelpers/refund
+github.com/stripe/stripe-go/v74/testhelpers/terminal/reader
+github.com/stripe/stripe-go/v74/testhelpers/testclock
+github.com/stripe/stripe-go/v74/testhelpers/treasury/inboundtransfer
+github.com/stripe/stripe-go/v74/testhelpers/treasury/outboundpayment
+github.com/stripe/stripe-go/v74/testhelpers/treasury/outboundtransfer
+github.com/stripe/stripe-go/v74/testhelpers/treasury/receivedcredit
+github.com/stripe/stripe-go/v74/testhelpers/treasury/receiveddebit
+github.com/stripe/stripe-go/v74/token
+github.com/stripe/stripe-go/v74/topup
+github.com/stripe/stripe-go/v74/transfer
+github.com/stripe/stripe-go/v74/transferreversal
+github.com/stripe/stripe-go/v74/treasury/creditreversal
+github.com/stripe/stripe-go/v74/treasury/debitreversal
+github.com/stripe/stripe-go/v74/treasury/financialaccount
+github.com/stripe/stripe-go/v74/treasury/inboundtransfer
+github.com/stripe/stripe-go/v74/treasury/outboundpayment
+github.com/stripe/stripe-go/v74/treasury/outboundtransfer
+github.com/stripe/stripe-go/v74/treasury/receivedcredit
+github.com/stripe/stripe-go/v74/treasury/receiveddebit
+github.com/stripe/stripe-go/v74/treasury/transaction
+github.com/stripe/stripe-go/v74/treasury/transactionentry
+github.com/stripe/stripe-go/v74/usagerecord
+github.com/stripe/stripe-go/v74/usagerecordsummary
+github.com/stripe/stripe-go/v74/webhookendpoint
+# github.com/vmihailenco/msgpack v4.0.4+incompatible
+## explicit
+github.com/vmihailenco/msgpack
+github.com/vmihailenco/msgpack/codes
+# github.com/vmihailenco/msgpack/v4 v4.3.12
+## explicit; go 1.11
+github.com/vmihailenco/msgpack/v4
+github.com/vmihailenco/msgpack/v4/codes
+# github.com/vmihailenco/tagparser v0.1.2
+## explicit; go 1.13
+github.com/vmihailenco/tagparser
+github.com/vmihailenco/tagparser/internal
+github.com/vmihailenco/tagparser/internal/parser
+# github.com/zclconf/go-cty v1.12.1
+## explicit; go 1.18
+github.com/zclconf/go-cty/cty
+github.com/zclconf/go-cty/cty/convert
+github.com/zclconf/go-cty/cty/function
+github.com/zclconf/go-cty/cty/function/stdlib
+github.com/zclconf/go-cty/cty/gocty
+github.com/zclconf/go-cty/cty/json
+github.com/zclconf/go-cty/cty/set
+# golang.org/x/net v0.7.0
+## explicit; go 1.17
+golang.org/x/net/context
+golang.org/x/net/http/httpguts
+golang.org/x/net/http2
+golang.org/x/net/http2/hpack
+golang.org/x/net/idna
+golang.org/x/net/internal/timeseries
+golang.org/x/net/trace
+# golang.org/x/sys v0.5.0
+## explicit; go 1.17
+golang.org/x/sys/unix
+# golang.org/x/text v0.7.0
+## explicit; go 1.17
+golang.org/x/text/secure/bidirule
+golang.org/x/text/transform
+golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm
+# google.golang.org/appengine v1.6.7
+## explicit; go 1.11
+google.golang.org/appengine
+google.golang.org/appengine/datastore
+google.golang.org/appengine/datastore/internal/cloudkey
+google.golang.org/appengine/datastore/internal/cloudpb
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/app_identity
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/modules
+google.golang.org/appengine/internal/remote_api
+# google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
+## explicit; go 1.19
+google.golang.org/genproto/googleapis/rpc/status
+# google.golang.org/grpc v1.53.0
+## explicit; go 1.17
+google.golang.org/grpc
+google.golang.org/grpc/attributes
+google.golang.org/grpc/backoff
+google.golang.org/grpc/balancer
+google.golang.org/grpc/balancer/base
+google.golang.org/grpc/balancer/grpclb/state
+google.golang.org/grpc/balancer/roundrobin
+google.golang.org/grpc/binarylog/grpc_binarylog_v1
+google.golang.org/grpc/channelz
+google.golang.org/grpc/codes
+google.golang.org/grpc/connectivity
+google.golang.org/grpc/credentials
+google.golang.org/grpc/credentials/insecure
+google.golang.org/grpc/encoding
+google.golang.org/grpc/encoding/proto
+google.golang.org/grpc/grpclog
+google.golang.org/grpc/health
+google.golang.org/grpc/health/grpc_health_v1
+google.golang.org/grpc/internal
+google.golang.org/grpc/internal/backoff
+google.golang.org/grpc/internal/balancer/gracefulswitch
+google.golang.org/grpc/internal/balancerload
+google.golang.org/grpc/internal/binarylog
+google.golang.org/grpc/internal/buffer
+google.golang.org/grpc/internal/channelz
+google.golang.org/grpc/internal/credentials
+google.golang.org/grpc/internal/envconfig
+google.golang.org/grpc/internal/grpclog
+google.golang.org/grpc/internal/grpcrand
+google.golang.org/grpc/internal/grpcsync
+google.golang.org/grpc/internal/grpcutil
+google.golang.org/grpc/internal/metadata
+google.golang.org/grpc/internal/pretty
+google.golang.org/grpc/internal/resolver
+google.golang.org/grpc/internal/resolver/dns
+google.golang.org/grpc/internal/resolver/passthrough
+google.golang.org/grpc/internal/resolver/unix
+google.golang.org/grpc/internal/serviceconfig
+google.golang.org/grpc/internal/status
+google.golang.org/grpc/internal/syscall
+google.golang.org/grpc/internal/transport
+google.golang.org/grpc/internal/transport/networktype
+google.golang.org/grpc/keepalive
+google.golang.org/grpc/metadata
+google.golang.org/grpc/peer
+google.golang.org/grpc/reflection
+google.golang.org/grpc/reflection/grpc_reflection_v1alpha
+google.golang.org/grpc/resolver
+google.golang.org/grpc/serviceconfig
+google.golang.org/grpc/stats
+google.golang.org/grpc/status
+google.golang.org/grpc/tap
+# google.golang.org/protobuf v1.28.1
+## explicit; go 1.11
+google.golang.org/protobuf/encoding/protojson
+google.golang.org/protobuf/encoding/prototext
+google.golang.org/protobuf/encoding/protowire
+google.golang.org/protobuf/internal/descfmt
+google.golang.org/protobuf/internal/descopts
+google.golang.org/protobuf/internal/detrand
+google.golang.org/protobuf/internal/encoding/defval
+google.golang.org/protobuf/internal/encoding/json
+google.golang.org/protobuf/internal/encoding/messageset
+google.golang.org/protobuf/internal/encoding/tag
+google.golang.org/protobuf/internal/encoding/text
+google.golang.org/protobuf/internal/errors
+google.golang.org/protobuf/internal/filedesc
+google.golang.org/protobuf/internal/filetype
+google.golang.org/protobuf/internal/flags
+google.golang.org/protobuf/internal/genid
+google.golang.org/protobuf/internal/impl
+google.golang.org/protobuf/internal/order
+google.golang.org/protobuf/internal/pragma
+google.golang.org/protobuf/internal/set
+google.golang.org/protobuf/internal/strs
+google.golang.org/protobuf/internal/version
+google.golang.org/protobuf/proto
+google.golang.org/protobuf/reflect/protodesc
+google.golang.org/protobuf/reflect/protoreflect
+google.golang.org/protobuf/reflect/protoregistry
+google.golang.org/protobuf/runtime/protoiface
+google.golang.org/protobuf/runtime/protoimpl
+google.golang.org/protobuf/types/descriptorpb
+google.golang.org/protobuf/types/known/anypb
+google.golang.org/protobuf/types/known/durationpb
+google.golang.org/protobuf/types/known/emptypb
+google.golang.org/protobuf/types/known/timestamppb
