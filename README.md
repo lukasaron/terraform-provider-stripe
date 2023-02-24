@@ -6,7 +6,7 @@ around the official Stripe API documentation [website](https://stripe.com/docs/a
 The Stripe Terraform Provider documentation can be found on the Terraform Provider documentation [website](https://registry.terraform.io/providers/lukasaron/stripe/latest).
 
 ## Usage:
-```terraform
+```
 terraform {
   required_providers {
     stripe = {
@@ -23,3 +23,26 @@ provider "stripe" {
 ### Environmental variable support
 
 The parameter `api_key` can be omitted when the `STRIPE_API_KEY` environmental variable is present.
+
+---
+
+### Local Debugging
+* Build the provider with `go build main.go`
+* Move the final binary to the `~/.terraform.d/plugins/local/lukasaron/stripe/100/[platform]/terraform-provider-stripe_v100` where [platform] is `darwin_arm64` for Mac Apple chip for example.
+* Create an HCL code with the following header:
+ ```
+terraform {
+  required_providers {
+    stripe = {
+      source  = "local/lukasaron/stripe"
+      version = "100"
+    }
+  }
+}
+```
+
+* Run the solution from the code with the program argument `--debug`
+* Copy the `TF_REATTACH_PROVIDERS` value.
+* export `TF_REATTACH_PROVIDERS=[value]`
+* Put breakpoints in the code
+* run `terraform init` & `terraform plan`
