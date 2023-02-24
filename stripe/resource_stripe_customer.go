@@ -429,10 +429,7 @@ func resourceStripeCustomerUpdate(ctx context.Context, d *schema.ResourceData, m
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 
 	_, err := c.Customers.Update(d.Id(), params)

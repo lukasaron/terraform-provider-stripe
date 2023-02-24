@@ -148,10 +148,9 @@ func resourceStripeCouponCreate(ctx context.Context, d *schema.ResourceData, m i
 			Products: stripe.StringSlice(ToStringSlice(appliesTo)),
 		}
 	}
-	if meta, set := d.GetOk("metadata"); set {
-		for k, v := range ToMap(meta) {
-			params.AddMetadata(k, ToString(v))
-		}
+	if d.HasChange("metadata") {
+		params.Metadata = nil
+		UpdateMetadata(d, params)
 	}
 
 	coupon, err := c.Coupons.New(params)

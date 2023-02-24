@@ -444,10 +444,7 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 
 	_, err := c.Prices.Update(d.Id(), params)
