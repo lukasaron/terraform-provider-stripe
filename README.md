@@ -28,7 +28,7 @@ The parameter `api_key` can be omitted when the `STRIPE_API_KEY` environmental v
 
 ### Local Debugging
 * Build the provider with `go build main.go`
-* Move the final binary to the `~/.terraform.d/plugins/local/lukasaron/stripe/100/[platform]/terraform-provider-stripe_v100` where [platform] is `darwin_arm64` for Mac Apple chip for example.
+* Move the final binary to the `mv main ~/.terraform.d/plugins/local/lukasaron/stripe/100/[platform]/terraform-provider-stripe_v100` where [platform] is `darwin_arm64` for Mac Apple chip for example.
 * Create an HCL code with the following header:
  ```
 terraform {
@@ -43,6 +43,7 @@ terraform {
 
 * Run the solution from the code with the program argument `--debug`
 * Copy the `TF_REATTACH_PROVIDERS` value.
-* export `TF_REATTACH_PROVIDERS=[value]`
+* `export TF_REATTACH_PROVIDERS=[value]`
 * Put breakpoints in the code
-* run `terraform init` & `terraform plan`
+* Remove .terraform folder where the HCL code is.
+* Run `terraform init` & `terraform plan` & `terraform apply`
