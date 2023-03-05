@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/client"
+	"github.com/stripe/stripe-go/v74"
+	"github.com/stripe/stripe-go/v74/client"
 )
 
 func resourceStripePortalConfiguration() *schema.Resource {
