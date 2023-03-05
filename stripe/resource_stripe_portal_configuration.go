@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/client"
+	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/client"
 )
 
 func resourceStripePortalConfiguration() *schema.Resource {
@@ -286,6 +286,7 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	return CallSet(
 		d.Set("id", portal.ID),
 		d.Set("object", portal.Object),
@@ -330,7 +331,12 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 			for _, props := range cu {
 				p := ToMap(props)
 				if allowedUpdates, set := p["allowed_updates"]; set {
-					customerUpdate.AllowedUpdates = stripe.StringSlice(ToStringSlice(ToSlice(allowedUpdates)))
+					enumsI := ToSlice(allowedUpdates)
+					enums := []string{}
+					for _, enum := range enumsI {
+						enums = append(enums, ToString(enum))
+					}
+					customerUpdate.AllowedUpdates = stripe.StringSlice(enums)
 				}
 				if enabled, set := p["enabled"]; set {
 					customerUpdate.Enabled = stripe.Bool(ToBool(enabled))
@@ -374,7 +380,12 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 					for _, scrProps := range scr {
 						scrP := ToMap(scrProps)
 						if options, set := scrP["options"]; set {
-							subscriptionCancelReason.Options = stripe.StringSlice(ToStringSlice(ToSlice(options)))
+							enumsI := ToSlice(options)
+							enums := []string{}
+							for _, enum := range enumsI {
+								enums = append(enums, ToString(enum))
+							}
+							subscriptionCancelReason.Options = stripe.StringSlice(enums)
 						}
 						if enabled, set := scrP["enabled"]; set {
 							subscriptionCancelReason.Enabled = stripe.Bool(ToBool(enabled))
@@ -416,7 +427,12 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 			for _, props := range sp {
 				p := ToMap(props)
 				if defaultAllowedUpdates, set := p["default_allowed_updates"]; set {
-					subscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(ToStringSlice(ToSlice(defaultAllowedUpdates)))
+					enumsI := ToSlice(defaultAllowedUpdates)
+					enums := []string{}
+					for _, enum := range enumsI {
+						enums = append(enums, ToString(enum))
+					}
+					subscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(enums)
 				}
 
 				if enabled, set := p["enabled"]; set {
@@ -424,9 +440,9 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 				}
 
 				if products, set := p["products"]; set {
-					var productsParams []*stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams
-					schemaSet := products.(*schema.Set)
-					productsList := schemaSet.List()
+					var productsParams = []*stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
+					set := products.(*schema.Set)
+					productsList := set.List()
 					for _, i := range productsList {
 						pParams := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
 						finalProduct := ToMap(i)
@@ -435,7 +451,12 @@ func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationF
 						}
 
 						if prices, set := finalProduct["prices"]; set {
-							pParams.Prices = stripe.StringSlice(ToStringSlice(ToSlice(prices)))
+							pricesI := ToSlice(prices)
+							prices := []string{}
+							for _, price := range pricesI {
+								prices = append(prices, ToString(price))
+							}
+							pParams.Prices = stripe.StringSlice(prices)
 						}
 						productsParams = append(productsParams, pParams)
 					}
