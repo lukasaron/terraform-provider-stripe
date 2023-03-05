@@ -17,7 +17,7 @@ func resourceStripeTaxRate() *schema.Resource {
 		UpdateContext: resourceStripeTaxRateUpdate,
 		DeleteContext: resourceStripeTaxRateDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -207,10 +207,7 @@ func resourceStripeTaxRateUpdate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 	if d.HasChange("tax_type") {
 		params.TaxType = stripe.String(ExtractString(d, "tax_type"))
@@ -225,7 +222,7 @@ func resourceStripeTaxRateUpdate(ctx context.Context, d *schema.ResourceData, m 
 	return resourceStripeTaxRateRead(ctx, d, m)
 }
 
-func resourceStripeTaxRateDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceStripeTaxRateDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	log.Println("[WARN] Stripe SDK doesn't support Tax Rate deletion through API!")
 	d.SetId("")
 	return nil

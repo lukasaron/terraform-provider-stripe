@@ -16,7 +16,7 @@ func resourceStripeProduct() *schema.Resource {
 		UpdateContext: resourceStripeProductUpdate,
 		DeleteContext: resourceStripeProductDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -73,6 +73,11 @@ func resourceStripeProduct() *schema.Resource {
 					"and will appear on your customer’s statement in capital letters. " +
 					"Non-ASCII characters are automatically stripped. It must contain at least one letter.",
 			},
+			"tax_code": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "A tax code ID. Supported values are listed in the TaxCode resource and at https://stripe.com/docs/tax/tax-categories.",
+			},
 			"unit_label": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -121,6 +126,12 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 		}(),
 		d.Set("shippable", product.Shippable),
 		d.Set("statement_descriptor", product.StatementDescriptor),
+		func() error {
+			if product.TaxCode != nil {
+				return d.Set("tax_code", product.TaxCode.ID)
+			}
+			return nil
+		}(),
 		d.Set("unit_label", product.UnitLabel),
 		d.Set("url", product.URL),
 		d.Set("metadata", product.Metadata),
@@ -165,6 +176,9 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	if statementDescriptor, set := d.GetOk("statement_descriptor"); set {
 		params.StatementDescriptor = stripe.String(ToString(statementDescriptor))
+	}
+	if taxCode, set := d.GetOk("tax_code"); set {
+		params.TaxCode = stripe.String(ToString(taxCode))
 	}
 	if unitLabel, set := d.GetOk("unit_label"); set {
 		params.UnitLabel = stripe.String(ToString(unitLabel))
@@ -229,6 +243,9 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 	if d.HasChange("statement_descriptor") {
 		params.StatementDescriptor = stripe.String(ExtractString(d, "statement_descriptor"))
 	}
+	if d.HasChange("tax_code") {
+		params.TaxCode = stripe.String(ExtractString(d, "tax_code"))
+	}
 	if d.HasChange("unit_label") {
 		params.UnitLabel = stripe.String(ExtractString(d, "unit_label"))
 	}
@@ -237,10 +254,7 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 
 	_, err := c.Products.Update(d.Id(), params)

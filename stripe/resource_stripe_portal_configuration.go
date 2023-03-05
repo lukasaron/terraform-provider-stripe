@@ -18,7 +18,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 		UpdateContext: resourceStripePortalConfigurationUpdate,
 		DeleteContext: resourceStripePortalConfigurationDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -285,21 +285,22 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 	portal, err := c.BillingPortalConfigurations.Get(d.Id(), nil)
 	if err != nil {
 		return diag.FromErr(err)
-	} else {
-		d.Set("id", portal.ID)
-		d.Set("object", portal.Object)
-		d.Set("active", portal.Active)
-		d.Set("application", portal.Application)
-		d.Set("business_profile", portal.BusinessProfile)
-		d.Set("created", portal.Created)
-		d.Set("default_return_url", portal.DefaultReturnURL)
-		d.Set("features", portal.Features)
-		d.Set("is_default", portal.IsDefault)
-		d.Set("livemode", portal.Livemode)
-		d.Set("metadata", portal.Metadata)
-		d.Set("updated", portal.Updated)
 	}
-	return diag.FromErr(err)
+
+	return CallSet(
+		d.Set("id", portal.ID),
+		d.Set("object", portal.Object),
+		d.Set("active", portal.Active),
+		d.Set("application", portal.Application),
+		d.Set("business_profile", portal.BusinessProfile),
+		d.Set("created", portal.Created),
+		d.Set("default_return_url", portal.DefaultReturnURL),
+		d.Set("features", portal.Features),
+		d.Set("is_default", portal.IsDefault),
+		d.Set("livemode", portal.Livemode),
+		d.Set("metadata", portal.Metadata),
+		d.Set("updated", portal.Updated),
+	)
 }
 
 func expandBusinessProfile(businessProfileI []interface{}) *stripe.BillingPortalConfigurationBusinessProfileParams {
@@ -512,20 +513,17 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 
 	if d.HasChange("business_profile") {
-		_, new := d.GetChange("business_profile")
-		params.BusinessProfile = expandBusinessProfile(ToSlice(new))
+		_, newBusinessProfile := d.GetChange("business_profile")
+		params.BusinessProfile = expandBusinessProfile(ToSlice(newBusinessProfile))
 	}
 
 	if d.HasChange("features") {
-		_, new := d.GetChange("features")
-		params.Features = expandFeatures(ToSlice(new))
+		_, newFeatures := d.GetChange("features")
+		params.Features = expandFeatures(ToSlice(newFeatures))
 	}
 
 	_, err := c.BillingPortalConfigurations.Update(d.Id(), params)

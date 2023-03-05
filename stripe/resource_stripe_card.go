@@ -17,7 +17,7 @@ func resourceStripeCard() *schema.Resource {
 		UpdateContext: resourceStripeCardUpdate,
 		DeleteContext: resourceStripeCardDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -231,7 +231,7 @@ func resourceStripeCardCreate(ctx context.Context, d *schema.ResourceData, m int
 		func() error {
 			// CVC is an optional field it needs to be checked before it is set to the state.
 			// Other option is to set this filed to the state when params are filled.
-			// This seems more clear to have all state sets in one place.
+			// This seems clearer to have all state sets in one place.
 			if cvc, set := d.GetOk("cvc"); set {
 				return d.Set("cvc", ToInt(cvc))
 			}
@@ -283,10 +283,7 @@ func resourceStripeCardUpdate(ctx context.Context, d *schema.ResourceData, m int
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 
 	_, err := c.Cards.Update(d.Id(), params)

@@ -174,3 +174,26 @@ func CallSet(err ...error) (d diag.Diagnostics) {
 	}
 	return d
 }
+
+type MetadataAdder interface {
+	AddMetadata(key, value string)
+}
+
+func UpdateMetadata(d *schema.ResourceData, adder MetadataAdder) {
+	oldMeta, newMeta := d.GetChange("metadata")
+	oldMetaMap := ToMap(oldMeta)
+	newMetaMap := ToMap(newMeta)
+	for k := range newMetaMap {
+		if _, set := oldMetaMap[k]; set {
+			delete(oldMetaMap, k)
+		}
+	}
+
+	for k, v := range newMetaMap {
+		adder.AddMetadata(k, ToString(v))
+	}
+	for k := range oldMetaMap {
+		// when meta is empty string it's going be removed
+		adder.AddMetadata(k, "")
+	}
+}
