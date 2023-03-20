@@ -292,10 +292,78 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 		d.Set("object", portal.Object),
 		d.Set("active", portal.Active),
 		d.Set("application", portal.Application),
-		d.Set("business_profile", portal.BusinessProfile),
+		func() error {
+			if portal.BusinessProfile != nil {
+				businessProfile := []map[string]interface{}{{}}
+				if portal.BusinessProfile.Headline != "" {
+					businessProfile[0]["headline"] = portal.BusinessProfile.Headline
+				}
+				if portal.BusinessProfile.PrivacyPolicyURL != "" {
+					businessProfile[0]["privacy_policy_url"] = portal.BusinessProfile.PrivacyPolicyURL
+				}
+				if portal.BusinessProfile.TermsOfServiceURL != "" {
+					businessProfile[0]["terms_of_service_url"] = portal.BusinessProfile.TermsOfServiceURL
+				}
+				return d.Set("business_profile", businessProfile)
+			}
+			return nil
+		}(),
 		d.Set("created", portal.Created),
 		d.Set("default_return_url", portal.DefaultReturnURL),
-		d.Set("features", portal.Features),
+		func() error {
+			if portal.Features != nil {
+				features := []map[string]interface{}{{}}
+				if portal.Features.CustomerUpdate != nil {
+					customerUpdate := []map[string]interface{}{{}}
+					customerUpdate[0]["enabled"] = portal.Features.CustomerUpdate.Enabled
+					customerUpdate[0]["allowed_updates"] = portal.Features.CustomerUpdate.AllowedUpdates
+					features[0]["customer_update"] = customerUpdate
+				}
+				if portal.Features.InvoiceHistory != nil {
+					invoiceHistory := []map[string]interface{}{{}}
+					invoiceHistory[0]["enabled"] = portal.Features.InvoiceHistory.Enabled
+					features[0]["invoice_history"] = invoiceHistory
+				}
+				if portal.Features.PaymentMethodUpdate != nil {
+					paymentMethodUpdate := []map[string]interface{}{{}}
+					paymentMethodUpdate[0]["enabled"] = portal.Features.PaymentMethodUpdate.Enabled
+					features[0]["payment_method_update"] = paymentMethodUpdate
+				}
+				if portal.Features.SubscriptionCancel != nil {
+					subscriptionCancel := []map[string]interface{}{{}}
+					subscriptionCancel[0]["enabled"] = portal.Features.SubscriptionCancel.Enabled
+					if portal.Features.SubscriptionCancel.CancellationReason != nil {
+						cancellationReason := []map[string]interface{}{{}}
+						cancellationReason[0]["enabled"] = portal.Features.SubscriptionCancel.CancellationReason.Enabled
+						cancellationReason[0]["options"] = portal.Features.SubscriptionCancel.CancellationReason.Options
+						subscriptionCancel[0]["cancellation_reason"] = cancellationReason
+					}
+					subscriptionCancel[0]["mode"] = portal.Features.SubscriptionCancel.Mode
+					subscriptionCancel[0]["proration_behavior"] = portal.Features.SubscriptionCancel.ProrationBehavior
+					features[0]["subscription_cancel"] = subscriptionCancel
+				}
+				if portal.Features.SubscriptionPause != nil {
+					subscriptionPause := []map[string]interface{}{{}}
+					subscriptionPause[0]["enabled"] = portal.Features.SubscriptionPause.Enabled
+					features[0]["subscription_pause"] = subscriptionPause
+				}
+				if portal.Features.SubscriptionUpdate != nil {
+					subscriptionUpdate := []map[string]interface{}{{}}
+					subscriptionUpdate[0]["enabled"] = portal.Features.SubscriptionUpdate.Enabled
+					subscriptionUpdate[0]["default_allowed_updates"] = portal.Features.SubscriptionUpdate.DefaultAllowedUpdates
+					subscriptionUpdate[0]["proration_behavior"] = portal.Features.SubscriptionUpdate.ProrationBehavior
+					for _, p := range portal.Features.SubscriptionUpdate.Products {
+						product := map[string]interface{}{}
+						product["product"] = p.Product
+						product["prices"] = p.Prices
+						subscriptionUpdate[0]["products"] = append(subscriptionUpdate[0]["products"].([]interface{}), product)
+					}
+					features[0]["subscription_update"] = subscriptionUpdate
+				}
+				return d.Set("features", features)
+			}
+			return nil
+		}(),
 		d.Set("is_default", portal.IsDefault),
 		d.Set("livemode", portal.Livemode),
 		d.Set("metadata", portal.Metadata),
