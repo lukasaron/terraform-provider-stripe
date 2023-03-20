@@ -131,6 +131,23 @@ func ToStringSlice(value interface{}) []string {
 	return stringSlice
 }
 
+func ExtractMapSlice(d *schema.ResourceData, key string) []map[string]interface{} {
+	return ToMapSlice(d.Get(key))
+}
+
+func ToMapSlice(value interface{}) []map[string]interface{} {
+	slice, ok := value.([]interface{})
+	if !ok {
+		return nil
+	}
+
+	mapSlice := make([]map[string]interface{}, len(slice), len(slice))
+	for i := range slice {
+		mapSlice[i] = ToMap(slice[i])
+	}
+	return mapSlice
+}
+
 func ExtractBool(d *schema.ResourceData, key string) bool {
 	return ToBool(d.Get(key))
 }

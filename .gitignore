@@ -20,3 +20,6 @@ examples/.terraform.lock.hcl
 # temporary ignoring
 cmd
 examples
+
+# IDEs
+.vscode/

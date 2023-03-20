@@ -23,6 +23,7 @@ func Provider() *schema.Provider {
 			"stripe_webhook_endpoint":     resourceStripeWebhookEndpoint(),
 			"stripe_coupon":               resourceStripeCoupon(),
 			"stripe_card":                 resourceStripeCard(),
+			"stripe_payment_link":         resourceStripePaymentLink(),
 			"stripe_product":              resourceStripeProduct(),
 			"stripe_promotion_code":       resourceStripePromotionCode(),
 			"stripe_price":                resourceStripePrice(),
