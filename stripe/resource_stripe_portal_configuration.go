@@ -282,7 +282,11 @@ func resourceStripePortalConfiguration() *schema.Resource {
 
 func resourceStripePortalConfigurationRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-	portal, err := c.BillingPortalConfigurations.Get(d.Id(), nil)
+	portal, err := c.BillingPortalConfigurations.Get(d.Id(), &stripe.BillingPortalConfigurationParams{
+		Params: stripe.Params{
+			Expand: []*string{stripe.String("features.subscription_update.products")},
+		},
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -352,11 +356,15 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 					subscriptionUpdate[0]["enabled"] = portal.Features.SubscriptionUpdate.Enabled
 					subscriptionUpdate[0]["default_allowed_updates"] = portal.Features.SubscriptionUpdate.DefaultAllowedUpdates
 					subscriptionUpdate[0]["proration_behavior"] = portal.Features.SubscriptionUpdate.ProrationBehavior
-					for _, p := range portal.Features.SubscriptionUpdate.Products {
-						product := map[string]interface{}{}
-						product["product"] = p.Product
-						product["prices"] = p.Prices
-						subscriptionUpdate[0]["products"] = append(subscriptionUpdate[0]["products"].([]interface{}), product)
+					if (len(portal.Features.SubscriptionUpdate.Products)) > 0 {
+						products := []interface{}{}
+						for _, p := range portal.Features.SubscriptionUpdate.Products {
+							product := map[string]interface{}{}
+							product["product"] = p.Product
+							product["prices"] = p.Prices
+							products = append(products, product)
+						}
+						subscriptionUpdate[0]["products"] = products
 					}
 					features[0]["subscription_update"] = subscriptionUpdate
 				}
