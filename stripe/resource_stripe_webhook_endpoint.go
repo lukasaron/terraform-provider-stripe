@@ -68,6 +68,14 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 				Description: "Set of key-value pairs that you can attach to an object. " +
 					"This can be useful for storing additional information about the object in a structured format.",
 			},
+			"api_version": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "This parameter is only available on creation. " +
+                             "We recommend setting the API version that the library is pinned to. " +
+                             "Events sent to this endpoint will be generated with this Stripe Version instead of " +
+                             "your account's default Stripe Version.",
+			},
 		},
 	}
 }
@@ -88,6 +96,7 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		// TODO revisit this part in the future - now hardcoded the value from the state
 		d.Set("connect", ExtractBool(d, "connect")),
 		d.Set("metadata", webhookEndpoint.Metadata),
+		d.Set("api_version", webhookEndpoint.APIVersion),
 	)
 }
 
@@ -107,6 +116,9 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 		for k, v := range ToMap(meta) {
 			params.AddMetadata(k, ToString(v))
 		}
+	}
+	if api_version, set := d.GetOk("api_version"); set {
+		params.APIVersion = stripe.String(ToString(api_version))
 	}
 	webhookEndpoint, err := c.WebhookEndpoints.New(params)
 	if err != nil {
