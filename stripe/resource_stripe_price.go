@@ -240,7 +240,11 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		func() error {
 			// We should only every fall into one of these if statements as we have a conflict between them on the schema
 			if d.HasChange("unit_amount") && !d.HasChange("unit_amount_decimal") {
-				if err = d.Set("unit_amount", price.UnitAmount); err != nil {
+				unitAmount := price.UnitAmount
+				if unitAmount == 0 {
+					unitAmount = -1
+				}
+				if err = d.Set("unit_amount", unitAmount); err != nil {
 					return err
 				}
 			}
