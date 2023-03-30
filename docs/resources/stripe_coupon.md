@@ -49,6 +49,7 @@ resource "stripe_coupon" "coupon" {
 
 Arguments accepted by this resource include:
 
+* `coupon_id` - (Optional) String. Unique string of your choice that will be used to identify this coupon when applying it to a customer.
 * `name` - (Optional) String. Name of the coupon displayed to customers on for instance invoices or receipts.
 * `amount_off` - (Optional) Int. Amount (in the currency specified) that will be taken off the subtotal of any invoices for this customer.
 * `currency` - (Optional) String. Required if `amount_off` has been set, the three-letter ISO code for the currency of the amount to take off.
@@ -63,7 +64,7 @@ Arguments accepted by this resource include:
 
 Attributes exported by this resource include:
 
-* `id` - String. The unique identifier for the object.
+* `coupon_id` - String. The unique identifier for the object.
 * `name` - String. Name of the coupon displayed to customers on for instance invoices or receipts.
 * `amount_off` - Int. Amount (in the currency specified) that will be taken off the subtotal of any invoices for this customer.
 * `currency` - String. The three-letter ISO code for the currency of the amount to take off.

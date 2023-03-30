@@ -19,10 +19,11 @@ func resourceStripeProduct() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": {
+			"product_id": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
 				Description: "Unique identifier for the object.",
 			},
 			"name": {
@@ -109,6 +110,7 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 	}
 
 	return CallSet(
+		d.Set("product_id", product.ID),
 		d.Set("name", product.Name),
 		d.Set("active", product.Active),
 		d.Set("description", product.Description),
@@ -143,7 +145,7 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	params := &stripe.ProductParams{
 		Name: stripe.String(ExtractString(d, "name")),
 	}
-	if productID, ok := d.GetOk("id"); ok {
+	if productID, ok := d.GetOk("product_id"); ok {
 		params.ID = stripe.String(ToString(productID))
 	}
 	if active, set := d.GetOk("active"); set {

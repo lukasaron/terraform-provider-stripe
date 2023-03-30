@@ -20,10 +20,12 @@ func resourceStripeCoupon() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": {
+			"coupon_id": {
 				Type:        schema.TypeString,
+				Optional:    true,
 				Computed:    true,
-				Description: "Unique identifier for the object.",
+				ForceNew:    true,
+				Description: "Unique string of your choice that will be used to identify this coupon when applying it to a customer. If you don’t want to specify a particular code, you can leave the ID blank and we’ll generate a random code for you.",
 			},
 			"name": {
 				Type:        schema.TypeString,
@@ -115,6 +117,9 @@ func resourceStripeCouponCreate(ctx context.Context, d *schema.ResourceData, m i
 	c := m.(*client.API)
 	params := &stripe.CouponParams{}
 
+	if couponID, set := d.GetOk("coupon_id"); set {
+		params.ID = stripe.String(ToString(couponID))
+	}
 	if name, set := d.GetOk("name"); set {
 		params.Name = stripe.String(ToString(name))
 	}
@@ -183,6 +188,7 @@ func resourceStripeCouponRead(_ context.Context, d *schema.ResourceData, m inter
 	}
 
 	return CallSet(
+		d.Set("coupon_id", coupon.ID),
 		d.Set("name", coupon.Name),
 		d.Set("amount_off", coupon.AmountOff),
 		d.Set("currency", coupon.Currency),
