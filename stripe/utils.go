@@ -101,10 +101,6 @@ func ToFloat64(value interface{}) float64 {
 	}
 }
 
-//func ExtractSlice(d *schema.ResourceData, key string) []interface{} {
-//	return ToSlice(d.Get(key))
-//}
-
 func ToSlice(value interface{}) []interface{} {
 	switch value.(type) {
 	case []interface{}:
@@ -119,11 +115,7 @@ func ExtractStringSlice(d *schema.ResourceData, key string) []string {
 }
 
 func ToStringSlice(value interface{}) []string {
-	slice, ok := value.([]interface{})
-	if !ok {
-		return nil
-	}
-
+	slice := ToSlice(value)
 	stringSlice := make([]string, len(slice), len(slice))
 	for i := range slice {
 		stringSlice[i] = ToString(slice[i])
@@ -161,6 +153,19 @@ func ToMap(value interface{}) map[string]interface{} {
 		}
 	}
 	return map[string]interface{}{}
+}
+
+func ExtractMapSlice(d *schema.ResourceData, key string) []map[string]interface{} {
+	return ToMapSlice(d.Get(key))
+}
+
+func ToMapSlice(value interface{}) []map[string]interface{} {
+	slice := ToSlice(value)
+	mapSlice := make([]map[string]interface{}, len(slice), len(slice))
+	for i := range slice {
+		mapSlice[i] = ToMap(slice[i])
+	}
+	return mapSlice
 }
 
 func CallSet(err ...error) (d diag.Diagnostics) {
