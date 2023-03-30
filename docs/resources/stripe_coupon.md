@@ -64,6 +64,7 @@ Arguments accepted by this resource include:
 
 Attributes exported by this resource include:
 
+* `id` - String. The unique identifier for the object.
 * `coupon_id` - String. The unique identifier for the object.
 * `name` - String. Name of the coupon displayed to customers on for instance invoices or receipts.
 * `amount_off` - Int. Amount (in the currency specified) that will be taken off the subtotal of any invoices for this customer.

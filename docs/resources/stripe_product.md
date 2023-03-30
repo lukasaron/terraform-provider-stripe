@@ -50,6 +50,7 @@ Arguments accepted by this resource include:
 
 Attributes exported by this resource include:
 
+* `id` - String. The unique identifier for the object.
 * `product_id` - String. The unique identifier for the object.
 * `name` - String. The product’s name, meant to be displayable to the customer. 
 * `active` - Bool. Whether the product is currently available for purchase. 
