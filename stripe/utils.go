@@ -58,28 +58,29 @@ func ToInt64(value interface{}) int64 {
 	}
 }
 
-func OptionalInt64(value interface{}) *int64 {
+func NonZeroInt64(value interface{}) *int64 {
 	valueInt64 := ToInt64(value)
-	switch valueInt64 {
-	case 0:
+	if valueInt64 == 0 {
 		return nil
-	case -1:
-		return new(int64)
-	default:
-		return &valueInt64
 	}
+	return &valueInt64
 }
 
-func OptionalFloat64(value interface{}) *float64 {
+func NonZeroFloat64(value interface{}) *float64 {
 	valueFloat64 := ToFloat64(value)
-	switch valueFloat64 {
-	case 0:
+	if valueFloat64 == 0 {
 		return nil
-	case -1:
-		return new(float64)
-	default:
-		return &valueFloat64
 	}
+
+	return &valueFloat64
+}
+
+func NonZeroString(value interface{}) *string {
+	valueString := ToString(value)
+	if len(valueString) == 0 {
+		return nil
+	}
+	return &valueString
 }
 
 func ExtractFloat64(d *schema.ResourceData, key string) float64 {

@@ -169,6 +169,115 @@ func resourceStripePrice() *schema.Resource {
 					"tiered indicates that the unit pricing will be computed using a tiering strategy " +
 					"as defined using the tiers and tiers_mode attributes.",
 			},
+			"currency_options": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Description: "Prices defined in each available currency option. " +
+					"Each key must be a three-letter ISO currency code and a supported currency",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"currency": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Each currency must be a three-letter ISO currency code and a supported currency",
+						},
+						"tax_behavior": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Description: "Only required if a default tax behavior was not provided in the Stripe Tax settings." +
+								" Specifies whether the price is considered inclusive of taxes or exclusive of taxes." +
+								" One of inclusive, exclusive, or unspecified." +
+								" Once specified as either inclusive or exclusive, it cannot be changed.",
+						},
+						"unit_amount": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "A positive integer in cents (or 0 for a free price) representing how much to charge.",
+						},
+						"unit_amount_decimal": {
+							Type:     schema.TypeFloat,
+							Optional: true,
+							Description: "Same as unit_amount, but accepts a decimal value in cents with at most 12 decimal places." +
+								" Only one of unit_amount and unit_amount_decimal can be set.",
+						},
+						"custom_unit_amount": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							MaxItems:    1,
+							Description: "When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:        schema.TypeBool,
+										Required:    true,
+										Description: "Pass in true to enable custom_unit_amount, otherwise omit custom_unit_amount",
+									},
+									"maximum": {
+										Type:        schema.TypeInt,
+										Optional:    true,
+										Description: "The maximum unit amount the customer can specify for this item.",
+									},
+									"minimum": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Description: "The minimum unit amount the customer can specify for this item." +
+											" Must be at least the minimum charge amount.",
+									},
+									"preset": {
+										Type:        schema.TypeInt,
+										Optional:    true,
+										Description: "The starting unit amount which can be updated by the customer.",
+									},
+								},
+							},
+						},
+						"tiers": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Description: "Each element represents a pricing tier." +
+								" This parameter requires billing_scheme to be set to tiered." +
+								" See also the documentation for billing_scheme.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"up_to": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Description: "Specifies the upper bound of this tier. " +
+											"The lower bound of a tier is the upper bound of the previous tier adding one. " +
+											"Use -1 to define a fallback tier.",
+									},
+									"flat_amount": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Description: "The flat billing amount for an entire tier, " +
+											"regardless of the number of units in the tier.",
+									},
+									"flat_amount_decimal": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+										Description: "Same as flat_amount, but accepts a decimal value representing an integer " +
+											"in the minor units of the currency. " +
+											"Only one of flat_amount and flat_amount_decimal can be set.",
+									},
+									"unit_amount": {
+										Type:     schema.TypeInt,
+										Optional: true,
+										Description: "The per unit billing amount for each individual unit " +
+											"for which this tier applies.",
+									},
+									"unit_amount_decimal": {
+										Type:     schema.TypeFloat,
+										Optional: true,
+										Description: "Same as unit_amount, but accepts a decimal value in cents with " +
+											"at most 12 decimal places. " +
+											"Only one of unit_amount and unit_amount_decimal can be set.",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"lookup_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -296,6 +405,58 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		}(),
 		d.Set("tiers_mode", price.TiersMode),
 		d.Set("billing_scheme", price.BillingScheme),
+		func() error {
+			if len(price.CurrencyOptions) > 0 {
+				var currencyOptions []map[string]interface{}
+				for currency, currencyOptionMap := range price.CurrencyOptions {
+					currencyOption := map[string]interface{}{
+						"currency":            currency,
+						"tax_behavior":        currencyOptionMap.TaxBehavior,
+						"unit_amount":         currencyOptionMap.UnitAmount,
+						"unit_amount_decimal": currencyOptionMap.UnitAmountDecimal,
+						"custom_unit_amount": func() []map[string]interface{} {
+							if currencyOptionMap.CustomUnitAmount != nil {
+								return []map[string]interface{}{
+									{
+										"enabled": true,
+										"maximum": currencyOptionMap.CustomUnitAmount.Maximum,
+										"minimum": currencyOptionMap.CustomUnitAmount.Minimum,
+										"preset":  currencyOptionMap.CustomUnitAmount.Preset,
+									},
+								}
+							}
+							return nil
+						}(),
+						"tiers": func() []map[string]interface{} {
+							if len(currencyOptionMap.Tiers) > 0 {
+								var tiers []map[string]interface{}
+								for _, tier := range price.Tiers {
+									t := map[string]interface{}{
+										"up_to": func() int64 {
+											// update the value to reflect the Terraform input
+											if tier.UpTo == 0 {
+												return -1
+											}
+											return tier.UpTo
+										}(),
+										"flat_amount":         tier.FlatAmount,
+										"flat_amount_decimal": tier.FlatAmountDecimal,
+										"unit_amount":         tier.UnitAmount,
+										"unit_amount_decimal": tier.UnitAmountDecimal,
+									}
+									tiers = append(tiers, t)
+								}
+								return tiers
+							}
+							return nil
+						}(),
+					}
+					currencyOptions = append(currencyOptions, currencyOption)
+				}
+				return d.Set("currency_options", currencyOptions)
+			}
+			return nil
+		}(),
 		d.Set("lookup_key", price.LookupKey),
 		d.Set("tax_behaviour", price.TaxBehavior),
 		func() error {
@@ -364,13 +525,13 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 						priceTier.UpTo = stripe.Int64(ToInt64(v))
 					}
 				case k == "flat_amount":
-					priceTier.FlatAmount = OptionalInt64(v)
+					priceTier.FlatAmount = NonZeroInt64(v)
 				case k == "flat_amount_decimal":
-					priceTier.FlatAmountDecimal = OptionalFloat64(v)
+					priceTier.FlatAmountDecimal = NonZeroFloat64(v)
 				case k == "unit_amount":
-					priceTier.UnitAmount = OptionalInt64(v)
+					priceTier.UnitAmount = NonZeroInt64(v)
 				case k == "unit_amount_decimal":
-					priceTier.UnitAmountDecimal = OptionalFloat64(v)
+					priceTier.UnitAmountDecimal = NonZeroFloat64(v)
 				}
 			}
 			params.Tiers = append(params.Tiers, priceTier)
@@ -382,6 +543,66 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	if billingScheme, set := d.GetOk("billing_scheme"); set {
 		params.BillingScheme = stripe.String(ToString(billingScheme))
 	}
+
+	if currencyOptions, set := d.GetOk("currency_options"); set {
+		params.CurrencyOptions = make(map[string]*stripe.PriceCurrencyOptionsParams)
+		for _, coMap := range ToMapSlice(currencyOptions) {
+			currencyOption := &stripe.PriceCurrencyOptionsParams{}
+			for k, v := range coMap {
+				switch k {
+				case "currency":
+					params.CurrencyOptions[ToString(v)] = currencyOption
+				case "tax_behavior":
+					currencyOption.TaxBehavior = NonZeroString(v)
+				case "unit_amount":
+					currencyOption.UnitAmount = NonZeroInt64(v)
+				case "unit_amount_decimal":
+					currencyOption.UnitAmountDecimal = NonZeroFloat64(v)
+				case "custom_unit_amount":
+					for _, cuaMap := range ToMapSlice(v) {
+						currencyOption.CustomUnitAmount = &stripe.PriceCurrencyOptionsCustomUnitAmountParams{}
+						for k, v := range cuaMap {
+							switch k {
+							case "enabled":
+								currencyOption.CustomUnitAmount.Enabled = stripe.Bool(ToBool(v))
+							case "maximum":
+								currencyOption.CustomUnitAmount.Maximum = NonZeroInt64(v)
+							case "minimum":
+								currencyOption.CustomUnitAmount.Minimum = NonZeroInt64(v)
+							case "preset":
+								currencyOption.CustomUnitAmount.Preset = NonZeroInt64(v)
+							}
+						}
+					}
+				case "tiers":
+					for _, tiersMap := range ToMapSlice(v) {
+						priceTier := &stripe.PriceCurrencyOptionsTierParams{}
+						for k, v := range tiersMap {
+							switch {
+							case k == "up_to" && ToInt64(v) != 0:
+								upTo := ToInt64(v)
+								if upTo < 0 {
+									priceTier.UpToInf = stripe.Bool(true)
+								} else {
+									priceTier.UpTo = stripe.Int64(ToInt64(v))
+								}
+							case k == "flat_amount":
+								priceTier.FlatAmount = NonZeroInt64(v)
+							case k == "flat_amount_decimal":
+								priceTier.FlatAmountDecimal = NonZeroFloat64(v)
+							case k == "unit_amount":
+								priceTier.UnitAmount = NonZeroInt64(v)
+							case k == "unit_amount_decimal":
+								priceTier.UnitAmountDecimal = NonZeroFloat64(v)
+							}
+						}
+						currencyOption.Tiers = append(currencyOption.Tiers, priceTier)
+					}
+				}
+			}
+		}
+	}
+
 	if lookupKey, set := d.GetOk("lookup_key"); set {
 		params.LookupKey = stripe.String(ToString(lookupKey))
 	}
