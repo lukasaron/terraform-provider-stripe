@@ -91,7 +91,7 @@ resource "stripe_price" "price" {
 
 Arguments accepted by this resource include:
 
-* `currency` - (Required) String. Three-letter ISO currency code, in lowercase.
+* `currency` - (Required) String. Three-letter ISO currency code, in lowercase - [supported currencies](https://stripe.com/docs/currencies).
 * `product` - (Required) String. The ID of the product that this price will belong to.
 * `unit_amount` - (Required unless `billing_scheme = tiered`) Int. A positive integer in cents (or `-1` for a free
   price) representing how much to charge.
@@ -112,6 +112,8 @@ Arguments accepted by this resource include:
   unit in quantity (for prices with `usage_type=licensed`), or per unit of total usage (for prices
   with `usage_type=metered`). `tiered` indicates that the unit pricing will be computed using a tiering strategy as
   defined using the `tiers` and `tiers_mode` attributes.
+* `currency_options` - (Optional) List(Resource). Prices defined in each available currency option. For details
+  of individual arguments see [Currency Options](#currency-options).
 * `lookup_key` - (Optional) String. A lookup key used to retrieve prices dynamically from a static string.
 * `transfer_lookup_key` - (Optional) Bool. If set to `true`, will atomically remove the lookup key from the existing
   price, and assign it to this price.
@@ -153,6 +155,36 @@ Arguments accepted by this resource include:
 * `unit_amount` - (Optional) Int. The per-unit billing amount for each individual unit for which this tier applies.
 * `unit_amount_decimal` - (Optional) Float. Same as `unit_amount`, but accepts a decimal value in cents with at most 12
   decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+
+### Currency Options
+
+`currency_options` Can be used multiple times within the price resource (one block per currency) and supports the 
+ following arguments:
+
+* `currency` - (Required) String. Three-letter ISO currency code, in lowercase - [supported currencies](https://stripe.com/docs/currencies).
+* `tax_behavior` - (Optional) String. Only required if a default tax behavior was not provided in the Stripe Tax settings. 
+  Specifies whether the price is considered inclusive of taxes or exclusive of taxes. 
+  One of `inclusive`, `exclusive`, or `unspecified`. 
+  Once specified as either inclusive or exclusive, it cannot be changed.
+* `unit_amount` - (Optional) Int. A positive integer in cents (or 0 for a free price) representing how much to charge.
+* `unit_amount_decimal` - (Optional) Float. Same as unit_amount, but accepts a decimal value in cents with at most 12
+  decimal places. Only one of unit_amount and unit_amount_decimal can be set.
+* `custom_unit_amount` - (Optional) List(Resource). When set, 
+  provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.
+  See details in [custom unit amount](#custom-unit-amount).
+* `tiers` - (Optional) List(Resource). Each element represents a pricing tier. 
+  This parameter requires `billing_scheme` to be set to `tiered`. This resource can be used more than once and follows
+  the same fields as the [root tiers block](#tiers)
+
+### Custom Unit Amount
+
+`custom_unit_amount` Only one block is allowed per custom price resource (per currency) with the following arguments:
+
+* `enabled` - (Required) Bool. Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+* `maximum` - (Optional) Int. The maximum unit amount the customer can specify for this item.
+* `minimum` - (Optional) Int. The minimum unit amount the customer can specify for this item. 
+  Must be at least the minimum charge amount.
+* `preset` - (Optional) Int. The starting unit amount which can be updated by the customer.
 
 ### Transform Quantity
 

@@ -658,6 +658,64 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 	if d.HasChange("nickname") {
 		params.Nickname = stripe.String(ExtractString(d, "nickname"))
 	}
+	if d.HasChange("currency_options") {
+		params.CurrencyOptions = make(map[string]*stripe.PriceCurrencyOptionsParams)
+		for _, coMap := range ExtractMapSlice(d, "currency_options") {
+			currencyOption := &stripe.PriceCurrencyOptionsParams{}
+			for k, v := range coMap {
+				switch k {
+				case "currency":
+					params.CurrencyOptions[ToString(v)] = currencyOption
+				case "tax_behavior":
+					currencyOption.TaxBehavior = NonZeroString(v)
+				case "unit_amount":
+					currencyOption.UnitAmount = NonZeroInt64(v)
+				case "unit_amount_decimal":
+					currencyOption.UnitAmountDecimal = NonZeroFloat64(v)
+				case "custom_unit_amount":
+					for _, cuaMap := range ToMapSlice(v) {
+						currencyOption.CustomUnitAmount = &stripe.PriceCurrencyOptionsCustomUnitAmountParams{}
+						for k, v := range cuaMap {
+							switch k {
+							case "enabled":
+								currencyOption.CustomUnitAmount.Enabled = stripe.Bool(ToBool(v))
+							case "maximum":
+								currencyOption.CustomUnitAmount.Maximum = NonZeroInt64(v)
+							case "minimum":
+								currencyOption.CustomUnitAmount.Minimum = NonZeroInt64(v)
+							case "preset":
+								currencyOption.CustomUnitAmount.Preset = NonZeroInt64(v)
+							}
+						}
+					}
+				case "tiers":
+					for _, tiersMap := range ToMapSlice(v) {
+						priceTier := &stripe.PriceCurrencyOptionsTierParams{}
+						for k, v := range tiersMap {
+							switch {
+							case k == "up_to" && ToInt64(v) != 0:
+								upTo := ToInt64(v)
+								if upTo < 0 {
+									priceTier.UpToInf = stripe.Bool(true)
+								} else {
+									priceTier.UpTo = stripe.Int64(ToInt64(v))
+								}
+							case k == "flat_amount":
+								priceTier.FlatAmount = NonZeroInt64(v)
+							case k == "flat_amount_decimal":
+								priceTier.FlatAmountDecimal = NonZeroFloat64(v)
+							case k == "unit_amount":
+								priceTier.UnitAmount = NonZeroInt64(v)
+							case k == "unit_amount_decimal":
+								priceTier.UnitAmountDecimal = NonZeroFloat64(v)
+							}
+						}
+						currencyOption.Tiers = append(currencyOption.Tiers, priceTier)
+					}
+				}
+			}
+		}
+	}
 	if d.HasChange("lookup_key") {
 		params.LookupKey = stripe.String(ExtractString(d, "lookup_key"))
 	}
