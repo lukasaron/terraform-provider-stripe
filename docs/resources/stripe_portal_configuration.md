@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_portal_configuration"
-description: |-
-The Stripe Customer Portal Configuration can be created and modified by this resource.
+description: |- The Stripe Customer Portal Configuration can be created and modified by this resource.
 ---
 
 # stripe_portal_configuration
@@ -12,6 +11,10 @@ With this resource, you can create a Customer Portal Configuration - [Stripe API
 The Billing customer portal is a Stripe-hosted UI for subscription and billing management.
 
 A portal configuration describes the functionality and features that you want to provide to your customers through the portal.
+
+~> Removal of the Customer Portal isn't supported through the Stripe SDK. The best practice, which this provider follows,
+is to deactivate the Customer Portal by marking it as inactive on destroy, which indicates that resource is no longer
+available.
 
 ## Example Usage
 
@@ -116,87 +119,103 @@ resource "stripe_portal_configuration" "portal_configuration" {
 Arguments accepted by this resource include:
 
 * `active` - (Optional) Bool. Whether the configuration is active and can be used to create portal sessions. (On create it is always set as `true`)
-* `business_profile` - (Required) Map(String). The business information shown to customers in the portal.
+* `business_profile` - (Required) List(Resource). The business information shown to customers in the portal. More details in [Business Profile section](#business-profile)
 * `default_return_url` - (Optional) String. The default URL to redirect customers to when they click on the portal’s link to return to your website. This can be overriden when creating the session.
-* `features` - (Required) Map(String). Information about the features available in the portal.
+* `login_page` - (Optional) List(Resource). The hosted login page for this configuration. See details in [Login Page Section](#login-page).
+* `features` - (Required) List(Resource). Information about the features available in the portal. Feature section described in [Feature section](#features)
 * `metadata` - (Optional) Map(String). Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
 
-### Buesiness Profile fields
+### Business Profile
+
+`business_profile` Supports the following arguments:
 
 * `headline` - (Optional) String. The messaging shown to customers in the portal.
-* `privacy_policy_url` - (Required) String. A link to the business's publicly available privacy policy.
-* `terms_of_service_url` - (Required) String. A link to the business's publicly available terms of service.
+* `privacy_policy_url` - (Optional) String. A link to the business's publicly available privacy policy.
+* `terms_of_service_url` - (Optional) String. A link to the business's publicly available terms of service.
 
-### Features fields
+### Login Page
 
-**At least one of these fields must be added.**
+`login_page` Includes only one option:
 
-Once you add a parent at least one sub field must be included.
-For example, if adding `subscription_cancel`, then you MUST also declare `enabled` as its required for that parent field.
+* `enabled` - (Required) Bool. Set to true to generate a shareable URL login_page.url that will take your customers to a hosted login page for the customer portal.
 
-* `customer_update` - (Optional) Map(String). Information about updating the customer details in the portal.
-  * `enabled` - (Required) Bool. Whether the feature is enabled.
-  * `allowed_updates` - (Required) List. The types of customer updates that are permitted. When empty, customers are not updateable. Possible values are `email`, `address`, `shipping`, `phone` and `tax_id`.
-* `invoice_history` - (Optional) Map(String). Information about showing the billing history in the portal.
-  * `enabled` - (Required) Bool. Whether the feature is enabled.
-* `payment_method_update` - (Optional) Map(String). Information about updating payment methods in the portal.
-  * `enabled` - (Required) Bool. Whether the feature is enabled.
-* `subscription_cancel` - (Optional) Map(String). Information about canceling subscriptions in the portal.
-  * `enabled` - (Required) Bool. Whether the feature is enabled.
-  * `cancellation_reason` - (Optional) Map(String). Whether the cancellation reasons will be collected in the portal and which options are exposed to the customer.
-    * `enabled` - (Required) Bool. Whether the feature is enabled.
-    * `options` - (Required) List. Which cancellation reasons will be given as options to the customer. Requires at least 2 values, from `too_expensive`, `missing_features`, `switched_service`, `unused`, `customer_service`, `too_complex`, `low_quality` and `other`.
-  * `mode` - (Optional) String. Whether to cancel subscriptions immediately or at the end of the billing period. Possible values are `immediately` - Cancel subscriptions immediately, `at_period_end` - After canceling, customers can still renew subscriptions until the billing period ends.
-  * `proration_behavior` - (Optional) String. Whether to create prorations when canceling subscriptions. Possible values are `none` and `create_prorations`, which is only compatible with `mode=immediately`. No prorations are generated when canceling a subscription at the end of its natural billing period.
-* `subscription_pause`- (Optional) Map(String). Information about pausing subscriptions in the portal.
-  * `enabled` - (Required) Bool. Whether the feature is enabled.
-* `subscription_update`- (Optional) Map(String). Information about updating subscriptions in the portal.
-  * `enabled` - (Required) Bool. Whether the feature is enabled.
-  * `default_allowed_updates` - (Required) List. The types of subscription updates that are supported. When empty, subscriptions are not updateable. Possible values are `price`, `quantity` and `promotion_code`.
-  * `products` - (Optional) Map(String). The list of products that support subscription updates.
-    * `prices` - (Required) List. The list of price IDs for the product that a subscription can be updated to.
-    * `product` - (Required) String. The product id.
-  * `proration_behavior` - (Optional) String. Determines how to handle prorations resulting from subscription updates. Valid values are `none`, `create_prorations`, and `always_invoice`.
+### Features
+
+`features` Supports the following sections:
+
+* `customer_update` - (Optional) List(Resource). Information about updating the customer details in the portal. See [Customer Update](#features-customer-update).
+* `invoice_history` - (Optional) List(Resource). Information about showing the billing history in the portal. See [Invoice History](#features-invoice-history).
+* `payment_method_update` - (Optional) List(Resource). Information about updating payment methods in the portal. See [Payment Method Update](#features-payment-method-update).
+* `subscription_cancel` - (Optional) List(Resource). Information about canceling subscriptions in the portal. See [Subscription Cancel](#features-subscription-cancel).
+* `subscription_pause`- (Optional) List(Resource). Information about pausing subscriptions in the portal. See [Subscription Pause](#features-subscription-pause).
+* `subscription_update`- (Optional) List(Resource). Information about updating subscriptions in the portal. See [Subscription Update](#features-subscription-update).
+
+### Features Customer Update
+
+`customer_update` Consists of:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+* `allowed_updates` - (Optional) List(String). The types of customer updates that are supported [`name`, `email`, `address`, `shipping`, `phone`, `tax_id`]. When empty, customers are not updatable.
+
+### Features Invoice History
+
+`invoice_history` Includes only one option:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+
+### Features Payment Method Update
+
+`payment_method_update` Consists of only one option:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+
+### Features Subscription Cancel
+
+`subscription_cancel` Supports these arguments:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+* `mode` - (Optional) String. Whether to cancel subscriptions immediately or at the end of the billing period. Valid value is either `immediately` or `at_period_end`
+* `proration_behavior` - (Optional) String. Whether to create prorations when canceling subscriptions. Possible values are `none` and `create_prorations`, which is only compatible with `mode=immediately`. No prorations are generated when canceling a subscription at the end of its natural billing period.
+* `cancellation_reason` - (Optional) List(Resource). Whether the cancellation reasons will be collected in the portal and which options are exposed to the customer. Details of this field is in [Cancellation Reason](#features-subscription-cancel-cancellation-reason).
+
+#### Features Subscription Cancel Cancellation Reason
+
+`cancellation_reason` consumes the following arguments:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+* `options` - (Required) List(String). Which cancellation reasons will be given as options to the customer. Supported values are `too_expensive`, `missing_features`, `switched_service`, `unused`, `customer_service`, `too_complex`, `low_quality`, and `other`.
+
+
+### Features Subscription Pause
+
+`subscription_pause` Implements only one argument:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+
+### Features Subscription Update
+
+`subscription_update` Consists of these arguments:
+
+* `enabled` - (Required) Bool. Whether the feature is enabled.
+* `default_allowed_updates` - (Required) List(String). The types of subscription updates that are supported. When empty, subscriptions are not updatable. Supported values are `price`, `quantity`, and `promotion_code`.
+* `products` - (Required) List(Resource). The list of products that support subscription updates. See details [Products](#features-subscription-update-products).
+* `proration_behavior` - (Optional) String. Determines how to handle prorations resulting from subscription updates. Valid values are `none`, `create_prorations`, and `always_invoice`.
+
+#### Features Subscription Update Products
+
+`products` has to be defined with following fields:
+
+* `product` - (Required) String. The product id.
+* `prices` - (Required) List(String). The list of price IDs for the product that a subscription can be updated to.
+
 
 ## Attribute Reference
 
 Attributes exported by this resource include:
 
 * `id` - String. Unique identifier for the object.
-* `object` - String. String representing the object's type.
 * `active` - Bool. Whether the configuration is active and can be used to create portal sessions.
-* `application` - String. ID of the Stripe Connect Application that created the configuration.
 * `business_profile` - Map(String). The business information shown to customers in the portal.
-  * `headline` - String. The messaging shown to customers in the portal.
-  * `privacy_policy_url` - String. A link to the business's publicly available privacy policy.
-  * `terms_of_service_url` - String. A link to the business's publicly available terms of service.
-* `created` - Int. Time at which the object was created. Measured in seconds since the Unix epoch.
-* `default_return_url` - String. The default URL to redirect customers to when they click on the portal’s link to return to your website. This can be overriden when creating the session.
+* `default_return_url` - String. The default URL to redirect customers to when they click on the portal’s link.
 * `features` - Map(String). Information about the features available in the portal.
-  * `customer_update` - Map(String). Information about updating the customer details in the portal.
-    * `enabled` - Bool. Whether the feature is enabled.
-    * `allowed_updates` - List. The types of customer updates that are supported. When empty, customers are not updateable. - `email`, `address`, `shipping`, `phone` and `tax_id`.
-  * `invoice_history` - Map(String). Information about showing the billing history in the portal.
-    * `enabled` - Bool. Whether the feature is enabled.
-  * `payment_method_update` - Map(String). Information about updating payment methods in the portal.
-    * `enabled` - Bool. Whether the feature is enabled.
-  * `subscription_cancel` - Map(String). Information about canceling subscriptions in the portal.
-    * `enabled` - Bool. Whether the feature is enabled.
-    * `cancellation_reason` - Map(String). Whether the cancellation reasons will be collected in the portal and which options are exposed to the customer.
-      * `enabled` - Bool. Whether the feature is enabled.
-      * `options` - List. Which cancellation reasons will be given as options to the customer. - `too_expensive`, `missing_features`, `switched_service`, `unused`, `customer_service`, `too_complex`, `low_quality`, `other`.
-    * `mode` - String. Whether to cancel subscriptions immediately or at the end of the billing period. - `immediately`, `at_period_end`.
-    * `proration_behavior` - String. Whether to create prorations when canceling subscriptions. - `none`, `create_prorations`.
-  * `subscription_pause`- Map(String). Information about pausing subscriptions in the portal.
-    * `enabled` - Bool. Whether the feature is enabled.
-  * `subscription_update`- Map(String). Information about updating subscriptions in the portal.
-    * `default_allowed_updates` - List. The types of subscription updates that are supported. When empty, subscriptions are not updateable. - `price`, `quantity`, `promotion_code`.
-    * `enabled` - Bool. Whether the feature is enabled.
-    * `products` - Map(String). The list of products that support subscription updates.
-      * `prices` - List. The list of price IDs for the product that a subscription can be updated to.
-      * `product` - String. The product id.
-    * `proration_behavior` - String. Determines how to handle prorations resulting from subscription updates. - `none`, `create_prorations`, `always_invoice`.
-* `is_default` - Bool. Whether the configuration is the default. If `true`, this configuration can be managed in the Dashboard and portal sessions will use this configuration unless it is overriden when creating the session.
-* `livemode` - Bool. Has the value true if the object exists in live mode or the value false if the object exists in test mode.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
-* `updated` - Int. Time at which the object was last updated. Measured in seconds since the Unix epoch.

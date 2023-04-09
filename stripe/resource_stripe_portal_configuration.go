@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/client"
 )
@@ -26,24 +25,15 @@ func resourceStripePortalConfiguration() *schema.Resource {
 				Computed:    true,
 				Description: "Unique identifier for the object.",
 			},
-			"object": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "String representing the object's type.",
-			},
 			"active": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
 				Description: "Whether the configuration is active and can be used to create portal sessions.",
 			},
-			"application": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "ID of the Connect Application that created the configuration.",
-			},
 			"business_profile": {
 				Type:        schema.TypeList,
+				MaxItems:    1,
 				Required:    true,
 				Description: "The business information shown to customers in the portal.",
 				Elem: &schema.Resource{
@@ -55,22 +45,16 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						},
 						"privacy_policy_url": {
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 							Description: "A link to the business's publicly available privacy policy.",
 						},
 						"terms_of_service_url": {
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 							Description: "A link to the business's publicly available terms of service.",
 						},
 					},
 				},
-			},
-			"created": {
-				Type:     schema.TypeInt,
-				Computed: true,
-				Description: "Time at which the object was created. " +
-					"Measured in seconds since the Unix epoch.",
 			},
 			"default_return_url": {
 				Type:     schema.TypeString,
@@ -78,15 +62,39 @@ func resourceStripePortalConfiguration() *schema.Resource {
 				Description: "The default URL to redirect customers to when they click on the portal's " +
 					"link to return to your website. This can be overriden when creating the session.",
 			},
+			"login_page": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Description: "The hosted login page for this configuration.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Description: "Set to true to generate a shareable URL login_page.url that will take your" +
+								" customers to a hosted login page for the customer portal.",
+						},
+						"url": {
+							Type:     schema.TypeString,
+							Computed: true,
+							Description: "A shareable URL to the hosted portal login page. " +
+								"Your customers will be able to log in with their email and receive a link to their customer portal.",
+						},
+					},
+				},
+			},
 			"features": {
 				Type:        schema.TypeList,
 				Required:    true,
+				MaxItems:    1,
 				Description: "Information about the features available in the portal.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"customer_update": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							MaxItems:    1,
 							Description: "Information about updating the customer details in the portal.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -97,12 +105,9 @@ func resourceStripePortalConfiguration() *schema.Resource {
 									},
 									"allowed_updates": {
 										Type:        schema.TypeList,
-										Required:    true,
-										Description: "The types of customer updates that are supported. When empty, customers are not updateable.",
-										Elem: &schema.Schema{
-											Type:         schema.TypeString,
-											ValidateFunc: validation.StringInSlice([]string{"email", "address", "shipping", "phone", "tax_id"}, false),
-										},
+										Optional:    true,
+										Description: "The types of customer updates that are supported. When empty, customers are not updatable.",
+										Elem:        &schema.Schema{Type: schema.TypeString},
 									},
 								},
 							},
@@ -110,6 +115,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"invoice_history": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							MaxItems:    1,
 							Description: "Information about showing the billing history in the portal.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -124,6 +130,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"payment_method_update": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							MaxItems:    1,
 							Description: "Information about updating payment methods in the portal.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -138,6 +145,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"subscription_cancel": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							MaxItems:    1,
 							Description: "Information about canceling subscriptions in the portal.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -149,6 +157,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 									"cancellation_reason": {
 										Type:        schema.TypeList,
 										Optional:    true,
+										MaxItems:    1,
 										Description: "Whether the cancellation reasons will be collected in the portal and which options are exposed to the customer",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -161,25 +170,20 @@ func resourceStripePortalConfiguration() *schema.Resource {
 													Type:        schema.TypeList,
 													Required:    true,
 													Description: "Which cancellation reasons will be given as options to the customer.",
-													Elem: &schema.Schema{
-														Type:         schema.TypeString,
-														ValidateFunc: validation.StringInSlice([]string{"too_expensive", "missing_features", "switched_service", "unused", "customer_service", "too_complex", "low_quality", "other"}, false),
-													},
+													Elem:        &schema.Schema{Type: schema.TypeString},
 												},
 											},
 										},
 									},
 									"mode": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										Description:  "Whether to cancel subscriptions immediately or at the end of the billing period.",
-										ValidateFunc: validation.StringInSlice([]string{"immediately", "at_period_end"}, false),
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Whether to cancel subscriptions immediately or at the end of the billing period.",
 									},
 									"proration_behavior": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										Description:  "Whether to create prorations when canceling subscriptions.",
-										ValidateFunc: validation.StringInSlice([]string{"none", "create_prorations"}, false),
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Whether to create prorations when canceling subscriptions.",
 									},
 								},
 							},
@@ -192,7 +196,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"enabled": {
 										Type:        schema.TypeBool,
-										Required:    true,
+										Optional:    true,
 										Description: "Whether the feature is enabled.",
 									},
 								},
@@ -208,10 +212,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 										Type:        schema.TypeList,
 										Required:    true,
 										Description: "The types of subscription updates that are supported. When empty, subscriptions are not updateable.",
-										Elem: &schema.Schema{
-											Type:         schema.TypeString,
-											ValidateFunc: validation.StringInSlice([]string{"price", "quantity", "promotion_code"}, false),
-										},
+										Elem:        &schema.Schema{Type: schema.TypeString},
 									},
 									"enabled": {
 										Type:        schema.TypeBool,
@@ -219,8 +220,8 @@ func resourceStripePortalConfiguration() *schema.Resource {
 										Description: "Whether the feature is enabled.",
 									},
 									"products": {
-										Type:        schema.TypeSet,
-										Optional:    true,
+										Type:        schema.TypeList,
+										Required:    true,
 										Description: "The list of products that support subscription updates.",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -239,10 +240,9 @@ func resourceStripePortalConfiguration() *schema.Resource {
 										},
 									},
 									"proration_behavior": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										Description:  "Determines how to handle prorations resulting from subscription updates",
-										ValidateFunc: validation.StringInSlice([]string{"none", "create_prorations", "always_invoice"}, false),
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Determines how to handle prorations resulting from subscription updates",
 									},
 								},
 							},
@@ -250,31 +250,12 @@ func resourceStripePortalConfiguration() *schema.Resource {
 					},
 				},
 			},
-			"is_default": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				Description: "Whether the configuration is the default. If true, this configuration can be " +
-					"managed in the Dashboard and portal sessions will use this configuration unless it is " +
-					"overriden when creating the session.",
-			},
-			"livemode": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				Description: "Has the value true if the object exists in live mode or the value false if the " +
-					"object exists in test mode.",
-			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Description: "Set of key-value pairs that you can attach to an object. " +
 					"This can be useful for storing additional information about the object in a structured format.",
 				Elem: &schema.Schema{Type: schema.TypeString},
-			},
-			"updated": {
-				Type:     schema.TypeInt,
-				Computed: true,
-				Description: "Time at which the object was last updated. " +
-					"Measured in seconds since the Unix epoch.",
 			},
 		},
 	}
@@ -289,202 +270,250 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 
 	return CallSet(
 		d.Set("id", portal.ID),
-		d.Set("object", portal.Object),
 		d.Set("active", portal.Active),
-		d.Set("application", portal.Application),
-		d.Set("business_profile", portal.BusinessProfile),
-		d.Set("created", portal.Created),
+		d.Set("business_profile", func() []map[string]interface{} {
+			if portal.BusinessProfile != nil {
+				return []map[string]interface{}{
+					{
+						"headline":             portal.BusinessProfile.Headline,
+						"privacy_policy_url":   portal.BusinessProfile.PrivacyPolicyURL,
+						"terms_of_service_url": portal.BusinessProfile.TermsOfServiceURL,
+					},
+				}
+			}
+			return nil
+		}()),
 		d.Set("default_return_url", portal.DefaultReturnURL),
-		d.Set("features", portal.Features),
-		d.Set("is_default", portal.IsDefault),
-		d.Set("livemode", portal.Livemode),
+		d.Set("login_page", func() []map[string]interface{} {
+			if portal.LoginPage != nil {
+				return []map[string]interface{}{
+					{
+						"enabled": portal.LoginPage.Enabled,
+						"url":     portal.LoginPage.URL,
+					},
+				}
+			}
+			return nil
+		}()),
+		d.Set("features", func() []map[string]interface{} {
+			if portal.Features != nil {
+				featureMap := make(map[string]interface{})
+				if portal.Features.CustomerUpdate != nil {
+					featureMap["customer_update"] = []map[string]interface{}{
+						{
+							"enabled":         portal.Features.CustomerUpdate.Enabled,
+							"allowed_updates": portal.Features.CustomerUpdate.AllowedUpdates,
+						},
+					}
+				}
+				if portal.Features.InvoiceHistory != nil {
+					featureMap["invoice_history"] = []map[string]interface{}{
+						{
+							"enabled": portal.Features.InvoiceHistory.Enabled,
+						},
+					}
+				}
+				if portal.Features.PaymentMethodUpdate != nil {
+					featureMap["payment_method_update"] = []map[string]interface{}{
+						{
+							"enabled": portal.Features.PaymentMethodUpdate.Enabled,
+						},
+					}
+				}
+				if portal.Features.SubscriptionCancel != nil {
+					subsCancelMap := map[string]interface{}{
+						"enabled":            portal.Features.SubscriptionCancel.Enabled,
+						"mode":               portal.Features.SubscriptionCancel.Mode,
+						"proration_behavior": portal.Features.SubscriptionCancel.ProrationBehavior,
+					}
+					if portal.Features.SubscriptionCancel.CancellationReason != nil {
+						subsCancelMap["cancellation_reason"] = map[string]interface{}{
+							"enabled": portal.Features.SubscriptionCancel.CancellationReason.Enabled,
+							"options": portal.Features.SubscriptionCancel.CancellationReason.Options,
+						}
+					}
+					featureMap["subscription_cancel"] = []map[string]interface{}{
+						subsCancelMap,
+					}
+				}
+				if portal.Features.SubscriptionPause != nil {
+					featureMap["subscription_pause"] = []map[string]interface{}{
+						{
+							"enabled": portal.Features.SubscriptionPause.Enabled,
+						},
+					}
+				}
+				if portal.Features.SubscriptionUpdate != nil {
+					subsUpdateMap := map[string]interface{}{
+						"enabled":                 portal.Features.SubscriptionUpdate.Enabled,
+						"default_allowed_updates": portal.Features.SubscriptionUpdate.DefaultAllowedUpdates,
+						"proration_behavior":      portal.Features.SubscriptionUpdate.ProrationBehavior,
+					}
+					var products []map[string]interface{}
+					for _, p := range portal.Features.SubscriptionUpdate.Products {
+						products = append(products, map[string]interface{}{
+							"prices":  p.Prices,
+							"product": p.Product,
+						})
+					}
+					if products != nil {
+						subsUpdateMap["products"] = products
+					}
+
+					featureMap["subscription_update"] = []map[string]interface{}{
+						subsUpdateMap,
+					}
+				}
+				return []map[string]interface{}{
+					featureMap,
+				}
+			}
+			return nil
+		}()),
 		d.Set("metadata", portal.Metadata),
-		d.Set("updated", portal.Updated),
 	)
-}
-
-func expandBusinessProfile(businessProfileI []interface{}) *stripe.BillingPortalConfigurationBusinessProfileParams {
-	businessProfile := &stripe.BillingPortalConfigurationBusinessProfileParams{}
-	for _, v := range businessProfileI {
-		businessProfileMap := ToMap(v)
-		if privacyPolicyURL, set := businessProfileMap["privacy_policy_url"]; set {
-			businessProfile.PrivacyPolicyURL = stripe.String(ToString(privacyPolicyURL))
-		}
-		if termsOfServiceURL, set := businessProfileMap["terms_of_service_url"]; set {
-			businessProfile.TermsOfServiceURL = stripe.String(ToString(termsOfServiceURL))
-		}
-		if headline, set := businessProfileMap["headline"]; set {
-			businessProfile.Headline = stripe.String(ToString(headline))
-		}
-	}
-	return businessProfile
-}
-
-func expandFeatures(featuresI []interface{}) *stripe.BillingPortalConfigurationFeaturesParams {
-	features := &stripe.BillingPortalConfigurationFeaturesParams{}
-	for _, v := range featuresI {
-		featuresMap := ToMap(v)
-
-		if customerUpdateSettings, set := featuresMap["customer_update"]; set {
-			customerUpdate := &stripe.BillingPortalConfigurationFeaturesCustomerUpdateParams{}
-			cu := ToSlice(customerUpdateSettings)
-			for _, props := range cu {
-				p := ToMap(props)
-				if allowedUpdates, set := p["allowed_updates"]; set {
-					enumsI := ToSlice(allowedUpdates)
-					enums := []string{}
-					for _, enum := range enumsI {
-						enums = append(enums, ToString(enum))
-					}
-					customerUpdate.AllowedUpdates = stripe.StringSlice(enums)
-				}
-				if enabled, set := p["enabled"]; set {
-					customerUpdate.Enabled = stripe.Bool(ToBool(enabled))
-				}
-			}
-			features.CustomerUpdate = customerUpdate
-		}
-
-		if invoiceHistorySettings, set := featuresMap["invoice_history"]; set {
-			invoiceHistory := &stripe.BillingPortalConfigurationFeaturesInvoiceHistoryParams{}
-			ih := ToSlice(invoiceHistorySettings)
-			for _, props := range ih {
-				p := ToMap(props)
-				if enabled, set := p["enabled"]; set {
-					invoiceHistory.Enabled = stripe.Bool(ToBool(enabled))
-				}
-			}
-			features.InvoiceHistory = invoiceHistory
-		}
-
-		if paymentMethodUpdateSettings, set := featuresMap["payment_method_update"]; set {
-			paymentMethodUpdate := &stripe.BillingPortalConfigurationFeaturesPaymentMethodUpdateParams{}
-			pmu := ToSlice(paymentMethodUpdateSettings)
-			for _, props := range pmu {
-				p := ToMap(props)
-				if enabled, set := p["enabled"]; set {
-					paymentMethodUpdate.Enabled = stripe.Bool(ToBool(enabled))
-				}
-			}
-			features.PaymentMethodUpdate = paymentMethodUpdate
-		}
-
-		if subscriptionCancelSettings, set := featuresMap["subscription_cancel"]; set {
-			subscriptionCancel := &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
-			sc := ToSlice(subscriptionCancelSettings)
-			for _, props := range sc {
-				p := ToMap(props)
-				if cancellationReason, set := p["cancellation_reason"]; set {
-					subscriptionCancelReason := &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelCancellationReasonParams{}
-					scr := ToSlice(cancellationReason)
-					for _, scrProps := range scr {
-						scrP := ToMap(scrProps)
-						if options, set := scrP["options"]; set {
-							enumsI := ToSlice(options)
-							enums := []string{}
-							for _, enum := range enumsI {
-								enums = append(enums, ToString(enum))
-							}
-							subscriptionCancelReason.Options = stripe.StringSlice(enums)
-						}
-						if enabled, set := scrP["enabled"]; set {
-							subscriptionCancelReason.Enabled = stripe.Bool(ToBool(enabled))
-						}
-					}
-					subscriptionCancel.CancellationReason = subscriptionCancelReason
-				}
-
-				if enabled, set := p["enabled"]; set {
-					subscriptionCancel.Enabled = stripe.Bool(ToBool(enabled))
-				}
-
-				if mode, set := p["mode"]; set {
-					subscriptionCancel.Mode = stripe.String(ToString(mode))
-				}
-
-				if prorationBehavior, set := p["proration_behavior"]; set {
-					subscriptionCancel.ProrationBehavior = stripe.String(ToString(prorationBehavior))
-				}
-			}
-			features.SubscriptionCancel = subscriptionCancel
-		}
-
-		if subscriptionPauseSettings, set := featuresMap["subscription_pause"]; set {
-			subscriptionPause := &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
-			sp := ToSlice(subscriptionPauseSettings)
-			for _, props := range sp {
-				p := ToMap(props)
-				if enabled, set := p["enabled"]; set {
-					subscriptionPause.Enabled = stripe.Bool(ToBool(enabled))
-				}
-			}
-			features.SubscriptionPause = subscriptionPause
-		}
-
-		if subscriptionUpdateSettings, set := featuresMap["subscription_update"]; set {
-			subscriptionUpdate := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateParams{}
-			sp := ToSlice(subscriptionUpdateSettings)
-			for _, props := range sp {
-				p := ToMap(props)
-				if defaultAllowedUpdates, set := p["default_allowed_updates"]; set {
-					enumsI := ToSlice(defaultAllowedUpdates)
-					enums := []string{}
-					for _, enum := range enumsI {
-						enums = append(enums, ToString(enum))
-					}
-					subscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(enums)
-				}
-
-				if enabled, set := p["enabled"]; set {
-					subscriptionUpdate.Enabled = stripe.Bool(ToBool(enabled))
-				}
-
-				if products, set := p["products"]; set {
-					var productsParams = []*stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
-					set := products.(*schema.Set)
-					productsList := set.List()
-					for _, i := range productsList {
-						pParams := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
-						finalProduct := ToMap(i)
-						if product, set := finalProduct["product"]; set {
-							pParams.Product = stripe.String(ToString(product))
-						}
-
-						if prices, set := finalProduct["prices"]; set {
-							pricesI := ToSlice(prices)
-							prices := []string{}
-							for _, price := range pricesI {
-								prices = append(prices, ToString(price))
-							}
-							pParams.Prices = stripe.StringSlice(prices)
-						}
-						productsParams = append(productsParams, pParams)
-					}
-					subscriptionUpdate.Products = productsParams
-				}
-
-				if prorationBehavior, set := p["proration_behavior"]; set {
-					subscriptionUpdate.ProrationBehavior = stripe.String(ToString(prorationBehavior))
-				}
-			}
-			features.SubscriptionUpdate = subscriptionUpdate
-		}
-	}
-	return features
 }
 
 func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
 	params := &stripe.BillingPortalConfigurationParams{}
+
+	if businessProfile, set := d.GetOk("business_profile"); set {
+		for _, businessProfileMap := range ToMapSlice(businessProfile) {
+			params.BusinessProfile = &stripe.BillingPortalConfigurationBusinessProfileParams{}
+			for k, v := range businessProfileMap {
+				switch k {
+				case "headline":
+					params.BusinessProfile.Headline = NonZeroString(v)
+				case "privacy_policy_url":
+					params.BusinessProfile.PrivacyPolicyURL = NonZeroString(v)
+				case "terms_of_service_url":
+					params.BusinessProfile.TermsOfServiceURL = NonZeroString(v)
+				}
+			}
+		}
+	}
+
 	if defaultReturnURL, set := d.GetOk("default_return_url"); set {
 		params.DefaultReturnURL = stripe.String(ToString(defaultReturnURL))
 	}
-	if businessProfile, set := d.GetOk("business_profile"); set {
-		params.BusinessProfile = expandBusinessProfile(ToSlice(businessProfile))
+
+	if loginPage, set := d.GetOk("login_page"); set {
+		for _, loginPageMap := range ToMapSlice(loginPage) {
+			for k, v := range loginPageMap {
+				switch k {
+				case "enabled":
+					params.LoginPage = &stripe.BillingPortalConfigurationLoginPageParams{Enabled: stripe.Bool(ToBool(v))}
+				}
+			}
+		}
 	}
+
 	if features, set := d.GetOk("features"); set {
-		params.Features = expandFeatures(ToSlice(features))
+		for _, featureMap := range ToMapSlice(features) {
+			params.Features = &stripe.BillingPortalConfigurationFeaturesParams{}
+			for k, v := range featureMap {
+				switch k {
+				case "customer_update":
+					for _, customerUpdateMap := range ToMapSlice(v) {
+						params.Features.CustomerUpdate = &stripe.BillingPortalConfigurationFeaturesCustomerUpdateParams{}
+						for k, v := range customerUpdateMap {
+							switch k {
+							case "enabled":
+								params.Features.CustomerUpdate.Enabled = stripe.Bool(ToBool(v))
+							case "allowed_updates":
+								params.Features.CustomerUpdate.AllowedUpdates = stripe.StringSlice(ToStringSlice(v))
+							}
+						}
+					}
+				case "invoice_history":
+					for _, invoiceHistoryMap := range ToMapSlice(v) {
+						params.Features.InvoiceHistory = &stripe.BillingPortalConfigurationFeaturesInvoiceHistoryParams{}
+						for k, v := range invoiceHistoryMap {
+							switch k {
+							case "enabled":
+								params.Features.InvoiceHistory.Enabled = stripe.Bool(ToBool(v))
+							}
+						}
+					}
+				case "payment_method_update":
+					for _, paymentMethodUpdateMap := range ToMapSlice(v) {
+						params.Features.PaymentMethodUpdate = &stripe.BillingPortalConfigurationFeaturesPaymentMethodUpdateParams{}
+						for k, v := range paymentMethodUpdateMap {
+							switch k {
+							case "enabled":
+								params.Features.PaymentMethodUpdate.Enabled = stripe.Bool(ToBool(v))
+							}
+						}
+					}
+				case "subscription_cancel":
+					for _, subsCancelMap := range ToMapSlice(v) {
+						params.Features.SubscriptionCancel = &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
+						for k, v := range subsCancelMap {
+							switch k {
+							case "enable":
+								params.Features.SubscriptionCancel.Enabled = stripe.Bool(ToBool(v))
+							case "mode":
+								params.Features.SubscriptionCancel.Mode = NonZeroString(v)
+							case "proration_behavior":
+								params.Features.SubscriptionCancel.ProrationBehavior = NonZeroString(v)
+							case "cancellation_reason":
+								for _, cancellationReasonMap := range ToMapSlice(v) {
+									params.Features.SubscriptionCancel.CancellationReason = &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelCancellationReasonParams{}
+									for k, v := range cancellationReasonMap {
+										switch k {
+										case "enabled":
+											params.Features.SubscriptionCancel.CancellationReason.Enabled = stripe.Bool(ToBool(v))
+										case "options":
+											params.Features.SubscriptionCancel.CancellationReason.Options = stripe.StringSlice(ToStringSlice(v))
+										}
+									}
+								}
+							}
+						}
+					}
+				case "subscription_pause":
+					for _, subsPauseMap := range ToMapSlice(v) {
+						params.Features.SubscriptionPause = &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
+						for k, v := range subsPauseMap {
+							switch k {
+							case "enabled":
+								params.Features.SubscriptionPause.Enabled = stripe.Bool(ToBool(v))
+							}
+						}
+					}
+				case "subscription_update":
+					for _, subsUpdateMap := range ToMapSlice(v) {
+						params.Features.SubscriptionUpdate = &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateParams{}
+						for k, v := range subsUpdateMap {
+							switch k {
+							case "enabled":
+								params.Features.SubscriptionUpdate.Enabled = stripe.Bool(ToBool(v))
+							case "default_allowed_updates":
+								params.Features.SubscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(ToStringSlice(v))
+							case "proration_behavior":
+								params.Features.SubscriptionUpdate.ProrationBehavior = NonZeroString(v)
+							case "products":
+								for _, productMap := range ToMapSlice(v) {
+									product := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
+									for k, v := range productMap {
+										switch k {
+										case "product":
+											product.Product = stripe.String(ToString(v))
+										case "prices":
+											product.Prices = stripe.StringSlice(ToStringSlice(v))
+										}
+									}
+									params.Features.SubscriptionUpdate.Products = append(params.Features.SubscriptionUpdate.Products, product)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
+
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
 			params.AddMetadata(k, ToString(v))
@@ -507,23 +536,145 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 		params.Active = stripe.Bool(ExtractBool(d, "active"))
 	}
 
+	if d.HasChange("business_profile") {
+		for _, businessProfileMap := range ExtractMapSlice(d, "business_profile") {
+			params.BusinessProfile = &stripe.BillingPortalConfigurationBusinessProfileParams{}
+			for k, v := range businessProfileMap {
+				switch k {
+				case "headline":
+					params.BusinessProfile.Headline = NonZeroString(v)
+				case "privacy_policy_url":
+					params.BusinessProfile.PrivacyPolicyURL = NonZeroString(v)
+				case "terms_of_service_url":
+					params.BusinessProfile.TermsOfServiceURL = NonZeroString(v)
+				}
+			}
+		}
+	}
+
 	if d.HasChange("default_return_url") {
 		params.DefaultReturnURL = stripe.String(ExtractString(d, "default_return_url"))
+	}
+
+	if d.HasChange("login_page") {
+		for _, loginPageMap := range ExtractMapSlice(d, "login_page") {
+			for k, v := range loginPageMap {
+				switch k {
+				case "enabled":
+					params.LoginPage = &stripe.BillingPortalConfigurationLoginPageParams{Enabled: stripe.Bool(ToBool(v))}
+				}
+			}
+		}
+	}
+
+	if d.HasChange("features") {
+		for _, featureMap := range ExtractMapSlice(d, "features") {
+			params.Features = &stripe.BillingPortalConfigurationFeaturesParams{}
+			for k, v := range featureMap {
+				switch k {
+				case "customer_update":
+					for _, customerUpdateMap := range ToMapSlice(v) {
+						params.Features.CustomerUpdate = &stripe.BillingPortalConfigurationFeaturesCustomerUpdateParams{}
+						for k, v := range customerUpdateMap {
+							switch k {
+							case "enabled":
+								params.Features.CustomerUpdate.Enabled = stripe.Bool(ToBool(v))
+							case "allowed_updates":
+								params.Features.CustomerUpdate.AllowedUpdates = stripe.StringSlice(ToStringSlice(v))
+							}
+						}
+					}
+				case "invoice_history":
+					for _, invoiceHistoryMap := range ToMapSlice(v) {
+						params.Features.InvoiceHistory = &stripe.BillingPortalConfigurationFeaturesInvoiceHistoryParams{}
+						for k, v := range invoiceHistoryMap {
+							switch k {
+							case "enabled":
+								params.Features.InvoiceHistory.Enabled = stripe.Bool(ToBool(v))
+							}
+						}
+					}
+				case "payment_method_update":
+					for _, paymentMethodUpdateMap := range ToMapSlice(v) {
+						params.Features.PaymentMethodUpdate = &stripe.BillingPortalConfigurationFeaturesPaymentMethodUpdateParams{}
+						for k, v := range paymentMethodUpdateMap {
+							switch k {
+							case "enabled":
+								params.Features.PaymentMethodUpdate.Enabled = stripe.Bool(ToBool(v))
+							}
+						}
+					}
+				case "subscription_cancel":
+					for _, subsCancelMap := range ToMapSlice(v) {
+						params.Features.SubscriptionCancel = &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
+						for k, v := range subsCancelMap {
+							switch k {
+							case "enable":
+								params.Features.SubscriptionCancel.Enabled = stripe.Bool(ToBool(v))
+							case "mode":
+								params.Features.SubscriptionCancel.Mode = NonZeroString(v)
+							case "proration_behavior":
+								params.Features.SubscriptionCancel.ProrationBehavior = NonZeroString(v)
+							case "cancellation_reason":
+								for _, cancellationReasonMap := range ToMapSlice(v) {
+									params.Features.SubscriptionCancel.CancellationReason = &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelCancellationReasonParams{}
+									for k, v := range cancellationReasonMap {
+										switch k {
+										case "enabled":
+											params.Features.SubscriptionCancel.CancellationReason.Enabled = stripe.Bool(ToBool(v))
+										case "options":
+											params.Features.SubscriptionCancel.CancellationReason.Options = stripe.StringSlice(ToStringSlice(v))
+										}
+									}
+								}
+							}
+						}
+					}
+				case "subscription_pause":
+					for _, subsPauseMap := range ToMapSlice(v) {
+						params.Features.SubscriptionPause = &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
+						for k, v := range subsPauseMap {
+							switch k {
+							case "enabled":
+								params.Features.SubscriptionPause.Enabled = stripe.Bool(ToBool(v))
+							}
+						}
+					}
+				case "subscription_update":
+					for _, subsUpdateMap := range ToMapSlice(v) {
+						params.Features.SubscriptionUpdate = &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateParams{}
+						for k, v := range subsUpdateMap {
+							switch k {
+							case "enabled":
+								params.Features.SubscriptionUpdate.Enabled = stripe.Bool(ToBool(v))
+							case "default_allowed_updates":
+								params.Features.SubscriptionUpdate.DefaultAllowedUpdates = stripe.StringSlice(ToStringSlice(v))
+							case "proration_behavior":
+								params.Features.SubscriptionUpdate.ProrationBehavior = NonZeroString(v)
+							case "products":
+								for _, productMap := range ToMapSlice(v) {
+									product := &stripe.BillingPortalConfigurationFeaturesSubscriptionUpdateProductParams{}
+									for k, v := range productMap {
+										switch k {
+										case "product":
+											product.Product = stripe.String(ToString(v))
+										case "prices":
+											product.Prices = stripe.StringSlice(ToStringSlice(v))
+										}
+									}
+									params.Features.SubscriptionUpdate.Products = append(params.Features.SubscriptionUpdate.Products, product)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	if d.HasChange("metadata") {
 		params.Metadata = nil
 		UpdateMetadata(d, params)
-	}
-
-	if d.HasChange("business_profile") {
-		_, newBusinessProfile := d.GetChange("business_profile")
-		params.BusinessProfile = expandBusinessProfile(ToSlice(newBusinessProfile))
-	}
-
-	if d.HasChange("features") {
-		_, newFeatures := d.GetChange("features")
-		params.Features = expandFeatures(ToSlice(newFeatures))
 	}
 
 	_, err := c.BillingPortalConfigurations.Update(d.Id(), params)
