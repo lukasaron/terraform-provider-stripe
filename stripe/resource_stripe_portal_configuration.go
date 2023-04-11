@@ -327,9 +327,11 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 						"proration_behavior": portal.Features.SubscriptionCancel.ProrationBehavior,
 					}
 					if portal.Features.SubscriptionCancel.CancellationReason != nil {
-						subsCancelMap["cancellation_reason"] = map[string]interface{}{
-							"enabled": portal.Features.SubscriptionCancel.CancellationReason.Enabled,
-							"options": portal.Features.SubscriptionCancel.CancellationReason.Options,
+						subsCancelMap["cancellation_reason"] = []map[string]interface{}{
+							{
+								"enabled": portal.Features.SubscriptionCancel.CancellationReason.Enabled,
+								"options": portal.Features.SubscriptionCancel.CancellationReason.Options,
+							},
 						}
 					}
 					featureMap["subscription_cancel"] = []map[string]interface{}{
