@@ -110,6 +110,9 @@ func resourceStripePromotionCode() *schema.Resource {
 
 func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var promotionCode *stripe.PromotionCode
+	var err error
+
 	params := &stripe.PromotionCodeParams{
 		Coupon: stripe.String(ExtractString(d, "coupon")),
 		Active: stripe.Bool(ExtractBool(d, "active")),
@@ -150,7 +153,10 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 
-	promotionCode, err := c.PromotionCodes.New(params)
+	err = retryWithBackOff(func() error {
+		promotionCode, err = c.PromotionCodes.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -161,7 +167,13 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 
 func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-	promotionCode, err := c.PromotionCodes.Get(d.Id(), nil)
+	var promotionCode *stripe.PromotionCode
+	var err error
+
+	err = retryWithBackOff(func() error {
+		promotionCode, err = c.PromotionCodes.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -201,6 +213,8 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 
 func resourceStripePromotionCodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.PromotionCodeParams{}
 	if d.HasChange("active") {
 		params.Active = stripe.Bool(ExtractBool(d, "active"))
@@ -209,7 +223,11 @@ func resourceStripePromotionCodeUpdate(ctx context.Context, d *schema.ResourceDa
 		params.Metadata = nil
 		UpdateMetadata(d, params)
 	}
-	_, err := c.PromotionCodes.Update(d.Id(), params)
+
+	err = retryWithBackOff(func() error {
+		_, err = c.PromotionCodes.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}

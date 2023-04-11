@@ -110,8 +110,13 @@ func resourceStripeTaxRate() *schema.Resource {
 
 func resourceStripeTaxRateRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var taxRate *stripe.TaxRate
+	var err error
 
-	taxRate, err := c.TaxRates.Get(d.Id(), nil)
+	err = retryWithBackOff(func() error {
+		taxRate, err = c.TaxRates.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -135,6 +140,8 @@ func resourceStripeTaxRateRead(_ context.Context, d *schema.ResourceData, m inte
 
 func resourceStripeTaxRateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var taxRate *stripe.TaxRate
+	var err error
 
 	params := &stripe.TaxRateParams{
 		DisplayName: stripe.String(ExtractString(d, "display_name")),
@@ -172,7 +179,10 @@ func resourceStripeTaxRateCreate(ctx context.Context, d *schema.ResourceData, m 
 		params.TaxType = stripe.String(ToString(taxType))
 	}
 
-	taxRate, err := c.TaxRates.New(params)
+	err = retryWithBackOff(func() error {
+		taxRate, err = c.TaxRates.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -183,6 +193,8 @@ func resourceStripeTaxRateCreate(ctx context.Context, d *schema.ResourceData, m 
 
 func resourceStripeTaxRateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.TaxRateParams{}
 
 	if d.HasChange("active") {
@@ -213,8 +225,10 @@ func resourceStripeTaxRateUpdate(ctx context.Context, d *schema.ResourceData, m 
 		params.TaxType = stripe.String(ExtractString(d, "tax_type"))
 	}
 
-	_, err := c.TaxRates.Update(d.Id(), params)
-
+	err = retryWithBackOff(func() error {
+		_, err = c.TaxRates.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}

@@ -104,7 +104,13 @@ func resourceStripeProduct() *schema.Resource {
 
 func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-	product, err := c.Products.Get(d.Id(), nil)
+	var product *stripe.Product
+	var err error
+
+	err = retryWithBackOff(func() error {
+		product, err = c.Products.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -142,6 +148,9 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 
 func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var product *stripe.Product
+	var err error
+
 	params := &stripe.ProductParams{
 		Name: stripe.String(ExtractString(d, "name")),
 	}
@@ -194,7 +203,10 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 		}
 	}
 
-	product, err := c.Products.New(params)
+	err = retryWithBackOff(func() error {
+		product, err = c.Products.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -210,6 +222,8 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 
 func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.ProductParams{}
 	if d.HasChange("name") {
 		params.Name = stripe.String(ExtractString(d, "name"))
@@ -259,7 +273,10 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 		UpdateMetadata(d, params)
 	}
 
-	_, err := c.Products.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.Products.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -269,7 +286,12 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 
 func resourceStripeProductDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-	_, err := c.Products.Del(d.Id(), nil)
+	var err error
+
+	err = retryWithBackOff(func() error {
+		_, err = c.Products.Del(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}

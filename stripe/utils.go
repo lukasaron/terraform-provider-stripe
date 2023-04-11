@@ -1,8 +1,11 @@
 package stripe
 
 import (
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/stripe/stripe-go/v74"
 )
 
 func ExtractString(d *schema.ResourceData, key string) string {
@@ -201,5 +204,26 @@ func UpdateMetadata(d *schema.ResourceData, adder MetadataAdder) {
 	for k := range oldMetaMap {
 		// when meta is empty string it's going be removed
 		adder.AddMetadata(k, "")
+	}
+}
+
+func isRateLimitErr(e error) bool {
+	err, ok := e.(*stripe.Error)
+	return ok && err.HTTPStatusCode == 429
+}
+
+func retryWithBackOff(call func() error) error {
+	var backOff time.Duration = 1
+	for {
+		err := call()
+		switch {
+		case err == nil:
+			return nil
+		case isRateLimitErr(err):
+			time.Sleep(time.Second * backOff)
+			backOff *= 2
+		default:
+			return err
+		}
 	}
 }

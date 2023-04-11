@@ -126,8 +126,13 @@ func resourceStripeCustomer() *schema.Resource {
 
 func resourceStripeCustomerRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var customer *stripe.Customer
+	var err error
 
-	customer, err := c.Customers.Get(d.Id(), nil)
+	err = retryWithBackOff(func() error {
+		customer, err = c.Customers.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -224,6 +229,9 @@ func resourceStripeCustomerRead(_ context.Context, d *schema.ResourceData, m int
 
 func resourceStripeCustomerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var customer *stripe.Customer
+	var err error
+
 	params := &stripe.CustomerParams{}
 
 	if name, set := d.GetOk("name"); set {
@@ -323,7 +331,10 @@ func resourceStripeCustomerCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 
-	customer, err := c.Customers.New(params)
+	err = retryWithBackOff(func() error {
+		customer, err = c.Customers.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -334,6 +345,8 @@ func resourceStripeCustomerCreate(ctx context.Context, d *schema.ResourceData, m
 
 func resourceStripeCustomerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.CustomerParams{}
 
 	if d.HasChange("name") {
@@ -432,7 +445,10 @@ func resourceStripeCustomerUpdate(ctx context.Context, d *schema.ResourceData, m
 		UpdateMetadata(d, params)
 	}
 
-	_, err := c.Customers.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.Customers.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -443,8 +459,12 @@ func resourceStripeCustomerUpdate(ctx context.Context, d *schema.ResourceData, m
 
 func resourceStripeCustomerDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
 
-	_, err := c.Customers.Del(d.Id(), nil)
+	err = retryWithBackOff(func() error {
+		_, err = c.Customers.Del(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}

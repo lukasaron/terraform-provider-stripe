@@ -113,8 +113,54 @@ func resourceStripeCoupon() *schema.Resource {
 	}
 }
 
+func resourceStripeCouponRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.API)
+	var coupon *stripe.Coupon
+	var err error
+
+	p := &stripe.CouponParams{}
+	p.AddExpand("applies_to")
+
+	err = retryWithBackOff(func() error {
+		coupon, err = c.Coupons.Get(d.Id(), p)
+		return err
+	})
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	var appliesTo []string
+	if coupon.AppliesTo != nil {
+		appliesTo = coupon.AppliesTo.Products
+	}
+
+	var redeemBy string
+	if coupon.RedeemBy != 0 {
+		redeemBy = time.Unix(coupon.RedeemBy, 0).Format(time.RFC3339)
+	}
+
+	return CallSet(
+		d.Set("coupon_id", coupon.ID),
+		d.Set("name", coupon.Name),
+		d.Set("amount_off", coupon.AmountOff),
+		d.Set("currency", coupon.Currency),
+		d.Set("percent_off", coupon.PercentOff),
+		d.Set("duration", coupon.Duration),
+		d.Set("duration_in_months", coupon.DurationInMonths),
+		d.Set("max_redemptions", coupon.MaxRedemptions),
+		d.Set("redeem_by", redeemBy),
+		d.Set("times_redeemed", coupon.TimesRedeemed),
+		d.Set("applies_to", appliesTo),
+		d.Set("metadata", coupon.Metadata),
+		d.Set("valid", coupon.Valid),
+	)
+}
+
 func resourceStripeCouponCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var coupon *stripe.Coupon
+	var err error
+
 	params := &stripe.CouponParams{}
 
 	if couponID, set := d.GetOk("coupon_id"); set {
@@ -153,12 +199,16 @@ func resourceStripeCouponCreate(ctx context.Context, d *schema.ResourceData, m i
 			Products: stripe.StringSlice(ToStringSlice(appliesTo)),
 		}
 	}
-	if d.HasChange("metadata") {
-		params.Metadata = nil
-		UpdateMetadata(d, params)
+	if meta, set := d.GetOk("metadata"); set {
+		for k, v := range ToMap(meta) {
+			params.AddMetadata(k, ToString(v))
+		}
 	}
 
-	coupon, err := c.Coupons.New(params)
+	err = retryWithBackOff(func() error {
+		coupon, err = c.Coupons.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -167,45 +217,10 @@ func resourceStripeCouponCreate(ctx context.Context, d *schema.ResourceData, m i
 	return resourceStripeCouponRead(ctx, d, m)
 }
 
-func resourceStripeCouponRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*client.API)
-	p := &stripe.CouponParams{}
-	p.AddExpand("applies_to")
-
-	coupon, err := c.Coupons.Get(d.Id(), p)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	var appliesTo []string
-	if coupon.AppliesTo != nil {
-		appliesTo = coupon.AppliesTo.Products
-	}
-
-	var redeemBy string
-	if coupon.RedeemBy != 0 {
-		redeemBy = time.Unix(coupon.RedeemBy, 0).Format(time.RFC3339)
-	}
-
-	return CallSet(
-		d.Set("coupon_id", coupon.ID),
-		d.Set("name", coupon.Name),
-		d.Set("amount_off", coupon.AmountOff),
-		d.Set("currency", coupon.Currency),
-		d.Set("percent_off", coupon.PercentOff),
-		d.Set("duration", coupon.Duration),
-		d.Set("duration_in_months", coupon.DurationInMonths),
-		d.Set("max_redemptions", coupon.MaxRedemptions),
-		d.Set("redeem_by", redeemBy),
-		d.Set("times_redeemed", coupon.TimesRedeemed),
-		d.Set("applies_to", appliesTo),
-		d.Set("metadata", coupon.Metadata),
-		d.Set("valid", coupon.Valid),
-	)
-}
-
 func resourceStripeCouponUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.CouponParams{}
 
 	if d.HasChange("name") {
@@ -213,13 +228,13 @@ func resourceStripeCouponUpdate(ctx context.Context, d *schema.ResourceData, m i
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil
-		metadata := ExtractMap(d, "metadata")
-		for k, v := range metadata {
-			params.AddMetadata(k, ToString(v))
-		}
+		UpdateMetadata(d, params)
 	}
 
-	_, err := c.Coupons.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.Coupons.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -229,8 +244,13 @@ func resourceStripeCouponUpdate(ctx context.Context, d *schema.ResourceData, m i
 
 func resourceStripeCouponDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
 
-	_, err := c.Coupons.Del(d.Id(), nil)
+	err = retryWithBackOff(func() error {
+		_, err = c.Coupons.Del(d.Id(), nil)
+		return err
+	})
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

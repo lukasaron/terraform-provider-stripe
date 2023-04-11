@@ -338,7 +338,13 @@ func resourceStripePrice() *schema.Resource {
 
 func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-	price, err := c.Prices.Get(d.Id(), nil)
+	var price *stripe.Price
+	var err error
+
+	err = retryWithBackOff(func() error {
+		price, err = c.Prices.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -477,6 +483,9 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 
 func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var price *stripe.Price
+	var err error
+
 	params := &stripe.PriceParams{
 		Product:  stripe.String(ExtractString(d, "product")),
 		Currency: stripe.String(ExtractString(d, "currency")),
@@ -629,7 +638,10 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 		}
 	}
 
-	price, err := c.Prices.New(params)
+	err = retryWithBackOff(func() error {
+		price, err = c.Prices.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -650,6 +662,8 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.PriceParams{}
 
 	if d.HasChange("active") {
@@ -730,7 +744,10 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 		UpdateMetadata(d, params)
 	}
 
-	_, err := c.Prices.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err := c.Prices.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -740,11 +757,17 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceStripePriceDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := stripe.PriceParams{
 		Active: stripe.Bool(false),
 	}
 
-	if _, err := c.Prices.Update(d.Id(), &params); err != nil {
+	err = retryWithBackOff(func() error {
+		_, err = c.Prices.Update(d.Id(), &params)
+		return err
+	})
+	if err != nil {
 		return diag.FromErr(err)
 	}
 

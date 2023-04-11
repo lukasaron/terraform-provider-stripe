@@ -145,11 +145,17 @@ func resourceStripeCard() *schema.Resource {
 
 func resourceStripeCardRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var card *stripe.Card
+	var err error
+
 	params := &stripe.CardParams{
 		Customer: stripe.String(ExtractString(d, "customer")),
 	}
 
-	card, err := c.Cards.Get(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		card, err = c.Cards.Get(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -183,6 +189,9 @@ func resourceStripeCardRead(_ context.Context, d *schema.ResourceData, m interfa
 
 func resourceStripeCardCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var card *stripe.Card
+	var err error
+
 	params := &stripe.CardParams{
 		Customer: stripe.String(ExtractString(d, "customer")),
 		Number:   stripe.String(ExtractString(d, "number")),
@@ -221,7 +230,10 @@ func resourceStripeCardCreate(ctx context.Context, d *schema.ResourceData, m int
 		}
 	}
 
-	card, err := c.Cards.New(params)
+	err = retryWithBackOff(func() error {
+		card, err = c.Cards.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -248,6 +260,8 @@ func resourceStripeCardCreate(ctx context.Context, d *schema.ResourceData, m int
 
 func resourceStripeCardUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.CardParams{
 		Customer: stripe.String(ExtractString(d, "customer")),
 	}
@@ -286,7 +300,10 @@ func resourceStripeCardUpdate(ctx context.Context, d *schema.ResourceData, m int
 		UpdateMetadata(d, params)
 	}
 
-	_, err := c.Cards.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.Cards.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -295,11 +312,16 @@ func resourceStripeCardUpdate(ctx context.Context, d *schema.ResourceData, m int
 
 func resourceStripeCardDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.CardParams{
 		Customer: stripe.String(ExtractString(d, "customer")),
 	}
 
-	_, err := c.Cards.Del(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.Cards.Del(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}

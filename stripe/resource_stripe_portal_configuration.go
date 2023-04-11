@@ -270,7 +270,13 @@ func resourceStripePortalConfiguration() *schema.Resource {
 
 func resourceStripePortalConfigurationRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
-	portal, err := c.BillingPortalConfigurations.Get(d.Id(), nil)
+	var portal *stripe.BillingPortalConfiguration
+	var err error
+
+	err = retryWithBackOff(func() error {
+		portal, err = c.BillingPortalConfigurations.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -385,6 +391,9 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 
 func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var portal *stripe.BillingPortalConfiguration
+	var err error
+
 	params := &stripe.BillingPortalConfigurationParams{}
 
 	if businessProfile, set := d.GetOk("business_profile"); set {
@@ -529,17 +538,22 @@ func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.Reso
 		}
 	}
 
-	portalConfiguration, err := c.BillingPortalConfigurations.New(params)
+	err = retryWithBackOff(func() error {
+		portal, err = c.BillingPortalConfigurations.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(portalConfiguration.ID)
+	d.SetId(portal.ID)
 	return resourceStripePortalConfigurationRead(ctx, d, m)
 }
 
 func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.BillingPortalConfigurationParams{}
 	if d.HasChange("active") {
 		params.Active = stripe.Bool(ExtractBool(d, "active"))
@@ -686,7 +700,10 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 		UpdateMetadata(d, params)
 	}
 
-	_, err := c.BillingPortalConfigurations.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.BillingPortalConfigurations.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -698,11 +715,17 @@ func resourceStripePortalConfigurationDelete(_ context.Context, d *schema.Resour
 	log.Println("[WARN] Stripe doesn't support deletion of customer portals. Portal will be deactivated but not deleted")
 
 	c := m.(*client.API)
+	var err error
+
 	params := stripe.BillingPortalConfigurationParams{
 		Active: stripe.Bool(false),
 	}
 
-	if _, err := c.BillingPortalConfigurations.Update(d.Id(), &params); err != nil {
+	err = retryWithBackOff(func() error {
+		_, err = c.BillingPortalConfigurations.Update(d.Id(), &params)
+		return err
+	})
+	if err != nil {
 		return diag.FromErr(err)
 	}
 

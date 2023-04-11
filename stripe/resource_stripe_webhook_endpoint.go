@@ -80,8 +80,13 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 
 func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var webhookEndpoint *stripe.WebhookEndpoint
+	var err error
 
-	webhookEndpoint, err := c.WebhookEndpoints.Get(d.Id(), nil)
+	err = retryWithBackOff(func() error {
+		webhookEndpoint, err = c.WebhookEndpoints.Get(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -100,6 +105,9 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 
 func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var webhookEndpoint *stripe.WebhookEndpoint
+	var err error
+
 	params := &stripe.WebhookEndpointParams{
 		URL:           stripe.String(ExtractString(d, "url")),
 		EnabledEvents: stripe.StringSlice(ExtractStringSlice(d, "enabled_events")),
@@ -118,7 +126,11 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 			params.AddMetadata(k, ToString(v))
 		}
 	}
-	webhookEndpoint, err := c.WebhookEndpoints.New(params)
+
+	err = retryWithBackOff(func() error {
+		webhookEndpoint, err = c.WebhookEndpoints.New(params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -136,6 +148,8 @@ func resourceStripeWebhookEndpointCreate(ctx context.Context, d *schema.Resource
 
 func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
+
 	params := &stripe.WebhookEndpointParams{}
 
 	if d.HasChange("enabled_events") {
@@ -155,7 +169,10 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 		UpdateMetadata(d, params)
 	}
 
-	_, err := c.WebhookEndpoints.Update(d.Id(), params)
+	err = retryWithBackOff(func() error {
+		_, err = c.WebhookEndpoints.Update(d.Id(), params)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -165,8 +182,12 @@ func resourceStripeWebhookEndpointUpdate(ctx context.Context, d *schema.Resource
 
 func resourceStripeWebhookEndpointDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.API)
+	var err error
 
-	_, err := c.WebhookEndpoints.Del(d.Id(), nil)
+	err = retryWithBackOff(func() error {
+		_, err = c.WebhookEndpoints.Del(d.Id(), nil)
+		return err
+	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
