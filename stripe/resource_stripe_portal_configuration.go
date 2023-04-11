@@ -66,6 +66,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
+				Computed:    true,
 				Description: "The hosted login page for this configuration.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -94,6 +95,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"customer_update": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							MaxItems:    1,
 							Description: "Information about updating the customer details in the portal.",
 							Elem: &schema.Resource{
@@ -115,6 +117,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"invoice_history": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							MaxItems:    1,
 							Description: "Information about showing the billing history in the portal.",
 							Elem: &schema.Resource{
@@ -130,6 +133,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"payment_method_update": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							MaxItems:    1,
 							Description: "Information about updating payment methods in the portal.",
 							Elem: &schema.Resource{
@@ -145,6 +149,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"subscription_cancel": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							MaxItems:    1,
 							Description: "Information about canceling subscriptions in the portal.",
 							Elem: &schema.Resource{
@@ -191,6 +196,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"subscription_pause": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							Description: "Information about pausing subscriptions in the portal.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -205,6 +211,7 @@ func resourceStripePortalConfiguration() *schema.Resource {
 						"subscription_update": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							Description: "Information about updating subscriptions in the portal.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
