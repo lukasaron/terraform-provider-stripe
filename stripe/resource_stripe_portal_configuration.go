@@ -469,7 +469,7 @@ func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.Reso
 						params.Features.SubscriptionCancel = &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
 						for k, v := range subsCancelMap {
 							switch k {
-							case "enable":
+							case "enabled":
 								params.Features.SubscriptionCancel.Enabled = stripe.Bool(ToBool(v))
 							case "mode":
 								params.Features.SubscriptionCancel.Mode = NonZeroString(v)
@@ -632,7 +632,7 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 						params.Features.SubscriptionCancel = &stripe.BillingPortalConfigurationFeaturesSubscriptionCancelParams{}
 						for k, v := range subsCancelMap {
 							switch k {
-							case "enable":
+							case "enabled":
 								params.Features.SubscriptionCancel.Enabled = stripe.Bool(ToBool(v))
 							case "mode":
 								params.Features.SubscriptionCancel.Mode = NonZeroString(v)
