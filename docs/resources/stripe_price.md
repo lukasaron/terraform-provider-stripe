@@ -119,7 +119,7 @@ Arguments accepted by this resource include:
   price, and assign it to this price.
 * `tax_behaviour` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
   taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it
-  cannot be changed.
+  cannot be changed, default is `unspecified`.
 * `transform_quantity` - (Optional) List(Resource). Apply a transformation to the reported usage or set quantity before
   computing the billed price. Cannot be combined with `tiers`. For details of individual arguments
   see [Transform Quantity](#transform-quantity).
