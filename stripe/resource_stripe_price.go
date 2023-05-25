@@ -354,7 +354,11 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		d.Set("product", price.Product.ID),
 		func() error {
 			if float64(price.UnitAmount) == price.UnitAmountDecimal {
+				if price.UnitAmount == 0 {
+					return d.Set("unit_amount", -1)
+				}
 				return d.Set("unit_amount", price.UnitAmount)
+
 			}
 			return d.Set("unit_amount_decimal", price.UnitAmountDecimal)
 		}(),
