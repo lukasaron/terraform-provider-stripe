@@ -353,23 +353,10 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		d.Set("currency", price.Currency),
 		d.Set("product", price.Product.ID),
 		func() error {
-			// We should only every fall into one of these if statements as we have a conflict between them on the schema
-			if d.HasChange("unit_amount") && !d.HasChange("unit_amount_decimal") {
-				unitAmount := price.UnitAmount
-				if unitAmount == 0 {
-					unitAmount = -1
-				}
-				if err = d.Set("unit_amount", unitAmount); err != nil {
-					return err
-				}
+			if float64(price.UnitAmount) == price.UnitAmountDecimal {
+				return d.Set("unit_amount", price.UnitAmount)
 			}
-			if d.HasChange("unit_amount_decimal") && !d.HasChange("unit_amount") {
-				if err = d.Set("unit_amount_decimal", price.UnitAmountDecimal); err != nil {
-					return err
-				}
-			}
-
-			return nil
+			return d.Set("unit_amount_decimal", price.UnitAmountDecimal)
 		}(),
 		d.Set("active", price.Active),
 		d.Set("nickname", price.Nickname),
@@ -464,7 +451,12 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 			return nil
 		}(),
 		d.Set("lookup_key", price.LookupKey),
-		d.Set("tax_behaviour", price.TaxBehavior),
+		func() error {
+			if price.TaxBehavior != stripe.PriceTaxBehaviorUnspecified {
+				return d.Set("tax_behaviour", price.TaxBehavior)
+			}
+			return nil
+		}(),
 		func() error {
 			if price.TransformQuantity != nil {
 				return d.Set("transform_quantity", []map[string]interface{}{
