@@ -293,6 +293,7 @@ func resourceStripePrice() *schema.Resource {
 			"tax_behaviour": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  stripe.PriceTaxBehaviorUnspecified,
 				Description: "Specifies whether the price is considered inclusive of taxes or exclusive of taxes. " +
 					"One of inclusive, exclusive, or unspecified. " +
 					"Once specified as either inclusive or exclusive, it cannot be changed.",
@@ -455,12 +456,13 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 			return nil
 		}(),
 		d.Set("lookup_key", price.LookupKey),
-		func() error {
-			if price.TaxBehavior != stripe.PriceTaxBehaviorUnspecified {
-				return d.Set("tax_behaviour", price.TaxBehavior)
-			}
-			return nil
-		}(),
+		d.Set("tax_behaviour", price.TaxBehavior),
+		//func() error {
+		//	if price.TaxBehavior != stripe.PriceTaxBehaviorUnspecified {
+		//		return d.Set("tax_behaviour", price.TaxBehavior)
+		//	}
+		//	return nil
+		//}(),
 		func() error {
 			if price.TransformQuantity != nil {
 				return d.Set("transform_quantity", []map[string]interface{}{
