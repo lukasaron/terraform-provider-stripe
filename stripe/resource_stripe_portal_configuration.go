@@ -273,8 +273,11 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 	var portal *stripe.BillingPortalConfiguration
 	var err error
 
+	params := &stripe.BillingPortalConfigurationParams{}
+	params.AddExpand("features.subscription_update.products")
+
 	err = retryWithBackOff(func() error {
-		portal, err = c.BillingPortalConfigurations.Get(d.Id(), nil)
+		portal, err = c.BillingPortalConfigurations.Get(d.Id(), params)
 		return err
 	})
 	if err != nil {
