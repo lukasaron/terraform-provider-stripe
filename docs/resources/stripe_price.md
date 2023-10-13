@@ -64,17 +64,17 @@ resource "stripe_price" "price" {
   # free up to ten
   tiers {
     up_to       = 10
-    unit_amount = 0
+    unit_amount = 0 // can be omitted
   }
-  
+
   tiers {
     up_to       = 100
     unit_amount = 300
   }
-  
+
   tiers {
-    up_to       = -1
-    unit_amount = 100.5
+    up_to               = -1
+    unit_amount_decimal = 100.5
   }
 
   recurring {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/client"
+	"github.com/stripe/stripe-go/v75"
+	"github.com/stripe/stripe-go/v75/client"
 )
 
 func resourceStripePrice() *schema.Resource {
@@ -39,6 +39,7 @@ func resourceStripePrice() *schema.Resource {
 			"unit_amount": {
 				Type:          schema.TypeInt,
 				Optional:      true,
+				Computed:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"unit_amount_decimal"},
 				Description:   "A positive integer in cents (or -1 for a free price) representing how much to charge.",
@@ -46,6 +47,7 @@ func resourceStripePrice() *schema.Resource {
 			"unit_amount_decimal": {
 				Type:          schema.TypeFloat,
 				Optional:      true,
+				Computed:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"unit_amount"},
 				Description: "Same as unit_amount, " +
@@ -160,6 +162,7 @@ func resourceStripePrice() *schema.Resource {
 			"billing_scheme": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 				ForceNew: true,
 				Description: "Describes how to compute the price per period. " +
 					"Either per_unit or tiered. per_unit indicates that the fixed amount " +
@@ -354,14 +357,17 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		d.Set("currency", price.Currency),
 		d.Set("product", price.Product.ID),
 		func() error {
-			if float64(price.UnitAmount) == price.UnitAmountDecimal {
-				if price.UnitAmount == 0 {
+			if price.BillingScheme == stripe.PriceBillingSchemePerUnit && price.TiersMode == "" {
+				switch {
+				case price.UnitAmount == 0 && price.UnitAmountDecimal == 0:
 					return d.Set("unit_amount", -1)
+				case float64(price.UnitAmount) == price.UnitAmountDecimal:
+					return d.Set("unit_amount", price.UnitAmount)
+				case price.UnitAmount == 0 && price.UnitAmountDecimal > 0:
+					return d.Set("unit_amount_decimal", price.UnitAmountDecimal)
 				}
-				return d.Set("unit_amount", price.UnitAmount)
-
 			}
-			return d.Set("unit_amount_decimal", price.UnitAmountDecimal)
+			return nil
 		}(),
 		d.Set("active", price.Active),
 		d.Set("nickname", price.Nickname),
@@ -379,12 +385,11 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 			return nil
 		}(),
 		func() error {
-			if len(price.Tiers) > 0 {
+			if price.BillingScheme == stripe.PriceBillingSchemeTiered && price.TiersMode != "" && len(price.Tiers) > 0 {
 				var tiers []map[string]interface{}
 				for _, tier := range price.Tiers {
 					t := map[string]interface{}{
 						"up_to": func() int64 {
-							// update the value to reflect the Terraform input
 							if tier.UpTo == 0 {
 								return -1
 							}
@@ -457,12 +462,6 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 		}(),
 		d.Set("lookup_key", price.LookupKey),
 		d.Set("tax_behaviour", price.TaxBehavior),
-		//func() error {
-		//	if price.TaxBehavior != stripe.PriceTaxBehaviorUnspecified {
-		//		return d.Set("tax_behaviour", price.TaxBehavior)
-		//	}
-		//	return nil
-		//}(),
 		func() error {
 			if price.TransformQuantity != nil {
 				return d.Set("transform_quantity", []map[string]interface{}{
@@ -543,6 +542,14 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 			}
 			params.Tiers = append(params.Tiers, priceTier)
 		}
+	}
+	if len(params.Tiers) > 0 && // Fix for free first tier - unit_amount = 0
+		params.Tiers[0].UnitAmount == nil &&
+		params.Tiers[0].UnitAmountDecimal == nil &&
+		params.Tiers[0].FlatAmount == nil &&
+		params.Tiers[0].FlatAmountDecimal == nil {
+
+		params.Tiers[0].UnitAmount = stripe.Int64(0)
 	}
 	if tiersMode, set := d.GetOk("tiers_mode"); set {
 		params.TiersMode = stripe.String(ToString(tiersMode))
