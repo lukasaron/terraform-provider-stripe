@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Provider: Stripe"
-description: |-
-The Stripe provider gives the power to manage few Stripe resources.
+description: |- The Stripe provider gives the power to manage few Stripe resources.
 ---
 
 # Stripe Provider
