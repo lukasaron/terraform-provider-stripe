@@ -46,6 +46,12 @@ func resourceStripeProduct() *schema.Resource {
 					"Use this field to optionally store a long form explanation of the product " +
 					"being sold for your own rendering purposes.",
 			},
+			"features": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: " list of up to 15 features for this product. These are displayed in pricing tables. ",
+			},
 			"images": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -120,6 +126,16 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 		d.Set("name", product.Name),
 		d.Set("active", product.Active),
 		d.Set("description", product.Description),
+		func() error {
+			if len(product.Features) > 0 {
+				var features []string
+				for _, feature := range product.Features {
+					features = append(features, feature.Name)
+				}
+				return d.Set("features", features)
+			}
+			return nil
+		}(),
 		d.Set("images", product.Images),
 		func() error {
 			if product.PackageDimensions != nil {
@@ -162,6 +178,11 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	if description, set := d.GetOk("description"); set {
 		params.Description = stripe.String(ToString(description))
+	}
+	if features, set := d.GetOk("features"); set {
+		for _, feature := range ToStringSlice(features) {
+			params.Features = append(params.Features, &stripe.ProductFeatureParams{Name: stripe.String(feature)})
+		}
 	}
 	if images, set := d.GetOk("images"); set {
 		params.Images = stripe.StringSlice(ToStringSlice(images))
@@ -233,6 +254,11 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	if d.HasChange("description") {
 		params.Description = stripe.String(ExtractString(d, "description"))
+	}
+	if d.HasChange("features") {
+		for _, feature := range ExtractStringSlice(d, "features") {
+			params.Features = append(params.Features, &stripe.ProductFeatureParams{Name: stripe.String(feature)})
+		}
 	}
 	if d.HasChange("images") {
 		params.Images = stripe.StringSlice(ExtractStringSlice(d, "images"))
