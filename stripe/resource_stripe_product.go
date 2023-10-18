@@ -50,7 +50,7 @@ func resourceStripeProduct() *schema.Resource {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: " list of up to 15 features for this product. These are displayed in pricing tables. ",
+				Description: "A list of up to 15 features for this product. These are displayed in pricing tables. ",
 			},
 			"images": {
 				Type:     schema.TypeList,
