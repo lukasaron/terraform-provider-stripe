@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_product"
-description: |-
-The Stripe Product can be created, modified, configured and removed by this resource.
+description: |- The Stripe Product can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_product
