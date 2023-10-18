@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_product"
-description: |-
-The Stripe Product can be created, modified, configured and removed by this resource.
+description: |- The Stripe Product can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_product
@@ -37,6 +36,7 @@ Arguments accepted by this resource include:
 * `name` - (Required) String. The product’s name, meant to be displayable to the customer. Whenever this product is sold via a subscription, name will show up on associated invoice line item descriptions.
 * `active` - (Optional) Bool. Whether the product is currently available for purchase. Defaults to `true`.
 * `description` - (Optional) String. The product’s description, meant to be displayable to the customer. Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
+* `features` - (Optional) List(String). A list of up to 15 features for this product. These are displayed in pricing tables.
 * `images` - (Optional) List(String). A list of up to 8 URLs of images for this product, meant to be displayable to the customer.
 * `package_dimensions` - (Optional) Map(Float). The dimensions of this product for shipping purposes. When used these fields are required: `height`,`length`,`width` and `weight`; the precision is 2 decimal places.
 * `shippable` - (Optional) Bool. Whether this product is shipped (i.e., physical goods).
@@ -55,6 +55,7 @@ Attributes exported by this resource include:
 * `name` - String. The product’s name, meant to be displayable to the customer. 
 * `active` - Bool. Whether the product is currently available for purchase. 
 * `description` - String. The product’s description, meant to be displayable to the customer.
+* `features` - List(String). A list of features for this product.
 * `images` - List(String). A list of up to 8 URLs of images for this product.
 * `package_dimensions` - Map(Float). The dimensions of this product for shipping purposes.
 * `shippable` - Bool. Whether this product is shipped (i.e., physical goods).

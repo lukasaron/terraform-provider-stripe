@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_coupon"
-description: |-
-The Stripe Coupon can be created, modified, configured and removed by this resource.
+description: |- The Stripe Coupon can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_coupon

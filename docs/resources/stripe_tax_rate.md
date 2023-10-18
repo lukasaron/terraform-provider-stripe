@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_tax_rate"
-description: |-
-The Stripe Tax Rate can be created, modified and configured by this resource.
+description: |- The Stripe Tax Rate can be created, modified and configured by this resource.
 ---
 
 # stripe_tax_rate
