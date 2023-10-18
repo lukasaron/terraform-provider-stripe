@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_webhook_endpoint"
-description: |-
-The Stripe Webhook Endpoint can be created, modified, configured and removed by this resource.
+description: |- The Stripe Webhook Endpoint can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_webhook_endpoint

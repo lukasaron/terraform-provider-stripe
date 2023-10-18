@@ -1,8 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_promotion_code"
-description: |-
-The Stripe Promotion Code can be created, modified and configured by this resource.
+description: |- The Stripe Promotion Code can be created, modified and configured by this resource.
 ---
 
 # stripe_promotion_code
