@@ -6,7 +6,7 @@ description: |- The Stripe Shipping Rate can be created, modified and configured
 
 # stripe_shipping_rate
 
-With this resource, you can create a shipping rate - [Stripe API price documentation](https://stripe.com/docs/api/shipping_rates).
+With this resource, you can create a shipping rate - [Stripe API shipping rate documentation](https://stripe.com/docs/api/shipping_rates).
 
 
 Shipping rates let you display various shipping options—like standard, express, and overnight—with more accurate delivery estimates. 
