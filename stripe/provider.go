@@ -30,6 +30,7 @@ func Provider() *schema.Provider {
 			"stripe_tax_rate":             resourceStripeTaxRate(),
 			"stripe_shipping_rate":        resourceStripeShippingRate(),
 			"stripe_portal_configuration": resourceStripePortalConfiguration(),
+			"stripe_file":                 resourceStripeFile(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
