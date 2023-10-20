@@ -49,7 +49,8 @@ resource "stripe_shipping_rate" "shipping_rate" {
 }
 
 // shipping rate with currency options
-// !!! Currency options have to be sorted alphabetically by the currency field
+// !!! Currency options have to be sorted alphabetically 
+// !!! by the currency field
 resource "stripe_shipping_rate" "shipping" {
   display_name = "shipping rate"
   fixed_amount {
@@ -99,6 +100,7 @@ Arguments accepted by this resource include:
 ### Currency Option
 
 `currency_option` Can be used multiple times within the `fixed_amount` part.  
+
 ~> When multiple currency_options are defined sorting by currency field is mandatory! 
 Otherwise, the provider consider next run as a change.
 
