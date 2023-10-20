@@ -750,7 +750,7 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	err = retryWithBackOff(func() error {
-		_, err := c.Prices.Update(d.Id(), params)
+		_, err = c.Prices.Update(d.Id(), params)
 		return err
 	})
 	if err != nil {

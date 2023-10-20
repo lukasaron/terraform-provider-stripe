@@ -17,7 +17,7 @@ represented by prices. This approach lets you change prices without having to ch
 For example, you might have a single "gold" product that has prices for $10/month, $100/year, and €9 once.
 
 ~> Removal of the price isn't supported through the Stripe SDK. The best practice, which this provider follows,
-is to archive the price by marking it as inactive on destroy, which indicates that the price is not longer
+is to archive the price by marking it as inactive on destroy, which indicates that the price is no longer
 available for purchase.
 
 ## Example Usage
