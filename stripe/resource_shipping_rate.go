@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+	"sort"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -63,7 +64,7 @@ func resourceStripeShippingRate() *schema.Resource {
 							Required:    true,
 							Description: "Three-letter ISO currency code, in lowercase. Must be a supported currency.",
 						},
-						"currency_options": {
+						"currency_option": {
 							Type:     schema.TypeList,
 							Optional: true,
 							ForceNew: true,
@@ -103,7 +104,6 @@ func resourceStripeShippingRate() *schema.Resource {
 			},
 			"delivery_estimate": {
 				Type:     schema.TypeList,
-				MaxItems: 1,
 				Optional: true,
 				ForceNew: true,
 				Elem: &schema.Resource{
@@ -116,13 +116,15 @@ func resourceStripeShippingRate() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"unit": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
+										ForceNew: true,
 										Description: "The lower bound of the estimated range. " +
 											"If empty, represents no lower bound.",
 									},
 									"value": {
 										Type:        schema.TypeInt,
 										Required:    true,
+										ForceNew:    true,
 										Description: "Must be greater than 0.",
 									},
 								},
@@ -136,12 +138,14 @@ func resourceStripeShippingRate() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"unit": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
+										ForceNew: true,
 										Description: "The upper bound of the estimated range. " +
 											"If empty, represents no lower bound.",
 									},
 									"value": {
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 										Description: "Must be greater than 0.",
 									},
@@ -207,47 +211,49 @@ func resourceStripeShippingRateRead(_ context.Context, d *schema.ResourceData, m
 					"currency": shippingRate.FixedAmount.Currency,
 				}
 
-				var options []map[string]interface{}
-				// TODO fix the sorting issue
-				for currency, currencyOptions := range shippingRate.FixedAmount.CurrencyOptions {
-					if currency == string(shippingRate.FixedAmount.Currency) {
-						continue // don't add the same currency into the currency options
+				if len(shippingRate.FixedAmount.CurrencyOptions) > 0 {
+					var options []map[string]interface{}
+					for currency, currencyOptions := range shippingRate.FixedAmount.CurrencyOptions {
+						if currency == string(shippingRate.FixedAmount.Currency) {
+							continue // don't add the same currency into the currency options
+						}
+						options = append(options, map[string]interface{}{
+							"currency":     currency,
+							"amount":       currencyOptions.Amount,
+							"tax_behavior": currencyOptions.TaxBehavior,
+						})
 					}
-					options = append(options, map[string]interface{}{
-						"currency":     currency,
-						"amount":       currencyOptions.Amount,
-						"tax_behavior": currencyOptions.TaxBehavior,
+					sort.Slice(options, func(i, j int) bool {
+						return ToString(options[i]["currency"]) < ToString(options[j]["currency"])
 					})
+					fixedAmount["currency_option"] = options
 				}
-				fixedAmount["currency_options"] = options
+
 				return d.Set("fixed_amount", []map[string]interface{}{fixedAmount})
 			}
 			return nil
 		}(),
 		func() error {
 			if shippingRate.DeliveryEstimate != nil {
-				var deliveryEstimate []map[string]interface{}
+				deliveryEstimate := make(map[string]interface{})
 				if shippingRate.DeliveryEstimate.Minimum != nil {
-					deliveryEstimate = append(deliveryEstimate, map[string]interface{}{
-						"minimum": []map[string]interface{}{
-							{
-								"unit":  shippingRate.DeliveryEstimate.Minimum.Unit,
-								"value": shippingRate.DeliveryEstimate.Minimum.Value,
-							},
+					deliveryEstimate["minimum"] = []map[string]interface{}{
+						{
+							"unit":  shippingRate.DeliveryEstimate.Minimum.Unit,
+							"value": shippingRate.DeliveryEstimate.Minimum.Value,
 						},
-					})
+					}
 				}
+
 				if shippingRate.DeliveryEstimate.Maximum != nil {
-					deliveryEstimate = append(deliveryEstimate, map[string]interface{}{
-						"maximum": []map[string]interface{}{
-							{
-								"unit":  shippingRate.DeliveryEstimate.Maximum.Unit,
-								"value": shippingRate.DeliveryEstimate.Maximum.Value,
-							},
+					deliveryEstimate["maximum"] = []map[string]interface{}{
+						{
+							"unit":  shippingRate.DeliveryEstimate.Maximum.Unit,
+							"value": shippingRate.DeliveryEstimate.Maximum.Value,
 						},
-					})
+					}
 				}
-				return d.Set("delivery_estimate", deliveryEstimate)
+				return d.Set("delivery_estimate", []map[string]interface{}{deliveryEstimate})
 			}
 			return nil
 		}(),
@@ -274,9 +280,9 @@ func resourceStripeShippingRateCreate(ctx context.Context, d *schema.ResourceDat
 			Amount:   stripe.Int64(ToInt64(fixedAmountMap["amount"])),
 			Currency: stripe.String(ToString(fixedAmountMap["currency"])),
 		}
-		if _, set := fixedAmountMap["currency_options"]; set {
+		if _, set := fixedAmountMap["currency_option"]; set {
 			params.FixedAmount.CurrencyOptions = make(map[string]*stripe.ShippingRateFixedAmountCurrencyOptionsParams)
-			for _, options := range ToMapSlice(fixedAmountMap["currency_options"]) {
+			for _, options := range ToMapSlice(fixedAmountMap["currency_option"]) {
 				params.FixedAmount.CurrencyOptions[ToString(options["currency"])] = &stripe.ShippingRateFixedAmountCurrencyOptionsParams{
 					Amount:      stripe.Int64(ToInt64(options["amount"])),
 					TaxBehavior: stripe.String(ToString(options["tax_behavior"])),
