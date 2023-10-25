@@ -195,7 +195,7 @@ func resourceStripePrice() *schema.Resource {
 						"unit_amount": {
 							Type:        schema.TypeInt,
 							Optional:    true,
-							Description: "A positive integer in cents (or 0 for a free price) representing how much to charge.",
+							Description: "A positive integer in cents (or -1 for a free price) representing how much to charge.",
 						},
 						"unit_amount_decimal": {
 							Type:     schema.TypeFloat,
@@ -490,12 +490,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	if unitAmount, set := d.GetOk("unit_amount"); set {
-		amount := ToInt64(unitAmount)
-		// amount is -1 when free price is required
-		if amount < 0 {
-			amount = 0
-		}
-		params.UnitAmount = stripe.Int64(amount)
+		params.UnitAmount = NonZeroInt64(unitAmount)
 	}
 	if unitAmountDecimal, set := d.GetOk("unit_amount_decimal"); set {
 		params.UnitAmountDecimal = stripe.Float64(ToFloat64(unitAmountDecimal))
