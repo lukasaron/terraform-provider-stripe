@@ -66,6 +66,12 @@ func NonZeroInt64(value interface{}) *int64 {
 	if valueInt64 == 0 {
 		return nil
 	}
+
+	// amount is -1 for free price
+	if valueInt64 < 0 {
+		valueInt64 = 0
+	}
+
 	return &valueInt64
 }
 
@@ -73,6 +79,11 @@ func NonZeroFloat64(value interface{}) *float64 {
 	valueFloat64 := ToFloat64(value)
 	if valueFloat64 == 0 {
 		return nil
+	}
+
+	// amount is -1 for free price
+	if valueFloat64 < 0 {
+		valueFloat64 = 0
 	}
 
 	return &valueFloat64

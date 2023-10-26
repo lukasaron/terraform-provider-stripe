@@ -166,7 +166,7 @@ Arguments accepted by this resource include:
   Specifies whether the price is considered inclusive of taxes or exclusive of taxes. 
   One of `inclusive`, `exclusive`, or `unspecified`. 
   Once specified as either inclusive or exclusive, it cannot be changed.
-* `unit_amount` - (Optional) Int. A positive integer in cents (or 0 for a free price) representing how much to charge.
+* `unit_amount` - (Optional) Int. A positive integer in cents (or -1 for a free price) representing how much to charge.
 * `unit_amount_decimal` - (Optional) Float. Same as unit_amount, but accepts a decimal value in cents with at most 12
   decimal places. Only one of unit_amount and unit_amount_decimal can be set.
 * `custom_unit_amount` - (Optional) List(Resource). When set, 
