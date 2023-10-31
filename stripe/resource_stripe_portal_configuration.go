@@ -257,6 +257,13 @@ func resourceStripePortalConfiguration() *schema.Resource {
 					},
 				},
 			},
+			"is_default": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				Description: "Whether the configuration is the default. " +
+					"If true, this configuration can be managed in the Dashboard and portal sessions will use " +
+					"this configuration unless it is overriden when creating the session.",
+			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
@@ -388,6 +395,7 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 			}
 			return nil
 		}()),
+		d.Set("is_default", portal.IsDefault),
 		d.Set("metadata", portal.Metadata),
 	)
 }

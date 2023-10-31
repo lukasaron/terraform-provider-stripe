@@ -218,4 +218,5 @@ Attributes exported by this resource include:
 * `business_profile` - Map(String). The business information shown to customers in the portal.
 * `default_return_url` - String. The default URL to redirect customers to when they click on the portal’s link.
 * `features` - Map(String). Information about the features available in the portal.
+* `is_default`: Bool. Whether the configuration is the default.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
