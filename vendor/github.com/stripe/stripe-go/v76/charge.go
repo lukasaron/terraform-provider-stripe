@@ -121,6 +121,28 @@ const (
 	ChargePaymentMethodDetailsCardThreeDSecureAuthenticationFlowFrictionless ChargePaymentMethodDetailsCardThreeDSecureAuthenticationFlow = "frictionless"
 )
 
+// The Electronic Commerce Indicator (ECI). A protocol-level field
+// indicating what degree of authentication was performed.
+type ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator string
+
+// List of values that ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator can take
+const (
+	ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator01 ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "01"
+	ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator02 ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "02"
+	ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator05 ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "05"
+	ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator06 ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "06"
+	ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator07 ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "07"
+)
+
+// The exemption requested via 3DS and accepted by the issuer at authentication time.
+type ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicator string
+
+// List of values that ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicator can take
+const (
+	ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicatorLowRisk ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicator = "low_risk"
+	ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicatorNone    ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicator = "none"
+)
+
 // Indicates the outcome of 3D Secure authentication.
 type ChargePaymentMethodDetailsCardThreeDSecureResult string
 
@@ -278,23 +300,6 @@ const (
 	ChargeStatusSucceeded ChargeStatus = "succeeded"
 )
 
-// Search for charges you've previously created using Stripe's [Search Query Language](https://stripe.com/docs/search#search-query-language).
-// Don't use search in read-after-write flows where strict consistency is necessary. Under normal operating
-// conditions, data is searchable in less than a minute. Occasionally, propagation of new or updated data can be up
-// to an hour behind during outages. Search functionality is not available to merchants in India.
-type ChargeSearchParams struct {
-	SearchParams `form:"*"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-	// A cursor for pagination across multiple pages of results. Don't include this parameter on the first call. Use the next_page value returned in a previous response to request subsequent results.
-	Page *string `form:"page"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *ChargeSearchParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
 // Returns a list of charges you've previously created. The charges are returned in sorted order, with the most recent charges appearing first.
 type ChargeListParams struct {
 	ListParams   `form:"*"`
@@ -425,6 +430,23 @@ func (p *ChargeParams) AddMetadata(key string, value string) {
 type ChargeFraudDetailsParams struct {
 	// Either `safe` or `fraudulent`.
 	UserReport *string `form:"user_report"`
+}
+
+// Search for charges you've previously created using Stripe's [Search Query Language](https://stripe.com/docs/search#search-query-language).
+// Don't use search in read-after-write flows where strict consistency is necessary. Under normal operating
+// conditions, data is searchable in less than a minute. Occasionally, propagation of new or updated data can be up
+// to an hour behind during outages. Search functionality is not available to merchants in India.
+type ChargeSearchParams struct {
+	SearchParams `form:"*"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+	// A cursor for pagination across multiple pages of results. Don't include this parameter on the first call. Use the next_page value returned in a previous response to request subsequent results.
+	Page *string `form:"page"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *ChargeSearchParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
 }
 
 // An optional dictionary including the account to automatically transfer to as part of a destination charge. [See the Connect documentation](https://stripe.com/docs/connect/destination-charges) for details.
@@ -692,11 +714,22 @@ type ChargePaymentMethodDetailsCardThreeDSecure struct {
 	// For authenticated transactions: how the customer was authenticated by
 	// the issuing bank.
 	AuthenticationFlow ChargePaymentMethodDetailsCardThreeDSecureAuthenticationFlow `json:"authentication_flow"`
+	// The Electronic Commerce Indicator (ECI). A protocol-level field
+	// indicating what degree of authentication was performed.
+	ElectronicCommerceIndicator ChargePaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator `json:"electronic_commerce_indicator"`
+	// The exemption requested via 3DS and accepted by the issuer at authentication time.
+	ExemptionIndicator ChargePaymentMethodDetailsCardThreeDSecureExemptionIndicator `json:"exemption_indicator"`
+	// Whether Stripe requested the value of `exemption_indicator` in the transaction. This will depend on
+	// the outcome of Stripe's internal risk assessment.
+	ExemptionIndicatorApplied bool `json:"exemption_indicator_applied"`
 	// Indicates the outcome of 3D Secure authentication.
 	Result ChargePaymentMethodDetailsCardThreeDSecureResult `json:"result"`
 	// Additional information about why 3D Secure succeeded or failed based
 	// on the `result`.
 	ResultReason ChargePaymentMethodDetailsCardThreeDSecureResultReason `json:"result_reason"`
+	// The 3D Secure 1 XID or 3D Secure 2 Directory Server Transaction ID
+	// (dsTransId) for this payment.
+	TransactionID string `json:"transaction_id"`
 	// The version of 3D Secure that was used.
 	Version string `json:"version"`
 }
@@ -745,6 +778,8 @@ type ChargePaymentMethodDetailsCard struct {
 	AmountAuthorized int64 `json:"amount_authorized"`
 	// Card brand. Can be `amex`, `diners`, `discover`, `eftpos_au`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`.
 	Brand PaymentMethodCardBrand `json:"brand"`
+	// When using manual capture, a future timestamp at which the charge will be automatically refunded if uncaptured.
+	CaptureBefore int64 `json:"capture_before"`
 	// Check results by Card networks on Card address and CVC at time of payment.
 	Checks *ChargePaymentMethodDetailsCardChecks `json:"checks"`
 	// Two-letter ISO code representing the country of the card. You could use this attribute to get a sense of the international breakdown of cards you've collected.
@@ -789,6 +824,12 @@ type ChargePaymentMethodDetailsCard struct {
 	IIN string `json:"iin"`
 	// The name of the card's issuing bank. (For internal use only and not typically available in standard API requests.)
 	Issuer string `json:"issuer"`
+}
+
+// Details about payments collected offline.
+type ChargePaymentMethodDetailsCardPresentOffline struct {
+	// Time at which the payment was collected while offline
+	StoredAt int64 `json:"stored_at"`
 }
 
 // A collection of fields required to be displayed on receipts. Only required for EMV transactions.
@@ -843,6 +884,8 @@ type ChargePaymentMethodDetailsCardPresent struct {
 	Last4 string `json:"last4"`
 	// Identifies which network this charge was processed on. Can be `amex`, `cartes_bancaires`, `diners`, `discover`, `eftpos_au`, `interac`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`.
 	Network ChargePaymentMethodDetailsCardPresentNetwork `json:"network"`
+	// Details about payments collected offline.
+	Offline *ChargePaymentMethodDetailsCardPresentOffline `json:"offline"`
 	// Defines whether the authorized amount can be over-captured or not
 	OvercaptureSupported bool `json:"overcapture_supported"`
 	// How card details were read in this transaction.
@@ -898,7 +941,7 @@ type ChargePaymentMethodDetailsGrabpay struct {
 	TransactionID string `json:"transaction_id"`
 }
 type ChargePaymentMethodDetailsIDEAL struct {
-	// The customer's bank. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `n26`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, `van_lanschot`, or `yoursafe`.
+	// The customer's bank. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `n26`, `nn`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, `van_lanschot`, or `yoursafe`.
 	Bank string `json:"bank"`
 	// The Bank Identifier Code of the customer's bank.
 	BIC string `json:"bic"`
@@ -1051,6 +1094,7 @@ type ChargePaymentMethodDetailsPromptPay struct {
 	// Bill reference generated by PromptPay
 	Reference string `json:"reference"`
 }
+type ChargePaymentMethodDetailsRevolutPay struct{}
 type ChargePaymentMethodDetailsSEPACreditTransfer struct {
 	// Name of the bank associated with the bank account.
 	BankName string `json:"bank_name"`
@@ -1070,7 +1114,7 @@ type ChargePaymentMethodDetailsSEPADebit struct {
 	Fingerprint string `json:"fingerprint"`
 	// Last four characters of the IBAN.
 	Last4 string `json:"last4"`
-	// ID of the mandate used to make this payment.
+	// Find the ID of the mandate used for this payment under the [payment_method_details.sepa_debit.mandate](https://stripe.com/docs/api/charges/object#charge_object-payment_method_details-sepa_debit-mandate) property on the Charge. Use this mandate ID to [retrieve the Mandate](https://stripe.com/docs/api/mandates/retrieve).
 	Mandate string `json:"mandate"`
 }
 type ChargePaymentMethodDetailsSofort struct {
@@ -1152,6 +1196,7 @@ type ChargePaymentMethodDetails struct {
 	Paypal             *ChargePaymentMethodDetailsPaypal             `json:"paypal"`
 	Pix                *ChargePaymentMethodDetailsPix                `json:"pix"`
 	PromptPay          *ChargePaymentMethodDetailsPromptPay          `json:"promptpay"`
+	RevolutPay         *ChargePaymentMethodDetailsRevolutPay         `json:"revolut_pay"`
 	SEPACreditTransfer *ChargePaymentMethodDetailsSEPACreditTransfer `json:"sepa_credit_transfer"`
 	SEPADebit          *ChargePaymentMethodDetailsSEPADebit          `json:"sepa_debit"`
 	Sofort             *ChargePaymentMethodDetailsSofort             `json:"sofort"`

@@ -30,7 +30,7 @@ const (
 	PriceCurrencyOptionsTaxBehaviorUnspecified PriceCurrencyOptionsTaxBehavior = "unspecified"
 )
 
-// Specifies a usage aggregation strategy for prices of `usage_type=metered`. Allowed values are `sum` for summing up all usage during a period, `last_during_period` for using the last usage record reported within a period, `last_ever` for using the last usage record ever (across period bounds) or `max` which uses the usage record with the maximum reported usage during a period. Defaults to `sum`.
+// Specifies a usage aggregation strategy for prices of `usage_type=metered`. Defaults to `sum`.
 type PriceRecurringAggregateUsage string
 
 // List of values that PriceRecurringAggregateUsage can take
@@ -98,23 +98,6 @@ const (
 	PriceTypeRecurring PriceType = "recurring"
 )
 
-// Search for prices you've previously created using Stripe's [Search Query Language](https://stripe.com/docs/search#search-query-language).
-// Don't use search in read-after-write flows where strict consistency is necessary. Under normal operating
-// conditions, data is searchable in less than a minute. Occasionally, propagation of new or updated data can be up
-// to an hour behind during outages. Search functionality is not available to merchants in India.
-type PriceSearchParams struct {
-	SearchParams `form:"*"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-	// A cursor for pagination across multiple pages of results. Don't include this parameter on the first call. Use the next_page value returned in a previous response to request subsequent results.
-	Page *string `form:"page"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *PriceSearchParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
 // Only return prices with these recurring fields.
 type PriceListRecurringParams struct {
 	// Filter by billing frequency. Either `day`, `week`, `month` or `year`.
@@ -123,7 +106,7 @@ type PriceListRecurringParams struct {
 	UsageType *string `form:"usage_type"`
 }
 
-// Returns a list of your prices.
+// Returns a list of your active prices, excluding [inline prices](https://stripe.com/docs/products-prices/pricing-models#inline-pricing). For the list of inactive prices, set active to false.
 type PriceListParams struct {
 	ListParams `form:"*"`
 	// Only return prices that are active or inactive (e.g., pass `false` to list all inactive prices).
@@ -242,7 +225,7 @@ func (p *PriceProductDataParams) AddMetadata(key string, value string) {
 
 // The recurring components of a price such as `interval` and `usage_type`.
 type PriceRecurringParams struct {
-	// Specifies a usage aggregation strategy for prices of `usage_type=metered`. Allowed values are `sum` for summing up all usage during a period, `last_during_period` for using the last usage record reported within a period, `last_ever` for using the last usage record ever (across period bounds) or `max` which uses the usage record with the maximum reported usage during a period. Defaults to `sum`.
+	// Specifies a usage aggregation strategy for prices of `usage_type=metered`. Defaults to `sum`.
 	AggregateUsage *string `form:"aggregate_usage"`
 	// Specifies billing frequency. Either `day`, `week`, `month` or `year`.
 	Interval *string `form:"interval"`
@@ -341,6 +324,23 @@ func (p *PriceParams) AddMetadata(key string, value string) {
 	p.Metadata[key] = value
 }
 
+// Search for prices you've previously created using Stripe's [Search Query Language](https://stripe.com/docs/search#search-query-language).
+// Don't use search in read-after-write flows where strict consistency is necessary. Under normal operating
+// conditions, data is searchable in less than a minute. Occasionally, propagation of new or updated data can be up
+// to an hour behind during outages. Search functionality is not available to merchants in India.
+type PriceSearchParams struct {
+	SearchParams `form:"*"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+	// A cursor for pagination across multiple pages of results. Don't include this parameter on the first call. Use the next_page value returned in a previous response to request subsequent results.
+	Page *string `form:"page"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *PriceSearchParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
+}
+
 // When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.
 type PriceCurrencyOptionsCustomUnitAmount struct {
 	// The maximum unit amount the customer can specify for this item.
@@ -391,7 +391,7 @@ type PriceCustomUnitAmount struct {
 
 // The recurring components of a price such as `interval` and `usage_type`.
 type PriceRecurring struct {
-	// Specifies a usage aggregation strategy for prices of `usage_type=metered`. Allowed values are `sum` for summing up all usage during a period, `last_during_period` for using the last usage record reported within a period, `last_ever` for using the last usage record ever (across period bounds) or `max` which uses the usage record with the maximum reported usage during a period. Defaults to `sum`.
+	// Specifies a usage aggregation strategy for prices of `usage_type=metered`. Defaults to `sum`.
 	AggregateUsage PriceRecurringAggregateUsage `json:"aggregate_usage"`
 	// The frequency at which a subscription is billed. One of `day`, `week`, `month` or `year`.
 	Interval PriceRecurringInterval `json:"interval"`

@@ -43,6 +43,7 @@ const (
 	PaymentIntentCaptureMethodManual         PaymentIntentCaptureMethod = "manual"
 )
 
+// Describes whether we can confirm this PaymentIntent automatically, or if it requires customer action to confirm the payment.
 type PaymentIntentConfirmationMethod string
 
 // List of values that PaymentIntentConfirmationMethod can take
@@ -56,11 +57,14 @@ type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSuppo
 
 // List of values that PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork can take
 const (
-	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkBACS   PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "bacs"
-	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkFPS    PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "fps"
-	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkSEPA   PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "sepa"
-	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkSpei   PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "spei"
-	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkZengin PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "zengin"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkACH            PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "ach"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkBACS           PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "bacs"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkDomesticWireUS PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "domestic_wire_us"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkFPS            PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "fps"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkSEPA           PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "sepa"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkSpei           PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "spei"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkSwift          PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "swift"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetworkZengin         PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork = "zengin"
 )
 
 // The type of financial address
@@ -68,9 +72,11 @@ type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType 
 
 // List of values that PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType can take
 const (
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressTypeABA      PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType = "aba"
 	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressTypeIBAN     PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType = "iban"
 	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressTypeSortCode PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType = "sort_code"
 	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressTypeSpei     PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType = "spei"
+	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressTypeSwift    PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType = "swift"
 	PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressTypeZengin   PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType = "zengin"
 )
 
@@ -366,14 +372,14 @@ const (
 	PaymentIntentPaymentMethodOptionsCardRequestOvercaptureNever       PaymentIntentPaymentMethodOptionsCardRequestOvercapture = "never"
 )
 
-// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Permitted values include: `automatic` or `any`. If not provided, defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 type PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure string
 
 // List of values that PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure can take
 const (
-	PaymentIntentPaymentMethodOptionsCardRequestThreeDSecureAny           PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure = "any"
-	PaymentIntentPaymentMethodOptionsCardRequestThreeDSecureAutomatic     PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure = "automatic"
-	PaymentIntentPaymentMethodOptionsCardRequestThreeDSecureChallengeOnly PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure = "challenge_only"
+	PaymentIntentPaymentMethodOptionsCardRequestThreeDSecureAny       PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure = "any"
+	PaymentIntentPaymentMethodOptionsCardRequestThreeDSecureAutomatic PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure = "automatic"
+	PaymentIntentPaymentMethodOptionsCardRequestThreeDSecureChallenge PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure = "challenge"
 )
 
 // Indicates that you intend to make future payments with this PaymentIntent's payment method.
@@ -698,7 +704,16 @@ type PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch 
 
 // List of values that PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch can take
 const (
-	PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchBalances PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "balances"
+	PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchBalances     PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "balances"
+	PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchTransactions PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "transactions"
+)
+
+// Mandate collection method
+type PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod string
+
+// List of values that PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod can take
+const (
+	PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethodPaper PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod = "paper"
 )
 
 // Preferred transaction settlement speed
@@ -803,20 +818,21 @@ const (
 	PaymentIntentStatusSucceeded             PaymentIntentStatus = "succeeded"
 )
 
-// Search for PaymentIntents you've previously created using Stripe's [Search Query Language](https://stripe.com/docs/search#search-query-language).
-// Don't use search in read-after-write flows where strict consistency is necessary. Under normal operating
-// conditions, data is searchable in less than a minute. Occasionally, propagation of new or updated data can be up
-// to an hour behind during outages. Search functionality is not available to merchants in India.
-type PaymentIntentSearchParams struct {
-	SearchParams `form:"*"`
+// Returns a list of PaymentIntents.
+type PaymentIntentListParams struct {
+	ListParams `form:"*"`
+	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp or a dictionary with a number of different query options.
+	Created *int64 `form:"created"`
+	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp or a dictionary with a number of different query options.
+	CreatedRange *RangeQueryParams `form:"created"`
+	// Only return PaymentIntents for the customer that this customer ID specifies.
+	Customer *string `form:"customer"`
 	// Specifies which fields in the response should be expanded.
 	Expand []*string `form:"expand"`
-	// A cursor for pagination across multiple pages of results. Don't include this parameter on the first call. Use the next_page value returned in a previous response to request subsequent results.
-	Page *string `form:"page"`
 }
 
 // AddExpand appends a new field to expand.
-func (p *PaymentIntentSearchParams) AddExpand(f string) {
+func (p *PaymentIntentListParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }
 
@@ -907,6 +923,9 @@ type PaymentIntentPaymentMethodDataRadarOptionsParams struct {
 	Session *string `form:"session"`
 }
 
+// If this is a `Revolut Pay` PaymentMethod, this hash contains details about the Revolut Pay payment method.
+type PaymentIntentPaymentMethodDataRevolutPayParams struct{}
+
 // If this is an `us_bank_account` PaymentMethod, this hash contains details about the US bank account payment method.
 type PaymentIntentPaymentMethodDataUSBankAccountParams struct {
 	// Account holder type: individual or company.
@@ -986,6 +1005,8 @@ type PaymentIntentPaymentMethodDataParams struct {
 	PromptPay *PaymentIntentPaymentMethodDataPromptPayParams `form:"promptpay"`
 	// Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 	RadarOptions *PaymentIntentPaymentMethodDataRadarOptionsParams `form:"radar_options"`
+	// If this is a `Revolut Pay` PaymentMethod, this hash contains details about the Revolut Pay payment method.
+	RevolutPay *PaymentIntentPaymentMethodDataRevolutPayParams `form:"revolut_pay"`
 	// If this is a `sepa_debit` PaymentMethod, this hash contains details about the SEPA debit bank account.
 	SEPADebit *PaymentMethodSEPADebitParams `form:"sepa_debit"`
 	// If this is a `sofort` PaymentMethod, this hash contains details about the SOFORT payment method.
@@ -1035,7 +1056,7 @@ type PaymentIntentPaymentMethodOptionsACSSDebitParams struct {
 	//
 	// If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`.
 	SetupFutureUsage *string `form:"setup_future_usage"`
-	// Verification method for the intent
+	// Bank account verification method.
 	VerificationMethod *string `form:"verification_method"`
 }
 
@@ -1197,6 +1218,59 @@ type PaymentIntentPaymentMethodOptionsCardMandateOptionsParams struct {
 	SupportedTypes []*string `form:"supported_types"`
 }
 
+// Cartes Bancaires-specific 3DS fields.
+type PaymentIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsCartesBancairesParams struct {
+	// The cryptogram calculation algorithm used by the card Issuer's ACS
+	// to calculate the Authentication cryptogram. Also known as `cavvAlgorithm`.
+	// messageExtension: CB-AVALGO
+	CbAvalgo *string `form:"cb_avalgo"`
+	// The exemption indicator returned from Cartes Bancaires in the ARes.
+	// message extension: CB-EXEMPTION; string (4 characters)
+	// This is a 3 byte bitmap (low significant byte first and most significant
+	// bit first) that has been Base64 encoded
+	CbExemption *string `form:"cb_exemption"`
+	// The risk score returned from Cartes Bancaires in the ARes.
+	// message extension: CB-SCORE; numeric value 0-99
+	CbScore *int64 `form:"cb_score"`
+}
+
+// Network specific 3DS fields. Network specific arguments require an
+// explicit card brand choice. The parameter `payment_method_options.card.network“
+// must be populated accordingly
+type PaymentIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsParams struct {
+	// Cartes Bancaires-specific 3DS fields.
+	CartesBancaires *PaymentIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsCartesBancairesParams `form:"cartes_bancaires"`
+}
+
+// If 3D Secure authentication was performed with a third-party provider,
+// the authentication details to use for this payment.
+type PaymentIntentPaymentMethodOptionsCardThreeDSecureParams struct {
+	// The `transStatus` returned from the card Issuer's ACS in the ARes.
+	AresTransStatus *string `form:"ares_trans_status"`
+	// The cryptogram, also known as the "authentication value" (AAV, CAVV or
+	// AEVV). This value is 20 bytes, base64-encoded into a 28-character string.
+	// (Most 3D Secure providers will return the base64-encoded version, which
+	// is what you should specify here.)
+	Cryptogram *string `form:"cryptogram"`
+	// The Electronic Commerce Indicator (ECI) is returned by your 3D Secure
+	// provider and indicates what degree of authentication was performed.
+	ElectronicCommerceIndicator *string `form:"electronic_commerce_indicator"`
+	// The exemption requested via 3DS and accepted by the issuer at authentication time.
+	ExemptionIndicator *string `form:"exemption_indicator"`
+	// Network specific 3DS fields. Network specific arguments require an
+	// explicit card brand choice. The parameter `payment_method_options.card.network``
+	// must be populated accordingly
+	NetworkOptions *PaymentIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsParams `form:"network_options"`
+	// The challenge indicator (`threeDSRequestorChallengeInd`) which was requested in the
+	// AReq sent to the card Issuer's ACS. A string containing 2 digits from 01-99.
+	RequestorChallengeIndicator *string `form:"requestor_challenge_indicator"`
+	// For 3D Secure 1, the XID. For 3D Secure 2, the Directory Server
+	// Transaction ID (dsTransID).
+	TransactionID *string `form:"transaction_id"`
+	// The version of 3D Secure that was performed.
+	Version *string `form:"version"`
+}
+
 // Configuration for any card payments attempted on this PaymentIntent.
 type PaymentIntentPaymentMethodOptionsCardParams struct {
 	// Controls when the funds will be captured from the customer's account.
@@ -1227,7 +1301,7 @@ type PaymentIntentPaymentMethodOptionsCardParams struct {
 	RequestMulticapture *string `form:"request_multicapture"`
 	// Request ability to [overcapture](https://stripe.com/docs/payments/overcapture) for this PaymentIntent.
 	RequestOvercapture *string `form:"request_overcapture"`
-	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Permitted values include: `automatic` or `any`. If not provided, defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 	RequestThreeDSecure *string `form:"request_three_d_secure"`
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
 	//
@@ -1241,13 +1315,16 @@ type PaymentIntentPaymentMethodOptionsCardParams struct {
 	StatementDescriptorSuffixKana *string `form:"statement_descriptor_suffix_kana"`
 	// Provides information about a card payment that customers see on their statements. Concatenated with the Kanji prefix (shortened Kanji descriptor) or Kanji statement descriptor that's set on the account to form the complete statement descriptor. Maximum 17 characters. On card statements, the *concatenation* of both prefix and suffix (including separators) will appear truncated to 17 characters.
 	StatementDescriptorSuffixKanji *string `form:"statement_descriptor_suffix_kanji"`
+	// If 3D Secure authentication was performed with a third-party provider,
+	// the authentication details to use for this payment.
+	ThreeDSecure *PaymentIntentPaymentMethodOptionsCardThreeDSecureParams `form:"three_d_secure"`
 }
 
 // If this is a `card_present` PaymentMethod, this sub-hash contains details about the Card Present payment method options.
 type PaymentIntentPaymentMethodOptionsCardPresentParams struct {
 	// Request ability to capture this payment beyond the standard [authorization validity window](https://stripe.com/docs/terminal/features/extended-authorizations#authorization-validity)
 	RequestExtendedAuthorization *bool `form:"request_extended_authorization"`
-	// Request ability to [increment](https://stripe.com/docs/payments/incremental-authorization) for this PaymentIntent.
+	// This field was released by mistake and will be removed in the next major version
 	RequestIncrementalAuthorization *string `form:"request_incremental_authorization"`
 	// Request ability to [increment](https://stripe.com/docs/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://stripe.com/docs/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://stripe.com/docs/api/payment_intents/confirm) response to verify support.
 	RequestIncrementalAuthorizationSupport *bool `form:"request_incremental_authorization_support"`
@@ -1516,6 +1593,16 @@ type PaymentIntentPaymentMethodOptionsPromptPayParams struct {
 	SetupFutureUsage *string `form:"setup_future_usage"`
 }
 
+// If this is a `revolut_pay` PaymentMethod, this sub-hash contains details about the Demo Pay payment method options.
+type PaymentIntentPaymentMethodOptionsRevolutPayParams struct {
+	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+	//
+	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+	//
+	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+	SetupFutureUsage *string `form:"setup_future_usage"`
+}
+
 // Additional fields for Mandate creation
 type PaymentIntentPaymentMethodOptionsSEPADebitMandateOptionsParams struct{}
 
@@ -1557,6 +1644,12 @@ type PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsParams st
 	ReturnURL *string `form:"return_url"`
 }
 
+// Additional fields for Mandate creation
+type PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsParams struct {
+	// The method used to collect offline mandate customer acceptance.
+	CollectionMethod *string `form:"collection_method"`
+}
+
 // Additional fields for network related functions
 type PaymentIntentPaymentMethodOptionsUSBankAccountNetworksParams struct {
 	// Triggers validations to run across the selected networks
@@ -1567,6 +1660,8 @@ type PaymentIntentPaymentMethodOptionsUSBankAccountNetworksParams struct {
 type PaymentIntentPaymentMethodOptionsUSBankAccountParams struct {
 	// Additional fields for Financial Connections Session creation
 	FinancialConnections *PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsParams `form:"financial_connections"`
+	// Additional fields for Mandate creation
+	MandateOptions *PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsParams `form:"mandate_options"`
 	// Additional fields for network related functions
 	Networks *PaymentIntentPaymentMethodOptionsUSBankAccountNetworksParams `form:"networks"`
 	// Preferred transaction settlement speed
@@ -1579,7 +1674,7 @@ type PaymentIntentPaymentMethodOptionsUSBankAccountParams struct {
 	//
 	// If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`.
 	SetupFutureUsage *string `form:"setup_future_usage"`
-	// Verification method for the intent
+	// Bank account verification method.
 	VerificationMethod *string `form:"verification_method"`
 }
 
@@ -1669,6 +1764,8 @@ type PaymentIntentPaymentMethodOptionsParams struct {
 	Pix *PaymentIntentPaymentMethodOptionsPixParams `form:"pix"`
 	// If this is a `promptpay` PaymentMethod, this sub-hash contains details about the PromptPay payment method options.
 	PromptPay *PaymentIntentPaymentMethodOptionsPromptPayParams `form:"promptpay"`
+	// If this is a `revolut_pay` PaymentMethod, this sub-hash contains details about the Demo Pay payment method options.
+	RevolutPay *PaymentIntentPaymentMethodOptionsRevolutPayParams `form:"revolut_pay"`
 	// If this is a `sepa_debit` PaymentIntent, this sub-hash contains details about the SEPA Debit payment method options.
 	SEPADebit *PaymentIntentPaymentMethodOptionsSEPADebitParams `form:"sepa_debit"`
 	// If this is a `sofort` PaymentMethod, this sub-hash contains details about the SOFORT payment method options.
@@ -1687,7 +1784,7 @@ type PaymentIntentRadarOptionsParams struct {
 	Session *string `form:"session"`
 }
 
-// The parameters that you can use to automatically create a Transfer after the payment succeeds.
+// The parameters that you can use to automatically create a Transfer.
 // Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
 type PaymentIntentTransferDataParams struct {
 	// The amount that will be transferred automatically when a charge succeeds.
@@ -1728,7 +1825,8 @@ type PaymentIntentParams struct {
 	// The client secret of the PaymentIntent. We require it if you use a publishable key to retrieve the source.
 	ClientSecret *string `form:"client_secret"`
 	// Set to `true` to attempt to [confirm this PaymentIntent](https://stripe.com/docs/api/payment_intents/confirm) this PaymentIntent immediately. This parameter defaults to `false`. When creating and confirming a PaymentIntent at the same time, you can also provide the parameters available in the [Confirm API](https://stripe.com/docs/api/payment_intents/confirm).
-	Confirm            *bool   `form:"confirm"`
+	Confirm *bool `form:"confirm"`
+	// Describes whether we can confirm this PaymentIntent automatically, or if it requires customer action to confirm the payment.
 	ConfirmationMethod *string `form:"confirmation_method"`
 	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
 	Currency *string `form:"currency"`
@@ -1780,12 +1878,11 @@ type PaymentIntentParams struct {
 	SetupFutureUsage *string `form:"setup_future_usage"`
 	// Shipping information for this PaymentIntent.
 	Shipping *ShippingDetailsParams `form:"shipping"`
-	// For non-card charges, you can use this value as the complete description that appears on your customers' statements. It must contain at least one letter and be 1–22 characters long.
+	// For card charges, use [statement_descriptor_suffix](https://stripe.com/docs/payments/account/statement-descriptors#dynamic). Otherwise, you can use this value as the complete description of a charge on your customers' statements. It must contain at least one letter and be 1–22 characters long.
 	StatementDescriptor *string `form:"statement_descriptor"`
 	// Provides information about a card payment that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that's set on the account to form the complete statement descriptor. The concatenated descriptor must contain 1-22 characters.
 	StatementDescriptorSuffix *string `form:"statement_descriptor_suffix"`
-	// The parameters that you can use to automatically create a Transfer after the payment succeeds.
-	// Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+	// Use this parameter to automatically create a Transfer when the payment succeeds. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
 	TransferData *PaymentIntentTransferDataParams `form:"transfer_data"`
 	// A string that identifies the resulting payment as part of a group. You can only provide `transfer_group` if it hasn't been set. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
 	TransferGroup *string `form:"transfer_group"`
@@ -1812,22 +1909,101 @@ func (p *PaymentIntentParams) AddMetadata(key string, value string) {
 	p.Metadata[key] = value
 }
 
-// Returns a list of PaymentIntents.
-type PaymentIntentListParams struct {
-	ListParams `form:"*"`
-	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp or a dictionary with a number of different query options.
-	Created *int64 `form:"created"`
-	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp or a dictionary with a number of different query options.
-	CreatedRange *RangeQueryParams `form:"created"`
-	// Only return PaymentIntents for the customer that this customer ID specifies.
-	Customer *string `form:"customer"`
+// Search for PaymentIntents you've previously created using Stripe's [Search Query Language](https://stripe.com/docs/search#search-query-language).
+// Don't use search in read-after-write flows where strict consistency is necessary. Under normal operating
+// conditions, data is searchable in less than a minute. Occasionally, propagation of new or updated data can be up
+// to an hour behind during outages. Search functionality is not available to merchants in India.
+type PaymentIntentSearchParams struct {
+	SearchParams `form:"*"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+	// A cursor for pagination across multiple pages of results. Don't include this parameter on the first call. Use the next_page value returned in a previous response to request subsequent results.
+	Page *string `form:"page"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *PaymentIntentSearchParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
+}
+
+// Manually reconcile the remaining amount for a customer_balance PaymentIntent.
+type PaymentIntentApplyCustomerBalanceParams struct {
+	Params `form:"*"`
+	// Amount that you intend to apply to this PaymentIntent from the customer's cash balance.
+	//
+	// A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (for example, 100 cents to charge 1 USD or 100 to charge 100 JPY, a zero-decimal currency).
+	//
+	// The maximum amount is the amount of the PaymentIntent.
+	//
+	// When you omit the amount, it defaults to the remaining amount requested on the PaymentIntent.
+	Amount *int64 `form:"amount"`
+	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
+	Currency *string `form:"currency"`
 	// Specifies which fields in the response should be expanded.
 	Expand []*string `form:"expand"`
 }
 
 // AddExpand appends a new field to expand.
-func (p *PaymentIntentListParams) AddExpand(f string) {
+func (p *PaymentIntentApplyCustomerBalanceParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
+}
+
+// You can cancel a PaymentIntent object when it's in one of these statuses: requires_payment_method, requires_capture, requires_confirmation, requires_action or, [in rare cases](https://stripe.com/docs/payments/intents), processing.
+//
+// After it's canceled, no additional charges are made by the PaymentIntent and any operations on the PaymentIntent fail with an error. For PaymentIntents with a status of requires_capture, the remaining amount_capturable is automatically refunded.
+//
+// You can't cancel the PaymentIntent for a Checkout Session. [Expire the Checkout Session](https://stripe.com/docs/api/checkout/sessions/expire) instead.
+type PaymentIntentCancelParams struct {
+	Params `form:"*"`
+	// Reason for canceling this PaymentIntent. Possible values are: `duplicate`, `fraudulent`, `requested_by_customer`, or `abandoned`
+	CancellationReason *string `form:"cancellation_reason"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *PaymentIntentCancelParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
+}
+
+// Capture the funds of an existing uncaptured PaymentIntent when its status is requires_capture.
+//
+// Uncaptured PaymentIntents are cancelled a set number of days (7 by default) after their creation.
+//
+// Learn more about [separate authorization and capture](https://stripe.com/docs/payments/capture-later).
+type PaymentIntentCaptureParams struct {
+	Params `form:"*"`
+	// The amount to capture from the PaymentIntent, which must be less than or equal to the original amount. Any additional amount is automatically refunded. Defaults to the full `amount_capturable` if it's not provided.
+	AmountToCapture *int64 `form:"amount_to_capture"`
+	// The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total payment amount. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+	ApplicationFeeAmount *int64 `form:"application_fee_amount"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+	// Defaults to `true`. When capturing a PaymentIntent, setting `final_capture` to `false` notifies Stripe to not release the remaining uncaptured funds to make sure that they're captured in future requests. You can only use this setting when [multicapture](https://stripe.com/docs/payments/multicapture) is available for PaymentIntents.
+	FinalCapture *bool `form:"final_capture"`
+	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+	Metadata map[string]string `form:"metadata"`
+	// For card charges, use [statement_descriptor_suffix](https://stripe.com/docs/payments/account/statement-descriptors#dynamic). Otherwise, you can use this value as the complete description of a charge on your customers' statements. It must contain at least one letter and be 1–22 characters long.
+	StatementDescriptor *string `form:"statement_descriptor"`
+	// Provides information about a card payment that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that's set on the account to form the complete statement descriptor. The concatenated descriptor must be 1-22 characters long.
+	StatementDescriptorSuffix *string `form:"statement_descriptor_suffix"`
+	// The parameters that you can use to automatically create a transfer after the payment
+	// is captured. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+	TransferData *PaymentIntentTransferDataParams `form:"transfer_data"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *PaymentIntentCaptureParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
+}
+
+// AddMetadata adds a new key-value pair to the Metadata.
+func (p *PaymentIntentCaptureParams) AddMetadata(key string, value string) {
+	if p.Metadata == nil {
+		p.Metadata = make(map[string]string)
+	}
+
+	p.Metadata[key] = value
 }
 
 // Options to configure Radar. Learn more about [Radar Sessions](https://stripe.com/docs/radar/radar-session).
@@ -1907,64 +2083,6 @@ func (p *PaymentIntentConfirmParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }
 
-// You can cancel a PaymentIntent object when it's in one of these statuses: requires_payment_method, requires_capture, requires_confirmation, requires_action or, [in rare cases](https://stripe.com/docs/payments/intents), processing.
-//
-// After it's canceled, no additional charges are made by the PaymentIntent and any operations on the PaymentIntent fail with an error. For PaymentIntents with a status of requires_capture, the remaining amount_capturable is automatically refunded.
-//
-// You can't cancel the PaymentIntent for a Checkout Session. [Expire the Checkout Session](https://stripe.com/docs/api/checkout/sessions/expire) instead.
-type PaymentIntentCancelParams struct {
-	Params `form:"*"`
-	// Reason for canceling this PaymentIntent. Possible values are: `duplicate`, `fraudulent`, `requested_by_customer`, or `abandoned`
-	CancellationReason *string `form:"cancellation_reason"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *PaymentIntentCancelParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
-// Capture the funds of an existing uncaptured PaymentIntent when its status is requires_capture.
-//
-// Uncaptured PaymentIntents are cancelled a set number of days (7 by default) after their creation.
-//
-// Learn more about [separate authorization and capture](https://stripe.com/docs/payments/capture-later).
-type PaymentIntentCaptureParams struct {
-	Params `form:"*"`
-	// The amount to capture from the PaymentIntent, which must be less than or equal to the original amount. Any additional amount is automatically refunded. Defaults to the full `amount_capturable` if it's not provided.
-	AmountToCapture *int64 `form:"amount_to_capture"`
-	// The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total payment amount. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
-	ApplicationFeeAmount *int64 `form:"application_fee_amount"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-	// Defaults to `true`. When capturing a PaymentIntent, setting `final_capture` to `false` notifies Stripe to not release the remaining uncaptured funds to make sure that they're captured in future requests. You can only use this setting when [multicapture](https://stripe.com/docs/payments/multicapture) is available for PaymentIntents.
-	FinalCapture *bool `form:"final_capture"`
-	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
-	Metadata map[string]string `form:"metadata"`
-	// For non-card charges, you can use this value as the complete description that appears on your customers' statements. Must contain at least one letter, maximum 22 characters.
-	StatementDescriptor *string `form:"statement_descriptor"`
-	// Provides information about a card payment that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that's set on the account to form the complete statement descriptor. The concatenated descriptor must be 1-22 characters long.
-	StatementDescriptorSuffix *string `form:"statement_descriptor_suffix"`
-	// The parameters that you can use to automatically create a transfer after the payment
-	// is captured. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
-	TransferData *PaymentIntentTransferDataParams `form:"transfer_data"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *PaymentIntentCaptureParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
-// AddMetadata adds a new key-value pair to the Metadata.
-func (p *PaymentIntentCaptureParams) AddMetadata(key string, value string) {
-	if p.Metadata == nil {
-		p.Metadata = make(map[string]string)
-	}
-
-	p.Metadata[key] = value
-}
-
 // The parameters used to automatically create a transfer after the payment is captured.
 // Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
 type PaymentIntentIncrementAuthorizationTransferDataParams struct {
@@ -2008,7 +2126,7 @@ type PaymentIntentIncrementAuthorizationParams struct {
 	Expand []*string `form:"expand"`
 	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
 	Metadata map[string]string `form:"metadata"`
-	// For non-card charges, you can use this value as the complete description that appears on your customers' statements. Must contain at least one letter, maximum 22 characters.
+	// For card charges, use [statement_descriptor_suffix](https://stripe.com/docs/payments/account/statement-descriptors#dynamic). Otherwise, you can use this value as the complete description of a charge on your customers' statements. It must contain at least one letter and be 1–22 characters long.
 	StatementDescriptor *string `form:"statement_descriptor"`
 	// The parameters used to automatically create a transfer after the payment is captured.
 	// Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
@@ -2042,28 +2160,6 @@ type PaymentIntentVerifyMicrodepositsParams struct {
 
 // AddExpand appends a new field to expand.
 func (p *PaymentIntentVerifyMicrodepositsParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
-// Manually reconcile the remaining amount for a customer_balance PaymentIntent.
-type PaymentIntentApplyCustomerBalanceParams struct {
-	Params `form:"*"`
-	// Amount that you intend to apply to this PaymentIntent from the customer's cash balance.
-	//
-	// A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (for example, 100 cents to charge 1 USD or 100 to charge 100 JPY, a zero-decimal currency).
-	//
-	// The maximum amount is the amount of the PaymentIntent.
-	//
-	// When you omit the amount, it defaults to the remaining amount requested on the PaymentIntent.
-	Amount *int64 `form:"amount"`
-	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
-	Currency *string `form:"currency"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *PaymentIntentApplyCustomerBalanceParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }
 
@@ -2126,6 +2222,16 @@ type PaymentIntentNextActionCashAppHandleRedirectOrDisplayQRCode struct {
 	QRCode        *PaymentIntentNextActionCashAppHandleRedirectOrDisplayQRCodeQRCode `json:"qr_code"`
 }
 
+// ABA Records contain U.S. bank account details per the ABA format.
+type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressABA struct {
+	// The ABA account number
+	AccountNumber string `json:"account_number"`
+	// The bank name
+	BankName string `json:"bank_name"`
+	// The ABA routing number
+	RoutingNumber string `json:"routing_number"`
+}
+
 // Iban Records contain E.U. bank account details per the SEPA format.
 type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressIBAN struct {
 	// The name of the person or business that owns the bank account
@@ -2158,6 +2264,16 @@ type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSpei 
 	Clabe string `json:"clabe"`
 }
 
+// SWIFT Records contain U.S. bank account details per the SWIFT format.
+type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSwift struct {
+	// The account number
+	AccountNumber string `json:"account_number"`
+	// The bank name
+	BankName string `json:"bank_name"`
+	// The SWIFT code
+	SwiftCode string `json:"swift_code"`
+}
+
 // Zengin Records contain Japan bank account details per the Zengin format.
 type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressZengin struct {
 	// The account holder name
@@ -2178,6 +2294,8 @@ type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressZengi
 
 // A list of financial addresses that can be used to fund the customer balance
 type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddress struct {
+	// ABA Records contain U.S. bank account details per the ABA format.
+	ABA *PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressABA `json:"aba"`
 	// Iban Records contain E.U. bank account details per the SEPA format.
 	IBAN *PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressIBAN `json:"iban"`
 	// Sort Code Records contain U.K. bank account details per the sort code format.
@@ -2186,6 +2304,8 @@ type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddress stru
 	Spei *PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSpei `json:"spei"`
 	// The payment networks supported by this FinancialAddress
 	SupportedNetworks []PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSupportedNetwork `json:"supported_networks"`
+	// SWIFT Records contain U.S. bank account details per the SWIFT format.
+	Swift *PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressSwift `json:"swift"`
 	// The type of financial address
 	Type PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressType `json:"type"`
 	// Zengin Records contain Japan bank account details per the Zengin format.
@@ -2529,7 +2649,7 @@ type PaymentIntentPaymentMethodOptionsCard struct {
 	RequestMulticapture PaymentIntentPaymentMethodOptionsCardRequestMulticapture `json:"request_multicapture"`
 	// Request ability to [overcapture](https://stripe.com/docs/payments/overcapture) for this PaymentIntent.
 	RequestOvercapture PaymentIntentPaymentMethodOptionsCardRequestOvercapture `json:"request_overcapture"`
-	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Permitted values include: `automatic` or `any`. If not provided, defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 	RequestThreeDSecure PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure `json:"request_three_d_secure"`
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
 	//
@@ -2723,6 +2843,7 @@ type PaymentIntentPaymentMethodOptionsPromptPay struct {
 	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
 	SetupFutureUsage PaymentIntentPaymentMethodOptionsPromptPaySetupFutureUsage `json:"setup_future_usage"`
 }
+type PaymentIntentPaymentMethodOptionsRevolutPay struct{}
 type PaymentIntentPaymentMethodOptionsSEPADebitMandateOptions struct{}
 type PaymentIntentPaymentMethodOptionsSEPADebit struct {
 	MandateOptions *PaymentIntentPaymentMethodOptionsSEPADebitMandateOptions `json:"mandate_options"`
@@ -2751,8 +2872,13 @@ type PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnections struct {
 	// For webview integrations only. Upon completing OAuth login in the native browser, the user will be redirected to this URL to return to your app.
 	ReturnURL string `json:"return_url"`
 }
+type PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptions struct {
+	// Mandate collection method
+	CollectionMethod PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod `json:"collection_method"`
+}
 type PaymentIntentPaymentMethodOptionsUSBankAccount struct {
 	FinancialConnections *PaymentIntentPaymentMethodOptionsUSBankAccountFinancialConnections `json:"financial_connections"`
+	MandateOptions       *PaymentIntentPaymentMethodOptionsUSBankAccountMandateOptions       `json:"mandate_options"`
 	// Preferred transaction settlement speed
 	PreferredSettlementSpeed PaymentIntentPaymentMethodOptionsUSBankAccountPreferredSettlementSpeed `json:"preferred_settlement_speed"`
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
@@ -2815,6 +2941,7 @@ type PaymentIntentPaymentMethodOptions struct {
 	Paypal           *PaymentIntentPaymentMethodOptionsPaypal           `json:"paypal"`
 	Pix              *PaymentIntentPaymentMethodOptionsPix              `json:"pix"`
 	PromptPay        *PaymentIntentPaymentMethodOptionsPromptPay        `json:"promptpay"`
+	RevolutPay       *PaymentIntentPaymentMethodOptionsRevolutPay       `json:"revolut_pay"`
 	SEPADebit        *PaymentIntentPaymentMethodOptionsSEPADebit        `json:"sepa_debit"`
 	Sofort           *PaymentIntentPaymentMethodOptionsSofort           `json:"sofort"`
 	USBankAccount    *PaymentIntentPaymentMethodOptionsUSBankAccount    `json:"us_bank_account"`
@@ -2885,7 +3012,8 @@ type PaymentIntent struct {
 	// The client secret can be used to complete a payment from your frontend. It should not be stored, logged, or exposed to anyone other than the customer. Make sure that you have TLS enabled on any page that includes the client secret.
 	//
 	// Refer to our docs to [accept a payment](https://stripe.com/docs/payments/accept-a-payment?ui=elements) and learn about how `client_secret` should be handled.
-	ClientSecret       string                          `json:"client_secret"`
+	ClientSecret string `json:"client_secret"`
+	// Describes whether we can confirm this PaymentIntent automatically, or if it requires customer action to confirm the payment.
 	ConfirmationMethod PaymentIntentConfirmationMethod `json:"confirmation_method"`
 	// Time at which the object was created. Measured in seconds since the Unix epoch.
 	Created int64 `json:"created"`
@@ -2941,7 +3069,7 @@ type PaymentIntent struct {
 	Shipping *ShippingDetails `json:"shipping"`
 	// This is a legacy field that will be removed in the future. It is the ID of the Source object that is associated with this PaymentIntent, if one was supplied.
 	Source *PaymentSource `json:"source"`
-	// For non-card charges, you can use this value as the complete description that appears on your customers' statements. Must contain at least one letter, maximum 22 characters.
+	// For card charges, use [statement_descriptor_suffix](https://stripe.com/docs/payments/account/statement-descriptors#dynamic). Otherwise, you can use this value as the complete description of a charge on your customers' statements. It must contain at least one letter and be 1–22 characters long.
 	StatementDescriptor string `json:"statement_descriptor"`
 	// Provides information about a card payment that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that's set on the account to form the complete statement descriptor. Maximum 22 characters for the concatenated descriptor.
 	StatementDescriptorSuffix string `json:"statement_descriptor_suffix"`

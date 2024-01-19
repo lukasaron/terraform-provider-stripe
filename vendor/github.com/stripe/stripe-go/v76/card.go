@@ -89,22 +89,11 @@ const (
 	CardTokenizationMethodApplePay   CardTokenizationMethod = "apple_pay"
 )
 
-type CardOwnerParams struct {
-	// Owner's address.
-	Address *AddressParams `form:"address"`
-	// Owner's email address.
-	Email *string `form:"email"`
-	// Owner's full name.
-	Name *string `form:"name"`
-	// Owner's phone number.
-	Phone *string `form:"phone"`
-}
-
 // cardSource is a string that's used to build card form parameters. It's a
 // constant just to make mistakes less likely.
 const cardSource = "source"
 
-// Update a specified source for a given customer.
+// Delete a specified source for a given customer.
 type CardParams struct {
 	Params   `form:"*"`
 	Account  *string `form:"-"` // Included in URL
@@ -268,6 +257,16 @@ func (p *CardParams) AddMetadata(key string, value string) {
 	p.Metadata[key] = value
 }
 
+type CardOwnerParams struct {
+	// Owner's address.
+	Address *AddressParams `form:"address"`
+	// Owner's email address.
+	Email *string `form:"email"`
+	// Owner's full name.
+	Name *string `form:"name"`
+	// Owner's phone number.
+	Phone *string `form:"phone"`
+}
 type CardListParams struct {
 	ListParams `form:"*"`
 	Account    *string `form:"-"` // Included in URL
@@ -363,7 +362,7 @@ type Card struct {
 	Name string `json:"name"`
 	// String representing the object's type. Objects of the same type share the same value.
 	Object string `json:"object"`
-	// For external accounts, possible values are `new` and `errored`. If a transfer fails, the status is set to `errored` and transfers are stopped until account details are updated.
+	// For external accounts that are cards, possible values are `new` and `errored`. If a payout fails, the status is set to `errored` and [scheduled payouts](https://stripe.com/docs/payouts#payout-schedule) are stopped until account details are updated.
 	Status string `json:"status"`
 	// If the card number is tokenized, this is the method that was used. Can be `android_pay` (includes Google Pay), `apple_pay`, `masterpass`, `visa_checkout`, or null.
 	TokenizationMethod CardTokenizationMethod `json:"tokenization_method"`

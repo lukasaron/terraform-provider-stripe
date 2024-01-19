@@ -29,6 +29,19 @@ const (
 	SetupAttemptPaymentMethodDetailsCardThreeDSecureAuthenticationFlowFrictionless SetupAttemptPaymentMethodDetailsCardThreeDSecureAuthenticationFlow = "frictionless"
 )
 
+// The Electronic Commerce Indicator (ECI). A protocol-level field
+// indicating what degree of authentication was performed.
+type SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator string
+
+// List of values that SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator can take
+const (
+	SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator01 SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "01"
+	SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator02 SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "02"
+	SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator05 SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "05"
+	SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator06 SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "06"
+	SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator07 SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator = "07"
+)
+
 // Indicates the outcome of 3D Secure authentication.
 type SetupAttemptPaymentMethodDetailsCardThreeDSecureResult string
 
@@ -160,11 +173,17 @@ type SetupAttemptPaymentMethodDetailsCardThreeDSecure struct {
 	// For authenticated transactions: how the customer was authenticated by
 	// the issuing bank.
 	AuthenticationFlow SetupAttemptPaymentMethodDetailsCardThreeDSecureAuthenticationFlow `json:"authentication_flow"`
+	// The Electronic Commerce Indicator (ECI). A protocol-level field
+	// indicating what degree of authentication was performed.
+	ElectronicCommerceIndicator SetupAttemptPaymentMethodDetailsCardThreeDSecureElectronicCommerceIndicator `json:"electronic_commerce_indicator"`
 	// Indicates the outcome of 3D Secure authentication.
 	Result SetupAttemptPaymentMethodDetailsCardThreeDSecureResult `json:"result"`
 	// Additional information about why 3D Secure succeeded or failed based
 	// on the `result`.
 	ResultReason SetupAttemptPaymentMethodDetailsCardThreeDSecureResultReason `json:"result_reason"`
+	// The 3D Secure 1 XID or 3D Secure 2 Directory Server Transaction ID
+	// (dsTransId) for this payment.
+	TransactionID string `json:"transaction_id"`
 	// The version of 3D Secure that was used.
 	Version string `json:"version"`
 }
@@ -216,7 +235,7 @@ type SetupAttemptPaymentMethodDetailsCardPresent struct {
 }
 type SetupAttemptPaymentMethodDetailsCashApp struct{}
 type SetupAttemptPaymentMethodDetailsIDEAL struct {
-	// The customer's bank. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `n26`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, `van_lanschot`, or `yoursafe`.
+	// The customer's bank. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `n26`, `nn`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, `van_lanschot`, or `yoursafe`.
 	Bank string `json:"bank"`
 	// The Bank Identifier Code of the customer's bank.
 	BIC string `json:"bic"`

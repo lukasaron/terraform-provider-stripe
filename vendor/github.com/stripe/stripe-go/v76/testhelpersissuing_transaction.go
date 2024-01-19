@@ -6,6 +6,20 @@
 
 package stripe
 
+// Refund a test-mode Transaction.
+type TestHelpersIssuingTransactionRefundParams struct {
+	Params `form:"*"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+	// The total amount to attempt to refund. This amount is in the provided currency, or defaults to the cards currency, and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
+	RefundAmount *int64 `form:"refund_amount"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *TestHelpersIssuingTransactionRefundParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
+}
+
 // Details about the seller (grocery store, e-commerce website, etc.) where the card authorization happened.
 type TestHelpersIssuingTransactionCreateForceCaptureMerchantDataParams struct {
 	// A categorization of the seller's type of business. See our [merchant categories guide](https://stripe.com/docs/issuing/merchant-categories) for a list of possible values.
@@ -24,6 +38,8 @@ type TestHelpersIssuingTransactionCreateForceCaptureMerchantDataParams struct {
 	State *string `form:"state"`
 	// An ID assigned by the seller to the location of the sale.
 	TerminalID *string `form:"terminal_id"`
+	// URL provided by the merchant on a 3DS request
+	URL *string `form:"url"`
 }
 
 // The legs of the trip.
@@ -138,6 +154,8 @@ type TestHelpersIssuingTransactionCreateUnlinkedRefundMerchantDataParams struct 
 	State *string `form:"state"`
 	// An ID assigned by the seller to the location of the sale.
 	TerminalID *string `form:"terminal_id"`
+	// URL provided by the merchant on a 3DS request
+	URL *string `form:"url"`
 }
 
 // The legs of the trip.
@@ -231,19 +249,5 @@ type TestHelpersIssuingTransactionCreateUnlinkedRefundParams struct {
 
 // AddExpand appends a new field to expand.
 func (p *TestHelpersIssuingTransactionCreateUnlinkedRefundParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
-// Refund a test-mode Transaction.
-type TestHelpersIssuingTransactionRefundParams struct {
-	Params `form:"*"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-	// The total amount to attempt to refund. This amount is in the provided currency, or defaults to the cards currency, and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-	RefundAmount *int64 `form:"refund_amount"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *TestHelpersIssuingTransactionRefundParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }

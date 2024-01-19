@@ -49,6 +49,13 @@ const (
 	EventTypeCheckoutSessionAsyncPaymentSucceeded               EventType = "checkout.session.async_payment_succeeded"
 	EventTypeCheckoutSessionCompleted                           EventType = "checkout.session.completed"
 	EventTypeCheckoutSessionExpired                             EventType = "checkout.session.expired"
+	EventTypeClimateOrderCanceled                               EventType = "climate.order.canceled"
+	EventTypeClimateOrderCreated                                EventType = "climate.order.created"
+	EventTypeClimateOrderDelayed                                EventType = "climate.order.delayed"
+	EventTypeClimateOrderDelivered                              EventType = "climate.order.delivered"
+	EventTypeClimateOrderProductSubstituted                     EventType = "climate.order.product_substituted"
+	EventTypeClimateProductCreated                              EventType = "climate.product.created"
+	EventTypeClimateProductPricingUpdated                       EventType = "climate.product.pricing_updated"
 	EventTypeCouponCreated                                      EventType = "coupon.created"
 	EventTypeCouponDeleted                                      EventType = "coupon.deleted"
 	EventTypeCouponUpdated                                      EventType = "coupon.updated"
@@ -83,6 +90,7 @@ const (
 	EventTypeFinancialConnectionsAccountDisconnected            EventType = "financial_connections.account.disconnected"
 	EventTypeFinancialConnectionsAccountReactivated             EventType = "financial_connections.account.reactivated"
 	EventTypeFinancialConnectionsAccountRefreshedBalance        EventType = "financial_connections.account.refreshed_balance"
+	EventTypeFinancialConnectionsAccountRefreshedTransactions   EventType = "financial_connections.account.refreshed_transactions"
 	EventTypeIdentityVerificationSessionCanceled                EventType = "identity.verification_session.canceled"
 	EventTypeIdentityVerificationSessionCreated                 EventType = "identity.verification_session.created"
 	EventTypeIdentityVerificationSessionProcessing              EventType = "identity.verification_session.processing"
@@ -322,8 +330,8 @@ type EventRequest struct {
 // `Event` objects directly to an endpoint on your server. You can manage
 // webhooks in your
 // [account settings](https://dashboard.stripe.com/account/webhooks). Learn how
-// to [listen for events]
-// (/docs/webhooks) so that your integration can automatically trigger reactions.
+// to [listen for events](https://stripe.com/docs/webhooks)
+// so that your integration can automatically trigger reactions.
 //
 // When using [Connect](https://stripe.com/docs/connect), you can also receive event notifications
 // that occur in connected accounts. For these events, there's an

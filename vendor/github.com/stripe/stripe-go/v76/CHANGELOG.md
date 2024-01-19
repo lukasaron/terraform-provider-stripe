@@ -1,5 +1,167 @@
 # Changelog
 
+## 76.13.0 - 2024-01-18
+* [#1800](https://github.com/stripe/stripe-go/pull/1800) Update generated code
+* [#1798](https://github.com/stripe/stripe-go/pull/1798) Update generated code
+  * Add support for new value `nn` on enums `ChargePaymentMethodDetailsIdealBank`, `PaymentMethodIdealBank`, and `SetupAttemptPaymentMethodDetailsIdealBank`
+  * Add support for `Issuer` on `InvoiceParams`, `InvoiceUpcomingLinesParams`, `InvoiceUpcomingParams`, and `Invoice`
+  * Add support for `Liability` on `InvoiceAutomaticTaxParams`, `InvoiceAutomaticTax`, `InvoiceUpcomingAutomaticTaxParams`, `InvoiceUpcomingLinesAutomaticTaxParams`, `SubscriptionAutomaticTaxParams`, and `SubscriptionAutomaticTax`
+  * Add support for `OnBehalfOf` on `InvoiceUpcomingLinesParams` and `InvoiceUpcomingParams`
+  * Add support for `PIN` on `IssuingCardParams`
+  * Add support for `RevocationReason` on `MandatePaymentMethodDetailsBacsDebit`
+  * Add support for `CustomerBalance` on `PaymentMethodConfigurationParams` and `PaymentMethodConfiguration`
+  * Add support for `InvoiceSettings` on `SubscriptionParams`
+* [#1796](https://github.com/stripe/stripe-go/pull/1796) Update generated code
+  * Add support for new resource `CustomerSession`
+  * Add support for `New` method on resource `CustomerSession`
+  * Remove support for values `obligation_inbound`, `obligation_payout_failure`, `obligation_payout`, and `obligation_reversal_outbound` from enum `BalanceTransactionType`
+  * Remove support for `Expand` on `BankAccountParams` and `CardParams`
+  * Add support for `AccountType`, `DefaultForCurrency`, and `Documents` on `BankAccountParams` and `CardParams`
+  * Remove support for `Owner` on `BankAccountParams` and `CardParams`
+  * Change type of `BankAccountAccountHolderTypeParams` and `CardAccountHolderTypeParams` from `enum('company'|'individual')` to `emptyStringable(enum('company'|'individual'))`
+  * Add support for new values `eps` and `p24` on enums `InvoicePaymentSettingsPaymentMethodTypes` and `SubscriptionPaymentSettingsPaymentMethodTypes`
+  * Add support for `BillingCycleAnchorConfig` on `SubscriptionParams` and `Subscription`
+
+## 76.12.0 - 2024-01-12
+* [#1796](https://github.com/stripe/stripe-go/pull/1796) Update generated code
+  * Add support for new resource `CustomerSession`
+  * Add support for `New` method on resource `CustomerSession`
+  * Remove support for values `obligation_inbound`, `obligation_payout_failure`, `obligation_payout`, and `obligation_reversal_outbound` from enum `BalanceTransactionType`
+  * Remove support for `Expand` on `BankAccountParams` and `CardParams`
+  * Add support for `AccountType`, `DefaultForCurrency`, and `Documents` on `BankAccountParams` and `CardParams`
+  * Remove support for `Owner` on `BankAccountParams` and `CardParams`
+  * Change type of `BankAccountAccountHolderTypeParams` and `CardAccountHolderTypeParams` from `enum('company'|'individual')` to `emptyStringable(enum('company'|'individual'))`
+  * Add support for new values `eps` and `p24` on enums `InvoicePaymentSettingsPaymentMethodTypes` and `SubscriptionPaymentSettingsPaymentMethodTypes`
+  * Add support for `BillingCycleAnchorConfig` on `SubscriptionParams` and `Subscription`
+
+## 76.11.0 - 2024-01-04
+* [#1792](https://github.com/stripe/stripe-go/pull/1792) Update generated code
+  * Add support for `Get` method on resource `Tax.Registration`
+  * Change type of `SubscriptionScheduleDefaultSettingsInvoiceSettings` from `nullable(InvoiceSettingSubscriptionScheduleSetting)` to `InvoiceSettingSubscriptionScheduleSetting`
+* [#1790](https://github.com/stripe/stripe-go/pull/1790) Update generated code
+  * Add support for `CollectionMethod` on `MandatePaymentMethodDetailsUsBankAccount`
+  * Add support for `MandateOptions` on `PaymentIntentConfirmPaymentMethodOptionsUsBankAccountParams`, `PaymentIntentPaymentMethodOptionsUsBankAccountParams`, `PaymentIntentPaymentMethodOptionsUsBankAccount`, `SetupIntentConfirmPaymentMethodOptionsUsBankAccountParams`, `SetupIntentPaymentMethodOptionsUsBankAccountParams`, and `SetupIntentPaymentMethodOptionsUsBankAccount`
+* [#1789](https://github.com/stripe/stripe-go/pull/1789) Update generated code
+  * Add support for new resource `FinancialConnections.Transaction`
+  * Add support for `Get` and `List` methods on resource `Transaction`
+  * Add support for `Subscribe` and `Unsubscribe` methods on resource `FinancialConnections.Account`
+  * Add support for `Features` on `AccountSessionComponentsPayoutsParams`
+  * Add support for `EditPayoutSchedule`, `InstantPayouts`, and `StandardPayouts` on `AccountSessionComponentsPayoutsFeatures`
+  * Change type of `CheckoutSessionPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `CheckoutSessionPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `InvoicePaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `InvoicePaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `PaymentIntentConfirmPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `PaymentIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `PaymentIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `SetupIntentConfirmPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `SetupIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `SetupIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `SubscriptionPaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, and `SubscriptionPaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch` from `literal('balances')` to `enum('balances'|'transactions')`
+  * Add support for new value `financial_connections.account.refreshed_transactions` on enum `EventType`
+  * Add support for `Subscriptions` and `TransactionRefresh` on `FinancialConnectionsAccount`
+  * Add support for `NextRefreshAvailableAt` on `FinancialConnectionsAccountBalanceRefresh`
+  * Add support for new value `transactions` on enum `FinancialConnectionsSessionPrefetch`
+  * Add support for new value `unknown` on enum `IssuingAuthorizationVerificationDataAuthenticationExemptionType`
+  * Add support for new value `challenge` on enums `PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure` and `SetupIntentPaymentMethodOptionsCardRequestThreeDSecure`
+  * Add support for `RevolutPay` on `PaymentMethodConfigurationParams` and `PaymentMethodConfiguration`
+  * Change type of `QuoteInvoiceSettings` from `nullable(InvoiceSettingQuoteSetting)` to `InvoiceSettingQuoteSetting`
+  * Add support for `DestinationDetails` on `Refund`
+* [#1788](https://github.com/stripe/stripe-go/pull/1788) Use gofmt to format and lint
+
+## 76.10.0 - 2023-12-22
+* [#1790](https://github.com/stripe/stripe-go/pull/1790) Update generated code
+  * Add support for `CollectionMethod` on `MandatePaymentMethodDetailsUsBankAccount`
+  * Add support for `MandateOptions` on `PaymentIntentConfirmPaymentMethodOptionsUsBankAccountParams`, `PaymentIntentPaymentMethodOptionsUsBankAccountParams`, `PaymentIntentPaymentMethodOptionsUsBankAccount`, `SetupIntentConfirmPaymentMethodOptionsUsBankAccountParams`, `SetupIntentPaymentMethodOptionsUsBankAccountParams`, and `SetupIntentPaymentMethodOptionsUsBankAccount`
+* [#1789](https://github.com/stripe/stripe-go/pull/1789) Update generated code
+  * Add support for new resource `FinancialConnections.Transaction`
+  * Add support for `Get` and `List` methods on resource `Transaction`
+  * Add support for `Subscribe` and `Unsubscribe` methods on resource `FinancialConnections.Account`
+  * Add support for `Features` on `AccountSessionComponentsPayoutsParams`
+  * Add support for `EditPayoutSchedule`, `InstantPayouts`, and `StandardPayouts` on `AccountSessionComponentsPayoutsFeatures`
+  * Change type of `CheckoutSessionPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `CheckoutSessionPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `InvoicePaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `InvoicePaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `PaymentIntentConfirmPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `PaymentIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `PaymentIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `SetupIntentConfirmPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `SetupIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, `SetupIntentPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch`, `SubscriptionPaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetchParams`, and `SubscriptionPaymentSettingsPaymentMethodOptionsUsBankAccountFinancialConnectionsPrefetch` from `literal('balances')` to `enum('balances'|'transactions')`
+  * Add support for new value `financial_connections.account.refreshed_transactions` on enum `EventType`
+  * Add support for `Subscriptions` and `TransactionRefresh` on `FinancialConnectionsAccount`
+  * Add support for `NextRefreshAvailableAt` on `FinancialConnectionsAccountBalanceRefresh`
+  * Add support for new value `transactions` on enum `FinancialConnectionsSessionPrefetch`
+  * Add support for new value `unknown` on enum `IssuingAuthorizationVerificationDataAuthenticationExemptionType`
+  * Add support for new value `challenge` on enums `PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure` and `SetupIntentPaymentMethodOptionsCardRequestThreeDSecure`
+  * Add support for `RevolutPay` on `PaymentMethodConfigurationParams` and `PaymentMethodConfiguration`
+  * Change type of `QuoteInvoiceSettings` from `nullable(InvoiceSettingQuoteSetting)` to `InvoiceSettingQuoteSetting`
+  * Add support for `DestinationDetails` on `Refund`
+* [#1788](https://github.com/stripe/stripe-go/pull/1788) Use gofmt to format and lint
+
+## 76.9.0 - 2023-12-14
+* [#1781](https://github.com/stripe/stripe-go/pull/1781) Update generated code
+  * Add support for `PaymentMethodReuseAgreement` on `CheckoutSessionConsentCollectionParams`, `CheckoutSessionConsentCollection`, `PaymentLinkConsentCollectionParams`, and `PaymentLinkConsentCollection`
+  * Add support for `AfterSubmit` on `CheckoutSessionCustomTextParams`, `CheckoutSessionCustomText`, `PaymentLinkCustomTextParams`, and `PaymentLinkCustomText`
+  * Add support for `Created` on `RadarEarlyFraudWarningListParams`
+  
+* [#1780](https://github.com/stripe/stripe-go/pull/1780) Usage telemetry infrastructure
+
+## 76.8.0 - 2023-12-07
+* [#1775](https://github.com/stripe/stripe-go/pull/1775) Update generated code
+  * Add support for `PaymentDetails`, `Payments`, and `Payouts` on `AccountSessionComponentsParams` and `AccountSessionComponents`
+  * Add support for `Features` on `AccountSessionComponentsAccountOnboardingParams` and `AccountSessionComponentsAccountOnboarding`
+  * Add support for new values `customer_tax_location_invalid` and `financial_connections_no_successful_transaction_refresh` on enums `InvoiceLastFinalizationErrorCode`, `PaymentIntentLastPaymentErrorCode`, `SetupAttemptSetupErrorCode`, `SetupIntentLastSetupErrorCode`, and `StripeErrorCode`
+  * Add support for new values `payment_network_reserve_hold` and `payment_network_reserve_release` on enum `BalanceTransactionType`
+  * Remove support for value `various` from enum `ClimateSupplierRemovalPathway`
+  * Remove support for values `challenge_only` and `challenge` from enum `PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure`
+  * Add support for `InactiveMessage` and `Restrictions` on `PaymentLinkParams` and `PaymentLink`
+  * Add support for `TransferGroup` on `PaymentLinkPaymentIntentDataParams` and `PaymentLinkPaymentIntentData`
+  * Add support for `TrialSettings` on `PaymentLinkSubscriptionDataParams` and `PaymentLinkSubscriptionData`
+* [#1777](https://github.com/stripe/stripe-go/pull/1777) Add back PlanParams.ProductID
+  * Add back `PlanParams.ProductID`, which was mistakenly removed starting in v73.0.0. `ProductID` allows creation of a plan for an existing product by serializing `product` as a string .
+
+## 76.7.0 - 2023-11-30
+* [#1772](https://github.com/stripe/stripe-go/pull/1772) Update generated code
+  * Add support for new resources `Climate.Order`, `Climate.Product`, and `Climate.Supplier`
+  * Add support for `Cancel`, `Get`, `List`, `New`, and `Update` methods on resource `Order`
+  * Add support for `Get` and `List` methods on resources `Product` and `Supplier`
+  * Add support for new value `financial_connections_account_inactive` on enums `InvoiceLastFinalizationErrorCode`, `PaymentIntentLastPaymentErrorCode`, `SetupAttemptSetupErrorCode`, `SetupIntentLastSetupErrorCode`, and `StripeErrorCode`
+  * Add support for new values `climate_order_purchase` and `climate_order_refund` on enum `BalanceTransactionType`
+  * Add support for `Created` on `CheckoutSessionListParams`
+  * Add support for `ValidateLocation` on `CustomerTaxParams`
+  * Add support for new values `climate.order.canceled`, `climate.order.created`, `climate.order.delayed`, `climate.order.delivered`, `climate.order.product_substituted`, `climate.product.created`, and `climate.product.pricing_updated` on enum `EventType`
+  * Add support for new value `challenge` on enums `PaymentIntentPaymentMethodOptionsCardRequestThreeDSecure` and `SetupIntentPaymentMethodOptionsCardRequestThreeDSecure`
+
+## 76.6.0 - 2023-11-21
+* [#1769](https://github.com/stripe/stripe-go/pull/1769) Update generated code
+  * Add support for `ElectronicCommerceIndicator` on `ChargePaymentMethodDetailsCardThreeDSecure` and `SetupAttemptPaymentMethodDetailsCardThreeDSecure`
+  * Add support for `ExemptionIndicatorApplied` and `ExemptionIndicator` on `ChargePaymentMethodDetailsCardThreeDSecure`
+  * Add support for `TransactionID` on `ChargePaymentMethodDetailsCardThreeDSecure`, `IssuingAuthorizationNetworkData`, `IssuingTransactionNetworkData`, and `SetupAttemptPaymentMethodDetailsCardThreeDSecure`
+  * Add support for `Offline` on `ChargePaymentMethodDetailsCardPresent`
+  * Add support for `SystemTraceAuditNumber` on `IssuingAuthorizationNetworkData`
+  * Add support for `NetworkRiskScore` on `IssuingAuthorizationPendingRequest` and `IssuingAuthorizationRequestHistory`
+  * Add support for `RequestedAt` on `IssuingAuthorizationRequestHistory`
+  * Add support for `AuthorizationCode` on `IssuingTransactionNetworkData`
+  * Add support for `ThreeDSecure` on `PaymentIntentConfirmPaymentMethodOptionsCardParams`, `PaymentIntentPaymentMethodOptionsCardParams`, `SetupIntentConfirmPaymentMethodOptionsCardParams`, and `SetupIntentPaymentMethodOptionsCardParams`
+
+## 76.5.0 - 2023-11-16
+* [#1768](https://github.com/stripe/stripe-go/pull/1768) Update generated code
+  * Add support for `Status` on `CheckoutSessionListParams`
+* [#1767](https://github.com/stripe/stripe-go/pull/1767) Update generated code
+  * Add support for `BACSDebitPayments` on `AccountSettingsParams`
+  * Add support for `ServiceUserNumber` on `AccountSettingsBacsDebitPayments`
+  * Add support for `CaptureBefore` on `ChargePaymentMethodDetailsCard`
+  * Add support for `Paypal` on `CheckoutSessionPaymentMethodOptions`
+  * Add support for `TaxAmounts` on `CreditNoteLinesParams`, `CreditNotePreviewLinesLinesParams`, and `CreditNotePreviewLinesParams`
+  * Add support for `NetworkData` on `IssuingTransaction`
+* [#1764](https://github.com/stripe/stripe-go/pull/1764) Fix TestDo_RetryOnTimeout flakiness
+
+## 76.4.0 - 2023-11-09
+* [#1762](https://github.com/stripe/stripe-go/pull/1762) Update generated code
+  * Add support for new value `terminal_reader_hardware_fault` on enums `InvoiceLastFinalizationErrorCode`, `PaymentIntentLastPaymentErrorCode`, `SetupAttemptSetupErrorCode`, `SetupIntentLastSetupErrorCode`, and `StripeErrorCode`
+  * Add support for `Metadata` on `QuoteSubscriptionDataParams` and `QuoteSubscriptionData`
+
+## 76.3.0 - 2023-11-02
+* [#1760](https://github.com/stripe/stripe-go/pull/1760) Update generated code
+  * Add support for new resource `Tax.Registration`
+  * Add support for `List`, `New`, and `Update` methods on resource `Registration`
+  * Add support for `RevolutPay` throughout the API
+  * Add support for new value `token_card_network_invalid` on enums `InvoiceLastFinalizationErrorCode`, `PaymentIntentLastPaymentErrorCode`, `SetupAttemptSetupErrorCode`, `SetupIntentLastSetupErrorCode`, and `StripeErrorCode`
+  * Add support for new value `payment_unreconciled` on enum `BalanceTransactionType`
+  * Add support for `ABA` and `Swift` on `FundingInstructionsBankTransferFinancialAddresses` and `PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddresses`
+  * Add support for new values `ach`, `domestic_wire_us`, and `swift` on enums `FundingInstructionsBankTransferFinancialAddressesSupportedNetworks` and `PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressesSupportedNetworks`
+  * Add support for new values `aba` and `swift` on enums `FundingInstructionsBankTransferFinancialAddressesType` and `PaymentIntentNextActionDisplayBankTransferInstructionsFinancialAddressesType`
+  * Add support for `URL` on `IssuingAuthorizationMerchantDataParams`, `IssuingAuthorizationMerchantData`, `IssuingTransactionMerchantData`, `TestHelpersIssuingTransactionCreateForceCaptureMerchantDataParams`, and `TestHelpersIssuingTransactionCreateUnlinkedRefundMerchantDataParams`
+  * Add support for `AuthenticationExemption` and `ThreeDSecure` on `IssuingAuthorizationVerificationDataParams` and `IssuingAuthorizationVerificationData`
+  * Add support for `Description` on `PaymentLinkPaymentIntentDataParams` and `PaymentLinkPaymentIntentData`
+
+## 76.2.0 - 2023-10-26
+* [#1759](https://github.com/stripe/stripe-go/pull/1759) Update generated code
+  * Add support for new value `balance_invalid_parameter` on enums `InvoiceLastFinalizationErrorCode`, `PaymentIntentLastPaymentErrorCode`, `SetupAttemptSetupErrorCode`, `SetupIntentLastSetupErrorCode`, and `StripeErrorCode`
+
 ## 76.1.0 - 2023-10-17
 * [#1756](https://github.com/stripe/stripe-go/pull/1756) Update generated code
   * Add support for new value `invalid_dob_age_under_minimum` on enums `AccountFutureRequirementsErrorsCode`, `AccountRequirementsErrorsCode`, `BankAccountFutureRequirementsErrorsCode`, and `BankAccountRequirementsErrorsCode`

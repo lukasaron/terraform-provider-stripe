@@ -61,6 +61,36 @@ const (
 	IssuingAuthorizationVerificationDataCheckNotProvided IssuingAuthorizationVerificationDataCheck = "not_provided"
 )
 
+// The entity that requested the exemption, either the acquiring merchant or the Issuing user.
+type IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedBy string
+
+// List of values that IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedBy can take
+const (
+	IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedByAcquirer IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedBy = "acquirer"
+	IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedByIssuer   IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedBy = "issuer"
+)
+
+// The specific exemption claimed for this authorization.
+type IssuingAuthorizationVerificationDataAuthenticationExemptionType string
+
+// List of values that IssuingAuthorizationVerificationDataAuthenticationExemptionType can take
+const (
+	IssuingAuthorizationVerificationDataAuthenticationExemptionTypeLowValueTransaction     IssuingAuthorizationVerificationDataAuthenticationExemptionType = "low_value_transaction"
+	IssuingAuthorizationVerificationDataAuthenticationExemptionTypeTransactionRiskAnalysis IssuingAuthorizationVerificationDataAuthenticationExemptionType = "transaction_risk_analysis"
+	IssuingAuthorizationVerificationDataAuthenticationExemptionTypeUnknown                 IssuingAuthorizationVerificationDataAuthenticationExemptionType = "unknown"
+)
+
+// The outcome of the 3D Secure authentication request.
+type IssuingAuthorizationVerificationDataThreeDSecureResult string
+
+// List of values that IssuingAuthorizationVerificationDataThreeDSecureResult can take
+const (
+	IssuingAuthorizationVerificationDataThreeDSecureResultAttemptAcknowledged IssuingAuthorizationVerificationDataThreeDSecureResult = "attempt_acknowledged"
+	IssuingAuthorizationVerificationDataThreeDSecureResultAuthenticated       IssuingAuthorizationVerificationDataThreeDSecureResult = "authenticated"
+	IssuingAuthorizationVerificationDataThreeDSecureResultFailed              IssuingAuthorizationVerificationDataThreeDSecureResult = "failed"
+	IssuingAuthorizationVerificationDataThreeDSecureResultRequired            IssuingAuthorizationVerificationDataThreeDSecureResult = "required"
+)
+
 // The digital wallet used for this transaction. One of `apple_pay`, `google_pay`, or `samsung_pay`. Will populate as `null` when no digital wallet was utilized.
 type IssuingAuthorizationWallet string
 
@@ -192,12 +222,18 @@ type IssuingAuthorizationMerchantData struct {
 	State string `json:"state"`
 	// An ID assigned by the seller to the location of the sale.
 	TerminalID string `json:"terminal_id"`
+	// URL provided by the merchant on a 3DS request
+	URL string `json:"url"`
 }
 
 // Details about the authorization, such as identifiers, set by the card network.
 type IssuingAuthorizationNetworkData struct {
 	// Identifier assigned to the acquirer by the card network. Sometimes this value is not provided by the network; in this case, the value will be `null`.
 	AcquiringInstitutionID string `json:"acquiring_institution_id"`
+	// The System Trace Audit Number (STAN) is a 6-digit identifier assigned by the acquirer. Prefer `network_data.transaction_id` if present, unless you have special requirements.
+	SystemTraceAuditNumber string `json:"system_trace_audit_number"`
+	// Unique identifier for the authorization assigned by the card network used to match subsequent messages, disputes, and transactions.
+	TransactionID string `json:"transaction_id"`
 }
 
 // The pending authorization request. This field will only be non-null during an `issuing_authorization.request` webhook.
@@ -214,6 +250,8 @@ type IssuingAuthorizationPendingRequest struct {
 	MerchantAmount int64 `json:"merchant_amount"`
 	// The local currency the merchant is requesting to authorize.
 	MerchantCurrency Currency `json:"merchant_currency"`
+	// The card network's estimate of the likelihood that an authorization is fraudulent. Takes on values between 1 and 99.
+	NetworkRiskScore int64 `json:"network_risk_score"`
 }
 
 // History of every time a `pending_request` authorization was approved/declined, either by you directly or by Stripe (e.g. based on your spending_controls). If the merchant changes the authorization by performing an incremental authorization, you can look at this field to see the previous requests for the authorization. This field can be helpful in determining why a given authorization was approved/declined.
@@ -234,10 +272,14 @@ type IssuingAuthorizationRequestHistory struct {
 	MerchantAmount int64 `json:"merchant_amount"`
 	// The currency that was collected by the merchant and presented to the cardholder for the authorization. Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
 	MerchantCurrency Currency `json:"merchant_currency"`
+	// The card network's estimate of the likelihood that an authorization is fraudulent. Takes on values between 1 and 99.
+	NetworkRiskScore int64 `json:"network_risk_score"`
 	// When an authorization is approved or declined by you or by Stripe, this field provides additional detail on the reason for the outcome.
 	Reason IssuingAuthorizationRequestHistoryReason `json:"reason"`
-	// If approve/decline decision is directly responsed to the webhook with json payload and if the response is invalid (e.g., parsing errors), we surface the detailed message via this field.
+	// If the `request_history.reason` is `webhook_error` because the direct webhook response is invalid (for example, parsing errors or missing parameters), we surface a more detailed error message via this field.
 	ReasonMessage string `json:"reason_message"`
+	// Time when the card network received an authorization request from the acquirer in UTC. Referred to by networks as transmission time.
+	RequestedAt int64 `json:"requested_at"`
 }
 
 // [Treasury](https://stripe.com/docs/api/treasury) details related to this authorization if it was created on a [FinancialAccount](https://stripe.com/docs/api/treasury/financial_accounts).
@@ -249,17 +291,35 @@ type IssuingAuthorizationTreasury struct {
 	// The Treasury [Transaction](https://stripe.com/docs/api/treasury/transactions) associated with this authorization
 	Transaction string `json:"transaction"`
 }
+
+// The exemption applied to this authorization.
+type IssuingAuthorizationVerificationDataAuthenticationExemption struct {
+	// The entity that requested the exemption, either the acquiring merchant or the Issuing user.
+	ClaimedBy IssuingAuthorizationVerificationDataAuthenticationExemptionClaimedBy `json:"claimed_by"`
+	// The specific exemption claimed for this authorization.
+	Type IssuingAuthorizationVerificationDataAuthenticationExemptionType `json:"type"`
+}
+
+// 3D Secure details.
+type IssuingAuthorizationVerificationDataThreeDSecure struct {
+	// The outcome of the 3D Secure authentication request.
+	Result IssuingAuthorizationVerificationDataThreeDSecureResult `json:"result"`
+}
 type IssuingAuthorizationVerificationData struct {
 	// Whether the cardholder provided an address first line and if it matched the cardholder's `billing.address.line1`.
 	AddressLine1Check IssuingAuthorizationVerificationDataCheck `json:"address_line1_check"`
 	// Whether the cardholder provided a postal code and if it matched the cardholder's `billing.address.postal_code`.
 	AddressPostalCodeCheck IssuingAuthorizationVerificationDataCheck `json:"address_postal_code_check"`
+	// The exemption applied to this authorization.
+	AuthenticationExemption *IssuingAuthorizationVerificationDataAuthenticationExemption `json:"authentication_exemption"`
 	// Whether the cardholder provided a CVC and if it matched Stripe's record.
 	CVCCheck IssuingAuthorizationVerificationDataCheck `json:"cvc_check"`
 	// Whether the cardholder provided an expiry date and if it matched Stripe's record.
 	ExpiryCheck IssuingAuthorizationVerificationDataCheck `json:"expiry_check"`
 	// The postal code submitted as part of the authorization used for postal code verification.
 	PostalCode string `json:"postal_code"`
+	// 3D Secure details.
+	ThreeDSecure *IssuingAuthorizationVerificationDataThreeDSecure `json:"three_d_secure"`
 }
 
 // When an [issued card](https://stripe.com/docs/issuing) is used to make a purchase, an Issuing `Authorization`
@@ -269,7 +329,7 @@ type IssuingAuthorizationVerificationData struct {
 // Related guide: [Issued card authorizations](https://stripe.com/docs/issuing/purchases/authorizations)
 type IssuingAuthorization struct {
 	APIResource
-	// The total amount that was authorized or rejected. This amount is in the card's currency and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
+	// The total amount that was authorized or rejected. This amount is in `currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal). `amount` should be the same as `merchant_amount`, unless `currency` and `merchant_currency` are different.
 	Amount int64 `json:"amount"`
 	// Detailed breakdown of amount components. These amounts are denominated in `currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
 	AmountDetails *IssuingAuthorizationAmountDetails `json:"amount_details"`
@@ -285,15 +345,15 @@ type IssuingAuthorization struct {
 	Cardholder *IssuingCardholder `json:"cardholder"`
 	// Time at which the object was created. Measured in seconds since the Unix epoch.
 	Created int64 `json:"created"`
-	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
+	// The currency of the cardholder. This currency can be different from the currency presented at authorization and the `merchant_currency` field on this authorization. Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
 	Currency Currency `json:"currency"`
 	// Unique identifier for the object.
 	ID string `json:"id"`
 	// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
 	Livemode bool `json:"livemode"`
-	// The total amount that was authorized or rejected. This amount is in the `merchant_currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
+	// The total amount that was authorized or rejected. This amount is in the `merchant_currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal). `merchant_amount` should be the same as `amount`, unless `merchant_currency` and `currency` are different.
 	MerchantAmount int64 `json:"merchant_amount"`
-	// The currency that was presented to the cardholder for the authorization. Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
+	// The local currency that was presented to the cardholder for the authorization. This currency can be different from the cardholder currency and the `currency` field on this authorization. Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
 	MerchantCurrency Currency                          `json:"merchant_currency"`
 	MerchantData     *IssuingAuthorizationMerchantData `json:"merchant_data"`
 	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format.

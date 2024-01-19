@@ -25,12 +25,16 @@ import (
 	"github.com/stripe/stripe-go/v76/cashbalance"
 	"github.com/stripe/stripe-go/v76/charge"
 	checkoutsession "github.com/stripe/stripe-go/v76/checkout/session"
+	climateorder "github.com/stripe/stripe-go/v76/climate/order"
+	climateproduct "github.com/stripe/stripe-go/v76/climate/product"
+	climatesupplier "github.com/stripe/stripe-go/v76/climate/supplier"
 	"github.com/stripe/stripe-go/v76/countryspec"
 	"github.com/stripe/stripe-go/v76/coupon"
 	"github.com/stripe/stripe-go/v76/creditnote"
 	"github.com/stripe/stripe-go/v76/customer"
 	"github.com/stripe/stripe-go/v76/customerbalancetransaction"
 	"github.com/stripe/stripe-go/v76/customercashbalancetransaction"
+	"github.com/stripe/stripe-go/v76/customersession"
 	"github.com/stripe/stripe-go/v76/dispute"
 	"github.com/stripe/stripe-go/v76/ephemeralkey"
 	"github.com/stripe/stripe-go/v76/event"
@@ -39,6 +43,7 @@ import (
 	"github.com/stripe/stripe-go/v76/filelink"
 	financialconnectionsaccount "github.com/stripe/stripe-go/v76/financialconnections/account"
 	financialconnectionssession "github.com/stripe/stripe-go/v76/financialconnections/session"
+	financialconnectionstransaction "github.com/stripe/stripe-go/v76/financialconnections/transaction"
 	identityverificationreport "github.com/stripe/stripe-go/v76/identity/verificationreport"
 	identityverificationsession "github.com/stripe/stripe-go/v76/identity/verificationsession"
 	"github.com/stripe/stripe-go/v76/invoice"
@@ -82,6 +87,7 @@ import (
 	"github.com/stripe/stripe-go/v76/subscriptionitem"
 	"github.com/stripe/stripe-go/v76/subscriptionschedule"
 	taxcalculation "github.com/stripe/stripe-go/v76/tax/calculation"
+	taxregistration "github.com/stripe/stripe-go/v76/tax/registration"
 	taxsettings "github.com/stripe/stripe-go/v76/tax/settings"
 	taxtransaction "github.com/stripe/stripe-go/v76/tax/transaction"
 	"github.com/stripe/stripe-go/v76/taxcode"
@@ -156,6 +162,12 @@ type API struct {
 	Charges *charge.Client
 	// CheckoutSessions is the client used to invoke /checkout/sessions APIs.
 	CheckoutSessions *checkoutsession.Client
+	// ClimateOrders is the client used to invoke /climate/orders APIs.
+	ClimateOrders *climateorder.Client
+	// ClimateProducts is the client used to invoke /climate/products APIs.
+	ClimateProducts *climateproduct.Client
+	// ClimateSuppliers is the client used to invoke /climate/suppliers APIs.
+	ClimateSuppliers *climatesupplier.Client
 	// CountrySpecs is the client used to invoke /country_specs APIs.
 	CountrySpecs *countryspec.Client
 	// Coupons is the client used to invoke /coupons APIs.
@@ -168,6 +180,8 @@ type API struct {
 	CustomerCashBalanceTransactions *customercashbalancetransaction.Client
 	// Customers is the client used to invoke /customers APIs.
 	Customers *customer.Client
+	// CustomerSessions is the client used to invoke /customer_sessions APIs.
+	CustomerSessions *customersession.Client
 	// Disputes is the client used to invoke /disputes APIs.
 	Disputes *dispute.Client
 	// EphemeralKeys is the client used to invoke /ephemeral_keys APIs.
@@ -184,6 +198,8 @@ type API struct {
 	FinancialConnectionsAccounts *financialconnectionsaccount.Client
 	// FinancialConnectionsSessions is the client used to invoke /financial_connections/sessions APIs.
 	FinancialConnectionsSessions *financialconnectionssession.Client
+	// FinancialConnectionsTransactions is the client used to invoke /financial_connections/transactions APIs.
+	FinancialConnectionsTransactions *financialconnectionstransaction.Client
 	// IdentityVerificationReports is the client used to invoke /identity/verification_reports APIs.
 	IdentityVerificationReports *identityverificationreport.Client
 	// IdentityVerificationSessions is the client used to invoke /identity/verification_sessions APIs.
@@ -276,6 +292,8 @@ type API struct {
 	TaxIDs *taxid.Client
 	// TaxRates is the client used to invoke /tax_rates APIs.
 	TaxRates *taxrate.Client
+	// TaxRegistrations is the client used to invoke /tax/registrations APIs.
+	TaxRegistrations *taxregistration.Client
 	// TaxSettings is the client used to invoke /tax/settings APIs.
 	TaxSettings *taxsettings.Client
 	// TaxTransactions is the client used to invoke /tax/transactions APIs.
@@ -374,12 +392,16 @@ func (a *API) Init(key string, backends *stripe.Backends) {
 	a.CashBalances = &cashbalance.Client{B: backends.API, Key: key}
 	a.Charges = &charge.Client{B: backends.API, Key: key}
 	a.CheckoutSessions = &checkoutsession.Client{B: backends.API, Key: key}
+	a.ClimateOrders = &climateorder.Client{B: backends.API, Key: key}
+	a.ClimateProducts = &climateproduct.Client{B: backends.API, Key: key}
+	a.ClimateSuppliers = &climatesupplier.Client{B: backends.API, Key: key}
 	a.CountrySpecs = &countryspec.Client{B: backends.API, Key: key}
 	a.Coupons = &coupon.Client{B: backends.API, Key: key}
 	a.CreditNotes = &creditnote.Client{B: backends.API, Key: key}
 	a.CustomerBalanceTransactions = &customerbalancetransaction.Client{B: backends.API, Key: key}
 	a.CustomerCashBalanceTransactions = &customercashbalancetransaction.Client{B: backends.API, Key: key}
 	a.Customers = &customer.Client{B: backends.API, Key: key}
+	a.CustomerSessions = &customersession.Client{B: backends.API, Key: key}
 	a.Disputes = &dispute.Client{B: backends.API, Key: key}
 	a.EphemeralKeys = &ephemeralkey.Client{B: backends.API, Key: key}
 	a.Events = &event.Client{B: backends.API, Key: key}
@@ -388,6 +410,7 @@ func (a *API) Init(key string, backends *stripe.Backends) {
 	a.Files = &file.Client{B: backends.API, BUploads: backends.Uploads, Key: key}
 	a.FinancialConnectionsAccounts = &financialconnectionsaccount.Client{B: backends.API, Key: key}
 	a.FinancialConnectionsSessions = &financialconnectionssession.Client{B: backends.API, Key: key}
+	a.FinancialConnectionsTransactions = &financialconnectionstransaction.Client{B: backends.API, Key: key}
 	a.IdentityVerificationReports = &identityverificationreport.Client{B: backends.API, Key: key}
 	a.IdentityVerificationSessions = &identityverificationsession.Client{B: backends.API, Key: key}
 	a.InvoiceItems = &invoiceitem.Client{B: backends.API, Key: key}
@@ -434,6 +457,7 @@ func (a *API) Init(key string, backends *stripe.Backends) {
 	a.TaxCodes = &taxcode.Client{B: backends.API, Key: key}
 	a.TaxIDs = &taxid.Client{B: backends.API, Key: key}
 	a.TaxRates = &taxrate.Client{B: backends.API, Key: key}
+	a.TaxRegistrations = &taxregistration.Client{B: backends.API, Key: key}
 	a.TaxSettings = &taxsettings.Client{B: backends.API, Key: key}
 	a.TaxTransactions = &taxtransaction.Client{B: backends.API, Key: key}
 	a.TerminalConfigurations = &terminalconfiguration.Client{B: backends.API, Key: key}

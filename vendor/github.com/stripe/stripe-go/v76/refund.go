@@ -8,6 +8,16 @@ package stripe
 
 import "encoding/json"
 
+// The type of refund. This can be `refund`, `reversal`, or `pending`.
+type RefundDestinationDetailsCardType string
+
+// List of values that RefundDestinationDetailsCardType can take
+const (
+	RefundDestinationDetailsCardTypePending  RefundDestinationDetailsCardType = "pending"
+	RefundDestinationDetailsCardTypeRefund   RefundDestinationDetailsCardType = "refund"
+	RefundDestinationDetailsCardTypeReversal RefundDestinationDetailsCardType = "reversal"
+)
+
 // Provides the reason for the refund failure. Possible values are: `lost_or_stolen_card`, `expired_or_canceled_card`, `charge_for_pending_refund_disputed`, `insufficient_funds`, `declined`, `merchant_request`, or `unknown`.
 type RefundFailureReason string
 
@@ -29,7 +39,7 @@ const (
 	RefundReasonRequestedByCustomer     RefundReason = "requested_by_customer"
 )
 
-// Status of the refund. For credit card refunds, this can be `pending`, `succeeded`, or `failed`. For other types of refunds, it can be `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`. Learn more about [failed refunds](https://stripe.com/docs/refunds#failed-refunds).
+// Status of the refund. This can be `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`. Learn more about [failed refunds](https://stripe.com/docs/refunds#failed-refunds).
 type RefundStatus string
 
 // List of values that RefundStatus can take
@@ -127,6 +137,118 @@ func (p *RefundCancelParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }
 
+type RefundDestinationDetailsAffirm struct{}
+type RefundDestinationDetailsAfterpayClearpay struct{}
+type RefundDestinationDetailsAlipay struct{}
+type RefundDestinationDetailsAuBankTransfer struct{}
+type RefundDestinationDetailsBLIK struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsBrBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsCard struct {
+	// Value of the reference number assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference number on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+	// Type of the reference number assigned to the refund.
+	ReferenceType string `json:"reference_type"`
+	// The type of refund. This can be `refund`, `reversal`, or `pending`.
+	Type RefundDestinationDetailsCardType `json:"type"`
+}
+type RefundDestinationDetailsCashApp struct{}
+type RefundDestinationDetailsCustomerCashBalance struct{}
+type RefundDestinationDetailsEPS struct{}
+type RefundDestinationDetailsEUBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsGBBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsGiropay struct{}
+type RefundDestinationDetailsGrabpay struct{}
+type RefundDestinationDetailsJPBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsKlarna struct{}
+type RefundDestinationDetailsMXBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsP24 struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsPayNow struct{}
+type RefundDestinationDetailsPaypal struct{}
+type RefundDestinationDetailsPix struct{}
+type RefundDestinationDetailsRevolut struct{}
+type RefundDestinationDetailsSofort struct{}
+type RefundDestinationDetailsTHBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsUSBankTransfer struct {
+	// The reference assigned to the refund.
+	Reference string `json:"reference"`
+	// Status of the reference on the refund. This can be `pending`, `available` or `unavailable`.
+	ReferenceStatus string `json:"reference_status"`
+}
+type RefundDestinationDetailsWeChatPay struct{}
+type RefundDestinationDetailsZip struct{}
+type RefundDestinationDetails struct {
+	Affirm              *RefundDestinationDetailsAffirm              `json:"affirm"`
+	AfterpayClearpay    *RefundDestinationDetailsAfterpayClearpay    `json:"afterpay_clearpay"`
+	Alipay              *RefundDestinationDetailsAlipay              `json:"alipay"`
+	AuBankTransfer      *RefundDestinationDetailsAuBankTransfer      `json:"au_bank_transfer"`
+	BLIK                *RefundDestinationDetailsBLIK                `json:"blik"`
+	BrBankTransfer      *RefundDestinationDetailsBrBankTransfer      `json:"br_bank_transfer"`
+	Card                *RefundDestinationDetailsCard                `json:"card"`
+	CashApp             *RefundDestinationDetailsCashApp             `json:"cashapp"`
+	CustomerCashBalance *RefundDestinationDetailsCustomerCashBalance `json:"customer_cash_balance"`
+	EPS                 *RefundDestinationDetailsEPS                 `json:"eps"`
+	EUBankTransfer      *RefundDestinationDetailsEUBankTransfer      `json:"eu_bank_transfer"`
+	GBBankTransfer      *RefundDestinationDetailsGBBankTransfer      `json:"gb_bank_transfer"`
+	Giropay             *RefundDestinationDetailsGiropay             `json:"giropay"`
+	Grabpay             *RefundDestinationDetailsGrabpay             `json:"grabpay"`
+	JPBankTransfer      *RefundDestinationDetailsJPBankTransfer      `json:"jp_bank_transfer"`
+	Klarna              *RefundDestinationDetailsKlarna              `json:"klarna"`
+	MXBankTransfer      *RefundDestinationDetailsMXBankTransfer      `json:"mx_bank_transfer"`
+	P24                 *RefundDestinationDetailsP24                 `json:"p24"`
+	PayNow              *RefundDestinationDetailsPayNow              `json:"paynow"`
+	Paypal              *RefundDestinationDetailsPaypal              `json:"paypal"`
+	Pix                 *RefundDestinationDetailsPix                 `json:"pix"`
+	Revolut             *RefundDestinationDetailsRevolut             `json:"revolut"`
+	Sofort              *RefundDestinationDetailsSofort              `json:"sofort"`
+	THBankTransfer      *RefundDestinationDetailsTHBankTransfer      `json:"th_bank_transfer"`
+	// The type of transaction-specific details of the payment method used in the refund (e.g., `card`). An additional hash is included on `destination_details` with a name matching this value. It contains information specific to the refund transaction.
+	Type           string                                  `json:"type"`
+	USBankTransfer *RefundDestinationDetailsUSBankTransfer `json:"us_bank_transfer"`
+	WeChatPay      *RefundDestinationDetailsWeChatPay      `json:"wechat_pay"`
+	Zip            *RefundDestinationDetailsZip            `json:"zip"`
+}
 type RefundNextActionDisplayDetailsEmailSent struct {
 	// The timestamp when the email was sent.
 	EmailSentAt int64 `json:"email_sent_at"`
@@ -165,7 +287,8 @@ type Refund struct {
 	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
 	Currency Currency `json:"currency"`
 	// An arbitrary string attached to the object. You can use this for displaying to users (available on non-card refunds only).
-	Description string `json:"description"`
+	Description        string                    `json:"description"`
+	DestinationDetails *RefundDestinationDetails `json:"destination_details"`
 	// After the refund fails, this balance transaction describes the adjustment made on your account balance that reverses the initial balance transaction.
 	FailureBalanceTransaction *BalanceTransaction `json:"failure_balance_transaction"`
 	// Provides the reason for the refund failure. Possible values are: `lost_or_stolen_card`, `expired_or_canceled_card`, `charge_for_pending_refund_disputed`, `insufficient_funds`, `declined`, `merchant_request`, or `unknown`.
@@ -187,7 +310,7 @@ type Refund struct {
 	ReceiptNumber string `json:"receipt_number"`
 	// The transfer reversal that's associated with the refund. Only present if the charge came from another Stripe account.
 	SourceTransferReversal *TransferReversal `json:"source_transfer_reversal"`
-	// Status of the refund. For credit card refunds, this can be `pending`, `succeeded`, or `failed`. For other types of refunds, it can be `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`. Learn more about [failed refunds](https://stripe.com/docs/refunds#failed-refunds).
+	// Status of the refund. This can be `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`. Learn more about [failed refunds](https://stripe.com/docs/refunds#failed-refunds).
 	Status RefundStatus `json:"status"`
 	// This refers to the transfer reversal object if the accompanying transfer reverses. This is only applicable if the charge was created using the destination parameter.
 	TransferReversal *TransferReversal `json:"transfer_reversal"`

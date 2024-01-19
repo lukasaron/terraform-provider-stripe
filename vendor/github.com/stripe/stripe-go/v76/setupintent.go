@@ -155,13 +155,14 @@ const (
 	SetupIntentPaymentMethodOptionsCardNetworkVisa            SetupIntentPaymentMethodOptionsCardNetwork = "visa"
 )
 
-// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Permitted values include: `automatic` or `any`. If not provided, defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 type SetupIntentPaymentMethodOptionsCardRequestThreeDSecure string
 
 // List of values that SetupIntentPaymentMethodOptionsCardRequestThreeDSecure can take
 const (
 	SetupIntentPaymentMethodOptionsCardRequestThreeDSecureAny           SetupIntentPaymentMethodOptionsCardRequestThreeDSecure = "any"
 	SetupIntentPaymentMethodOptionsCardRequestThreeDSecureAutomatic     SetupIntentPaymentMethodOptionsCardRequestThreeDSecure = "automatic"
+	SetupIntentPaymentMethodOptionsCardRequestThreeDSecureChallenge     SetupIntentPaymentMethodOptionsCardRequestThreeDSecure = "challenge"
 	SetupIntentPaymentMethodOptionsCardRequestThreeDSecureChallengeOnly SetupIntentPaymentMethodOptionsCardRequestThreeDSecure = "challenge_only"
 )
 
@@ -181,7 +182,16 @@ type SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch st
 
 // List of values that SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch can take
 const (
-	SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchBalances SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "balances"
+	SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchBalances     SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "balances"
+	SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchTransactions SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "transactions"
+)
+
+// Mandate collection method
+type SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod string
+
+// List of values that SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod can take
+const (
+	SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethodPaper SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod = "paper"
 )
 
 // Bank account verification method.
@@ -217,6 +227,30 @@ const (
 	SetupIntentUsageOffSession SetupIntentUsage = "off_session"
 	SetupIntentUsageOnSession  SetupIntentUsage = "on_session"
 )
+
+// Returns a list of SetupIntents.
+type SetupIntentListParams struct {
+	ListParams `form:"*"`
+	// If present, the SetupIntent's payment method will be attached to the in-context Stripe Account.
+	//
+	// It can only be used for this Stripe Account's own money movement flows like InboundTransfer and OutboundTransfers. It cannot be set to true when setting up a PaymentMethod for a Customer, and defaults to false when attaching a PaymentMethod to a Customer.
+	AttachToSelf *bool `form:"attach_to_self"`
+	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp, or it can be a dictionary with a number of different query options.
+	Created *int64 `form:"created"`
+	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp, or it can be a dictionary with a number of different query options.
+	CreatedRange *RangeQueryParams `form:"created"`
+	// Only return SetupIntents for the customer specified by this customer ID.
+	Customer *string `form:"customer"`
+	// Specifies which fields in the response should be expanded.
+	Expand []*string `form:"expand"`
+	// Only return SetupIntents that associate with the specified payment method.
+	PaymentMethod *string `form:"payment_method"`
+}
+
+// AddExpand appends a new field to expand.
+func (p *SetupIntentListParams) AddExpand(f string) {
+	p.Expand = append(p.Expand, &f)
+}
 
 // When you enable this parameter, this SetupIntent accepts payment methods that you enable in the Dashboard and that are compatible with its other parameters.
 type SetupIntentAutomaticPaymentMethodsParams struct {
@@ -400,6 +434,9 @@ type SetupIntentPaymentMethodDataRadarOptionsParams struct {
 	Session *string `form:"session"`
 }
 
+// If this is a `Revolut Pay` PaymentMethod, this hash contains details about the Revolut Pay payment method.
+type SetupIntentPaymentMethodDataRevolutPayParams struct{}
+
 // If this is a `sepa_debit` PaymentMethod, this hash contains details about the SEPA debit bank account.
 type SetupIntentPaymentMethodDataSEPADebitParams struct {
 	// IBAN of the bank account.
@@ -493,6 +530,8 @@ type SetupIntentPaymentMethodDataParams struct {
 	PromptPay *SetupIntentPaymentMethodDataPromptPayParams `form:"promptpay"`
 	// Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 	RadarOptions *SetupIntentPaymentMethodDataRadarOptionsParams `form:"radar_options"`
+	// If this is a `Revolut Pay` PaymentMethod, this hash contains details about the Revolut Pay payment method.
+	RevolutPay *SetupIntentPaymentMethodDataRevolutPayParams `form:"revolut_pay"`
 	// If this is a `sepa_debit` PaymentMethod, this hash contains details about the SEPA debit bank account.
 	SEPADebit *SetupIntentPaymentMethodDataSEPADebitParams `form:"sepa_debit"`
 	// If this is a `sofort` PaymentMethod, this hash contains details about the SOFORT payment method.
@@ -538,7 +577,7 @@ type SetupIntentPaymentMethodOptionsACSSDebitParams struct {
 	Currency *string `form:"currency"`
 	// Additional fields for Mandate creation
 	MandateOptions *SetupIntentPaymentMethodOptionsACSSDebitMandateOptionsParams `form:"mandate_options"`
-	// Verification method for the intent
+	// Bank account verification method.
 	VerificationMethod *string `form:"verification_method"`
 }
 
@@ -566,6 +605,57 @@ type SetupIntentPaymentMethodOptionsCardMandateOptionsParams struct {
 	SupportedTypes []*string `form:"supported_types"`
 }
 
+// Cartes Bancaires-specific 3DS fields.
+type SetupIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsCartesBancairesParams struct {
+	// The cryptogram calculation algorithm used by the card Issuer's ACS
+	// to calculate the Authentication cryptogram. Also known as `cavvAlgorithm`.
+	// messageExtension: CB-AVALGO
+	CbAvalgo *string `form:"cb_avalgo"`
+	// The exemption indicator returned from Cartes Bancaires in the ARes.
+	// message extension: CB-EXEMPTION; string (4 characters)
+	// This is a 3 byte bitmap (low significant byte first and most significant
+	// bit first) that has been Base64 encoded
+	CbExemption *string `form:"cb_exemption"`
+	// The risk score returned from Cartes Bancaires in the ARes.
+	// message extension: CB-SCORE; numeric value 0-99
+	CbScore *int64 `form:"cb_score"`
+}
+
+// Network specific 3DS fields. Network specific arguments require an
+// explicit card brand choice. The parameter `payment_method_options.card.network“
+// must be populated accordingly
+type SetupIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsParams struct {
+	// Cartes Bancaires-specific 3DS fields.
+	CartesBancaires *SetupIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsCartesBancairesParams `form:"cartes_bancaires"`
+}
+
+// If 3D Secure authentication was performed with a third-party provider,
+// the authentication details to use for this setup.
+type SetupIntentPaymentMethodOptionsCardThreeDSecureParams struct {
+	// The `transStatus` returned from the card Issuer's ACS in the ARes.
+	AresTransStatus *string `form:"ares_trans_status"`
+	// The cryptogram, also known as the "authentication value" (AAV, CAVV or
+	// AEVV). This value is 20 bytes, base64-encoded into a 28-character string.
+	// (Most 3D Secure providers will return the base64-encoded version, which
+	// is what you should specify here.)
+	Cryptogram *string `form:"cryptogram"`
+	// The Electronic Commerce Indicator (ECI) is returned by your 3D Secure
+	// provider and indicates what degree of authentication was performed.
+	ElectronicCommerceIndicator *string `form:"electronic_commerce_indicator"`
+	// Network specific 3DS fields. Network specific arguments require an
+	// explicit card brand choice. The parameter `payment_method_options.card.network``
+	// must be populated accordingly
+	NetworkOptions *SetupIntentPaymentMethodOptionsCardThreeDSecureNetworkOptionsParams `form:"network_options"`
+	// The challenge indicator (`threeDSRequestorChallengeInd`) which was requested in the
+	// AReq sent to the card Issuer's ACS. A string containing 2 digits from 01-99.
+	RequestorChallengeIndicator *string `form:"requestor_challenge_indicator"`
+	// For 3D Secure 1, the XID. For 3D Secure 2, the Directory Server
+	// Transaction ID (dsTransID).
+	TransactionID *string `form:"transaction_id"`
+	// The version of 3D Secure that was performed.
+	Version *string `form:"version"`
+}
+
 // Configuration for any card setup attempted on this SetupIntent.
 type SetupIntentPaymentMethodOptionsCardParams struct {
 	// Configuration options for setting up an eMandate for cards issued in India.
@@ -576,8 +666,11 @@ type SetupIntentPaymentMethodOptionsCardParams struct {
 	MOTO *bool `form:"moto"`
 	// Selected network to process this SetupIntent on. Depends on the available networks of the card attached to the SetupIntent. Can be only set confirm-time.
 	Network *string `form:"network"`
-	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Permitted values include: `automatic` or `any`. If not provided, defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 	RequestThreeDSecure *string `form:"request_three_d_secure"`
+	// If 3D Secure authentication was performed with a third-party provider,
+	// the authentication details to use for this setup.
+	ThreeDSecure *SetupIntentPaymentMethodOptionsCardThreeDSecureParams `form:"three_d_secure"`
 }
 
 // If this is a `link` PaymentMethod, this sub-hash contains details about the Link payment method options.
@@ -611,6 +704,12 @@ type SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsParams stru
 	ReturnURL *string `form:"return_url"`
 }
 
+// Additional fields for Mandate creation
+type SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsParams struct {
+	// The method used to collect offline mandate customer acceptance.
+	CollectionMethod *string `form:"collection_method"`
+}
+
 // Additional fields for network related functions
 type SetupIntentPaymentMethodOptionsUSBankAccountNetworksParams struct {
 	// Triggers validations to run across the selected networks
@@ -621,9 +720,11 @@ type SetupIntentPaymentMethodOptionsUSBankAccountNetworksParams struct {
 type SetupIntentPaymentMethodOptionsUSBankAccountParams struct {
 	// Additional fields for Financial Connections Session creation
 	FinancialConnections *SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnectionsParams `form:"financial_connections"`
+	// Additional fields for Mandate creation
+	MandateOptions *SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsParams `form:"mandate_options"`
 	// Additional fields for network related functions
 	Networks *SetupIntentPaymentMethodOptionsUSBankAccountNetworksParams `form:"networks"`
-	// Verification method for the intent
+	// Bank account verification method.
 	VerificationMethod *string `form:"verification_method"`
 }
 
@@ -720,27 +821,19 @@ func (p *SetupIntentParams) AddMetadata(key string, value string) {
 	p.Metadata[key] = value
 }
 
-// Returns a list of SetupIntents.
-type SetupIntentListParams struct {
-	ListParams `form:"*"`
-	// If present, the SetupIntent's payment method will be attached to the in-context Stripe Account.
-	//
-	// It can only be used for this Stripe Account's own money movement flows like InboundTransfer and OutboundTransfers. It cannot be set to true when setting up a PaymentMethod for a Customer, and defaults to false when attaching a PaymentMethod to a Customer.
-	AttachToSelf *bool `form:"attach_to_self"`
-	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp, or it can be a dictionary with a number of different query options.
-	Created *int64 `form:"created"`
-	// A filter on the list, based on the object `created` field. The value can be a string with an integer Unix timestamp, or it can be a dictionary with a number of different query options.
-	CreatedRange *RangeQueryParams `form:"created"`
-	// Only return SetupIntents for the customer specified by this customer ID.
-	Customer *string `form:"customer"`
+// You can cancel a SetupIntent object when it's in one of these statuses: requires_payment_method, requires_confirmation, or requires_action.
+//
+// After you cancel it, setup is abandoned and any operations on the SetupIntent fail with an error.
+type SetupIntentCancelParams struct {
+	Params `form:"*"`
+	// Reason for canceling this SetupIntent. Possible values are: `abandoned`, `requested_by_customer`, or `duplicate`
+	CancellationReason *string `form:"cancellation_reason"`
 	// Specifies which fields in the response should be expanded.
 	Expand []*string `form:"expand"`
-	// Only return SetupIntents that associate with the specified payment method.
-	PaymentMethod *string `form:"payment_method"`
 }
 
 // AddExpand appends a new field to expand.
-func (p *SetupIntentListParams) AddExpand(f string) {
+func (p *SetupIntentCancelParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }
 
@@ -887,6 +980,9 @@ type SetupIntentConfirmPaymentMethodDataRadarOptionsParams struct {
 	Session *string `form:"session"`
 }
 
+// If this is a `Revolut Pay` PaymentMethod, this hash contains details about the Revolut Pay payment method.
+type SetupIntentConfirmPaymentMethodDataRevolutPayParams struct{}
+
 // If this is a `sepa_debit` PaymentMethod, this hash contains details about the SEPA debit bank account.
 type SetupIntentConfirmPaymentMethodDataSEPADebitParams struct {
 	// IBAN of the bank account.
@@ -980,6 +1076,8 @@ type SetupIntentConfirmPaymentMethodDataParams struct {
 	PromptPay *SetupIntentConfirmPaymentMethodDataPromptPayParams `form:"promptpay"`
 	// Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
 	RadarOptions *SetupIntentConfirmPaymentMethodDataRadarOptionsParams `form:"radar_options"`
+	// If this is a `Revolut Pay` PaymentMethod, this hash contains details about the Revolut Pay payment method.
+	RevolutPay *SetupIntentConfirmPaymentMethodDataRevolutPayParams `form:"revolut_pay"`
 	// If this is a `sepa_debit` PaymentMethod, this hash contains details about the SEPA debit bank account.
 	SEPADebit *SetupIntentConfirmPaymentMethodDataSEPADebitParams `form:"sepa_debit"`
 	// If this is a `sofort` PaymentMethod, this hash contains details about the SOFORT payment method.
@@ -1039,22 +1137,6 @@ type SetupIntentConfirmParams struct {
 
 // AddExpand appends a new field to expand.
 func (p *SetupIntentConfirmParams) AddExpand(f string) {
-	p.Expand = append(p.Expand, &f)
-}
-
-// You can cancel a SetupIntent object when it's in one of these statuses: requires_payment_method, requires_confirmation, or requires_action.
-//
-// After you cancel it, setup is abandoned and any operations on the SetupIntent fail with an error.
-type SetupIntentCancelParams struct {
-	Params `form:"*"`
-	// Reason for canceling this SetupIntent. Possible values are: `abandoned`, `requested_by_customer`, or `duplicate`
-	CancellationReason *string `form:"cancellation_reason"`
-	// Specifies which fields in the response should be expanded.
-	Expand []*string `form:"expand"`
-}
-
-// AddExpand appends a new field to expand.
-func (p *SetupIntentCancelParams) AddExpand(f string) {
 	p.Expand = append(p.Expand, &f)
 }
 
@@ -1182,7 +1264,7 @@ type SetupIntentPaymentMethodOptionsCard struct {
 	MandateOptions *SetupIntentPaymentMethodOptionsCardMandateOptions `json:"mandate_options"`
 	// Selected network to process this SetupIntent on. Depends on the available networks of the card attached to the setup intent. Can be only set confirm-time.
 	Network SetupIntentPaymentMethodOptionsCardNetwork `json:"network"`
-	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Permitted values include: `automatic` or `any`. If not provided, defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+	// We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
 	RequestThreeDSecure SetupIntentPaymentMethodOptionsCardRequestThreeDSecure `json:"request_three_d_secure"`
 }
 type SetupIntentPaymentMethodOptionsLink struct {
@@ -1205,8 +1287,13 @@ type SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnections struct {
 	// For webview integrations only. Upon completing OAuth login in the native browser, the user will be redirected to this URL to return to your app.
 	ReturnURL string `json:"return_url"`
 }
+type SetupIntentPaymentMethodOptionsUSBankAccountMandateOptions struct {
+	// Mandate collection method
+	CollectionMethod SetupIntentPaymentMethodOptionsUSBankAccountMandateOptionsCollectionMethod `json:"collection_method"`
+}
 type SetupIntentPaymentMethodOptionsUSBankAccount struct {
 	FinancialConnections *SetupIntentPaymentMethodOptionsUSBankAccountFinancialConnections `json:"financial_connections"`
+	MandateOptions       *SetupIntentPaymentMethodOptionsUSBankAccountMandateOptions       `json:"mandate_options"`
 	// Bank account verification method.
 	VerificationMethod SetupIntentPaymentMethodOptionsUSBankAccountVerificationMethod `json:"verification_method"`
 }

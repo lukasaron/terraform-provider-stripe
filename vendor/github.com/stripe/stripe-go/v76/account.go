@@ -99,7 +99,7 @@ const (
 	AccountExternalAccountTypeCard        AccountExternalAccountType = "card"
 )
 
-// If the account is disabled, this string describes why. Can be `requirements.past_due`, `requirements.pending_verification`, `listed`, `platform_paused`, `rejected.fraud`, `rejected.listed`, `rejected.terms_of_service`, `rejected.other`, `under_review`, or `other`.
+// If the account is disabled, this string describes why. [Learn more about handling verification issues](https://stripe.com/docs/connect/handling-api-verification). Can be `action_required.requested_capabilities`, `requirements.past_due`, `requirements.pending_verification`, `listed`, `platform_paused`, `rejected.fraud`, `rejected.incomplete_verification`, `rejected.listed`, `rejected.other`, `rejected.terms_of_service`, `under_review`, or `other`.
 type AccountRequirementsDisabledReason string
 
 // List of values that AccountRequirementsDisabledReason can take
@@ -144,7 +144,11 @@ const (
 	AccountTypeStandard AccountType = "standard"
 )
 
-// Retrieves the details of an account.
+// With [Connect](https://stripe.com/docs/connect), you can delete accounts you manage.
+//
+// Accounts created using test-mode keys can be deleted at any time. Standard accounts created using live-mode keys cannot be deleted. Custom or Express accounts created using live-mode keys can only be deleted once all balances are zero.
+//
+// If you want to delete your own account, use the [account information tab in your account settings](https://dashboard.stripe.com/settings/account) instead.
 type AccountParams struct {
 	Params `form:"*"`
 	// An [account token](https://stripe.com/docs/api#create_account_token), used to securely provide details to the account.
@@ -395,6 +399,12 @@ type AccountCapabilitiesPromptPayPaymentsParams struct {
 	Requested *bool `form:"requested"`
 }
 
+// The revolut_pay_payments capability.
+type AccountCapabilitiesRevolutPayPaymentsParams struct {
+	// Passing true requests the capability for the account, if it is not already requested. A requested capability may not immediately become active. Any requirements to activate the capability are returned in the `requirements` arrays.
+	Requested *bool `form:"requested"`
+}
+
 // The sepa_debit_payments capability.
 type AccountCapabilitiesSEPADebitPaymentsParams struct {
 	// Passing true requests the capability for the account, if it is not already requested. A requested capability may not immediately become active. Any requirements to activate the capability are returned in the `requirements` arrays.
@@ -501,6 +511,8 @@ type AccountCapabilitiesParams struct {
 	PayNowPayments *AccountCapabilitiesPayNowPaymentsParams `form:"paynow_payments"`
 	// The promptpay_payments capability.
 	PromptPayPayments *AccountCapabilitiesPromptPayPaymentsParams `form:"promptpay_payments"`
+	// The revolut_pay_payments capability.
+	RevolutPayPayments *AccountCapabilitiesRevolutPayPaymentsParams `form:"revolut_pay_payments"`
 	// The sepa_debit_payments capability.
 	SEPADebitPayments *AccountCapabilitiesSEPADebitPaymentsParams `form:"sepa_debit_payments"`
 	// The sofort_payments capability.
@@ -611,7 +623,7 @@ type AccountCompanyParams struct {
 	Phone *string `form:"phone"`
 	// The identification number given to a company when it is registered or incorporated, if distinct from the identification number used for filing taxes. (Examples are the CIN for companies and LLP IN for partnerships in India, and the Company Registration Number in Hong Kong).
 	RegistrationNumber *string `form:"registration_number"`
-	// The category identifying the legal structure of the company or legal entity. See [Business structure](https://stripe.com/docs/connect/identity-verification#business-structure) for more details.
+	// The category identifying the legal structure of the company or legal entity. See [Business structure](https://stripe.com/docs/connect/identity-verification#business-structure) for more details. Pass an empty string to unset this value.
 	Structure *string `form:"structure"`
 	// The business ID number of the company, as appropriate for the company's country. (Examples are an Employer ID Number in the U.S., a Business Number in Canada, or a Company Number in the UK.)
 	TaxID *string `form:"tax_id"`
@@ -681,6 +693,46 @@ type AccountDocumentsParams struct {
 	CompanyTaxIDVerification *AccountDocumentsCompanyTaxIDVerificationParams `form:"company_tax_id_verification"`
 	// One or more documents showing the company's proof of registration with the national business registry.
 	ProofOfRegistration *AccountDocumentsProofOfRegistrationParams `form:"proof_of_registration"`
+}
+
+// AccountExternalAccountParams are the parameters allowed to reference an
+// external account when creating an account. It should either have Token set
+// or everything else.
+type AccountExternalAccountParams struct {
+	Params            `form:"*"`
+	AccountNumber     *string `form:"account_number"`
+	AccountHolderName *string `form:"account_holder_name"`
+	AccountHolderType *string `form:"account_holder_type"`
+	Country           *string `form:"country"`
+	Currency          *string `form:"currency"`
+	RoutingNumber     *string `form:"routing_number"`
+	Token             *string `form:"token"`
+}
+
+// AppendTo implements custom encoding logic for AccountExternalAccountParams
+// so that we can send the special required `object` field up along with the
+// other specified parameters or the token value.
+func (p *AccountExternalAccountParams) AppendTo(body *form.Values, keyParts []string) {
+	if p.Token != nil {
+		body.Add(form.FormatKey(keyParts), StringValue(p.Token))
+	} else {
+		body.Add(form.FormatKey(append(keyParts, "object")), "bank_account")
+	}
+}
+
+// AddMetadata adds a new key-value pair to the Metadata.
+func (p *AccountExternalAccountParams) AddMetadata(key string, value string) {
+	if p.Metadata == nil {
+		p.Metadata = make(map[string]string)
+	}
+
+	p.Metadata[key] = value
+}
+
+// Settings specific to Bacs Direct Debit payments.
+type AccountSettingsBACSDebitPaymentsParams struct {
+	// The Bacs Direct Debit Display Name for this account. For payments made with Bacs Direct Debit, this name appears on the mandate as the statement descriptor. Mobile banking apps display it as the name of the business. To use custom branding, set the Bacs Direct Debit Display Name during or right after creation. Custom branding incurs an additional monthly fee for the platform. If you don't set the display name before requesting Bacs capability, it's automatically set as "Stripe" and the account is onboarded to Stripe branding, which is free.
+	DisplayName *string `form:"display_name"`
 }
 
 // Settings used to apply the account's branding to email receipts, invoices, Checkout, and other products.
@@ -786,12 +838,10 @@ type AccountSettingsTreasuryParams struct {
 	// Details on the account's acceptance of the Stripe Treasury Services Agreement.
 	TOSAcceptance *AccountSettingsTreasuryTOSAcceptanceParams `form:"tos_acceptance"`
 }
-type AccountSettingsBACSDebitPaymentsParams struct {
-	DisplayName *string `form:"display_name"`
-}
 
 // Options for customizing how the account functions within Stripe.
 type AccountSettingsParams struct {
+	// Settings specific to Bacs Direct Debit payments.
 	BACSDebitPayments *AccountSettingsBACSDebitPaymentsParams `form:"bacs_debit_payments"`
 	// Settings used to apply the account's branding to email receipts, invoices, Checkout, and other products.
 	Branding *AccountSettingsBrandingParams `form:"branding"`
@@ -842,31 +892,6 @@ type AccountRejectParams struct {
 	Expand []*string `form:"expand"`
 	// The reason for rejecting the account. Can be `fraud`, `terms_of_service`, or `other`.
 	Reason *string `form:"reason"`
-}
-
-// AccountExternalAccountParams are the parameters allowed to reference an
-// external account when creating an account. It should either have Token set
-// or everything else.
-type AccountExternalAccountParams struct {
-	Params            `form:"*"`
-	AccountNumber     *string `form:"account_number"`
-	AccountHolderName *string `form:"account_holder_name"`
-	AccountHolderType *string `form:"account_holder_type"`
-	Country           *string `form:"country"`
-	Currency          *string `form:"currency"`
-	RoutingNumber     *string `form:"routing_number"`
-	Token             *string `form:"token"`
-}
-
-// AppendTo implements custom encoding logic for AccountExternalAccountParams
-// so that we can send the special required `object` field up along with the
-// other specified parameters or the token value.
-func (p *AccountExternalAccountParams) AppendTo(body *form.Values, keyParts []string) {
-	if p.Token != nil {
-		body.Add(form.FormatKey(keyParts), StringValue(p.Token))
-	} else {
-		body.Add(form.FormatKey(append(keyParts, "object")), "bank_account")
-	}
 }
 
 // AddExpand appends a new field to expand.
@@ -958,6 +983,8 @@ type AccountCapabilities struct {
 	PayNowPayments AccountCapabilityStatus `json:"paynow_payments"`
 	// The status of the promptpay payments capability of the account, or whether the account can directly process promptpay charges.
 	PromptPayPayments AccountCapabilityStatus `json:"promptpay_payments"`
+	// The status of the RevolutPay capability of the account, or whether the account can directly process RevolutPay payments.
+	RevolutPayPayments AccountCapabilityStatus `json:"revolut_pay_payments"`
 	// The status of the SEPA Direct Debits payments capability of the account, or whether the account can directly process SEPA Direct Debits charges.
 	SEPADebitPayments AccountCapabilityStatus `json:"sepa_debit_payments"`
 	// The status of the Sofort payments capability of the account, or whether the account can directly process Sofort charges.
@@ -1104,7 +1131,7 @@ type AccountFutureRequirements struct {
 	CurrentDeadline int64 `json:"current_deadline"`
 	// Fields that need to be collected to keep the account enabled. If not collected by `future_requirements[current_deadline]`, these fields will transition to the main `requirements` hash.
 	CurrentlyDue []string `json:"currently_due"`
-	// This is typed as a string for consistency with `requirements.disabled_reason`, but it safe to assume `future_requirements.disabled_reason` is empty because fields in `future_requirements` will never disable the account.
+	// This is typed as a string for consistency with `requirements.disabled_reason`.
 	DisabledReason string `json:"disabled_reason"`
 	// Fields that are `currently_due` and need to be collected again because validation or verification failed.
 	Errors []*AccountFutureRequirementsError `json:"errors"`
@@ -1140,7 +1167,7 @@ type AccountRequirements struct {
 	CurrentDeadline int64 `json:"current_deadline"`
 	// Fields that need to be collected to keep the account enabled. If not collected by `current_deadline`, these fields appear in `past_due` as well, and the account is disabled.
 	CurrentlyDue []string `json:"currently_due"`
-	// If the account is disabled, this string describes why. Can be `requirements.past_due`, `requirements.pending_verification`, `listed`, `platform_paused`, `rejected.fraud`, `rejected.listed`, `rejected.terms_of_service`, `rejected.other`, `under_review`, or `other`.
+	// If the account is disabled, this string describes why. [Learn more about handling verification issues](https://stripe.com/docs/connect/handling-api-verification). Can be `action_required.requested_capabilities`, `requirements.past_due`, `requirements.pending_verification`, `listed`, `platform_paused`, `rejected.fraud`, `rejected.incomplete_verification`, `rejected.listed`, `rejected.other`, `rejected.terms_of_service`, `under_review`, or `other`.
 	DisabledReason AccountRequirementsDisabledReason `json:"disabled_reason"`
 	// Fields that are `currently_due` and need to be collected again because validation or verification failed.
 	Errors []*AccountRequirementsError `json:"errors"`
@@ -1152,8 +1179,10 @@ type AccountRequirements struct {
 	PendingVerification []string `json:"pending_verification"`
 }
 type AccountSettingsBACSDebitPayments struct {
-	// The Bacs Direct Debit Display Name for this account. For payments made with Bacs Direct Debit, this will appear on the mandate, and as the statement descriptor.
+	// The Bacs Direct Debit display name for this account. For payments made with Bacs Direct Debit, this name appears on the mandate as the statement descriptor. Mobile banking apps display it as the name of the business. To use custom branding, set the Bacs Direct Debit Display Name during or right after creation. Custom branding incurs an additional monthly fee for the platform. The fee appears 5 business days after requesting Bacs. If you don't set the display name before requesting Bacs capability, it's automatically set as "Stripe" and the account is onboarded to Stripe branding, which is free.
 	DisplayName string `json:"display_name"`
+	// The Bacs Direct Debit Service user number for this account. For payments made with Bacs Direct Debit, this number is a unique identifier of the account with our banking partners.
+	ServiceUserNumber string `json:"service_user_number"`
 }
 type AccountSettingsBranding struct {
 	// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) An icon for the account. Must be square and at least 128px x 128px.

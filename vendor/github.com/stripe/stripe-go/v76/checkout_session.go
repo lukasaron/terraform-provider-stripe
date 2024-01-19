@@ -43,6 +43,17 @@ const (
 	CheckoutSessionConsentTermsOfServiceAccepted CheckoutSessionConsentTermsOfService = "accepted"
 )
 
+// Determines the position and visibility of the payment method reuse agreement in the UI. When set to `auto`, Stripe's defaults will be used.
+//
+// When set to `hidden`, the payment method reuse agreement text will always be hidden in the UI.
+type CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPosition string
+
+// List of values that CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPosition can take
+const (
+	CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPositionAuto   CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPosition = "auto"
+	CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPositionHidden CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPosition = "hidden"
+)
+
 // If set to `auto`, enables the collection of customer consent for promotional communications. The Checkout
 // Session will determine whether to display an option to opt into promotional communication
 // from the merchant depending on the customer's locale. Only available to US merchants.
@@ -542,6 +553,27 @@ const (
 	CheckoutSessionPaymentMethodOptionsPayNowSetupFutureUsageNone CheckoutSessionPaymentMethodOptionsPayNowSetupFutureUsage = "none"
 )
 
+// Controls when the funds will be captured from the customer's account.
+type CheckoutSessionPaymentMethodOptionsPaypalCaptureMethod string
+
+// List of values that CheckoutSessionPaymentMethodOptionsPaypalCaptureMethod can take
+const (
+	CheckoutSessionPaymentMethodOptionsPaypalCaptureMethodManual CheckoutSessionPaymentMethodOptionsPaypalCaptureMethod = "manual"
+)
+
+// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+//
+// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+//
+// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+type CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsage string
+
+// List of values that CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsage can take
+const (
+	CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsageNone       CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsage = "none"
+	CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsageOffSession CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsage = "off_session"
+)
+
 // Indicates that you intend to make future payments with this PaymentIntent's payment method.
 //
 // Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
@@ -584,7 +616,8 @@ type CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetc
 
 // List of values that CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch can take
 const (
-	CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchBalances CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "balances"
+	CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchBalances     CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "balances"
+	CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetchTransactions CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPrefetch = "transactions"
 )
 
 // Indicates that you intend to make future payments with this PaymentIntent's payment method.
@@ -666,7 +699,7 @@ const (
 // Describes the type of transaction being performed by Checkout in order to customize
 // relevant text on the page, such as the submit button. `submit_type` can only be
 // specified on Checkout Sessions in `payment` mode, but not Checkout Sessions
-// in `subscription` or `setup` mode.
+// in `subscription` or `setup` mode. Possible values are `auto`, `pay`, `book`, `donate`. If blank or `auto`, `pay` is used.
 type CheckoutSessionSubmitType string
 
 // List of values that CheckoutSessionSubmitType can take
@@ -717,6 +750,10 @@ type CheckoutSessionListCustomerDetailsParams struct {
 // Returns a list of Checkout Sessions.
 type CheckoutSessionListParams struct {
 	ListParams `form:"*"`
+	// Only return the Checkout Sessions that were created during the given date interval.
+	Created *int64 `form:"created"`
+	// Only return the Checkout Sessions that were created during the given date interval.
+	CreatedRange *RangeQueryParams `form:"created"`
 	// Only return the Checkout Sessions for the Customer specified.
 	Customer *string `form:"customer"`
 	// Only return the Checkout Sessions for the Customer details specified.
@@ -727,6 +764,8 @@ type CheckoutSessionListParams struct {
 	PaymentIntent *string `form:"payment_intent"`
 	// Only return the Checkout Sessions for the Payment Link specified.
 	PaymentLink *string `form:"payment_link"`
+	// Only return the Checkout Sessions matching the given status.
+	Status *string `form:"status"`
 	// Only return the Checkout Session for the subscription specified.
 	Subscription *string `form:"subscription"`
 }
@@ -758,8 +797,17 @@ type CheckoutSessionAutomaticTaxParams struct {
 	Enabled *bool `form:"enabled"`
 }
 
+// Determines the display of payment method reuse agreement text in the UI. If set to `hidden`, it will hide legal text related to the reuse of a payment method.
+type CheckoutSessionConsentCollectionPaymentMethodReuseAgreementParams struct {
+	// Determines the position and visibility of the payment method reuse agreement in the UI. When set to `auto`, Stripe's
+	// defaults will be used. When set to `hidden`, the payment method reuse agreement text will always be hidden in the UI.
+	Position *string `form:"position"`
+}
+
 // Configure fields for the Checkout Session to gather active consent from customers.
 type CheckoutSessionConsentCollectionParams struct {
+	// Determines the display of payment method reuse agreement text in the UI. If set to `hidden`, it will hide legal text related to the reuse of a payment method.
+	PaymentMethodReuseAgreement *CheckoutSessionConsentCollectionPaymentMethodReuseAgreementParams `form:"payment_method_reuse_agreement"`
 	// If set to `auto`, enables the collection of customer consent for promotional communications. The Checkout
 	// Session will determine whether to display an option to opt into promotional communication
 	// from the merchant depending on the customer's locale. Only available to US merchants.
@@ -825,6 +873,12 @@ type CheckoutSessionCustomFieldParams struct {
 	Type *string `form:"type"`
 }
 
+// Custom text that should be displayed after the payment confirmation button.
+type CheckoutSessionCustomTextAfterSubmitParams struct {
+	// Text may be up to 1200 characters in length.
+	Message *string `form:"message"`
+}
+
 // Custom text that should be displayed alongside shipping address collection.
 type CheckoutSessionCustomTextShippingAddressParams struct {
 	// Text may be up to 1200 characters in length.
@@ -845,6 +899,8 @@ type CheckoutSessionCustomTextTermsOfServiceAcceptanceParams struct {
 
 // Display additional text for your customers using custom text.
 type CheckoutSessionCustomTextParams struct {
+	// Custom text that should be displayed after the payment confirmation button.
+	AfterSubmit *CheckoutSessionCustomTextAfterSubmitParams `form:"after_submit"`
 	// Custom text that should be displayed alongside shipping address collection.
 	ShippingAddress *CheckoutSessionCustomTextShippingAddressParams `form:"shipping_address"`
 	// Custom text that should be displayed alongside the payment confirmation button.
@@ -1384,6 +1440,16 @@ type CheckoutSessionPaymentMethodOptionsPixParams struct {
 	ExpiresAfterSeconds *int64 `form:"expires_after_seconds"`
 }
 
+// contains details about the RevolutPay payment method options.
+type CheckoutSessionPaymentMethodOptionsRevolutPayParams struct {
+	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+	//
+	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+	//
+	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+	SetupFutureUsage *string `form:"setup_future_usage"`
+}
+
 // contains details about the Sepa Debit payment method options.
 type CheckoutSessionPaymentMethodOptionsSEPADebitParams struct {
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
@@ -1490,6 +1556,8 @@ type CheckoutSessionPaymentMethodOptionsParams struct {
 	Paypal *CheckoutSessionPaymentMethodOptionsPaypalParams `form:"paypal"`
 	// contains details about the Pix payment method options.
 	Pix *CheckoutSessionPaymentMethodOptionsPixParams `form:"pix"`
+	// contains details about the RevolutPay payment method options.
+	RevolutPay *CheckoutSessionPaymentMethodOptionsRevolutPayParams `form:"revolut_pay"`
 	// contains details about the Sepa Debit payment method options.
 	SEPADebit *CheckoutSessionPaymentMethodOptionsSEPADebitParams `form:"sepa_debit"`
 	// contains details about the Sofort payment method options.
@@ -1699,12 +1767,12 @@ type CheckoutSessionParams struct {
 	ClientReferenceID *string `form:"client_reference_id"`
 	// Configure fields for the Checkout Session to gather active consent from customers.
 	ConsentCollection *CheckoutSessionConsentCollectionParams `form:"consent_collection"`
-	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
+	// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). Required in `setup` mode when `payment_method_types` is not set.
 	Currency *string `form:"currency"`
-	// ID of an existing Customer, if one exists. In `payment` mode, the customer's most recent card
+	// ID of an existing Customer, if one exists. In `payment` mode, the customer's most recently saved card
 	// payment method will be used to prefill the email, name, card details, and billing address
 	// on the Checkout page. In `subscription` mode, the customer's [default payment method](https://stripe.com/docs/api/customers/update#update_customer-invoice_settings-default_payment_method)
-	// will be used if it's a card, and otherwise the most recent card will be used. A valid billing address, billing name and billing email are required on the payment method for Checkout to prefill the customer's card details.
+	// will be used if it's a card, otherwise the most recently saved card will be used. A valid billing address, billing name and billing email are required on the payment method for Checkout to prefill the customer's card details.
 	//
 	// If the Customer already has a valid [email](https://stripe.com/docs/api/customers/object#customer_object-email) set, the email will be prefilled and not editable in Checkout.
 	// If the Customer does not have a valid `email`, Checkout will set the email entered during the session on the Customer.
@@ -1770,8 +1838,8 @@ type CheckoutSessionParams struct {
 	PaymentMethodOptions *CheckoutSessionPaymentMethodOptionsParams `form:"payment_method_options"`
 	// A list of the types of payment methods (e.g., `card`) this Checkout Session can accept.
 	//
-	// In `payment` and `subscription` mode, you can omit this attribute to manage your payment methods from the [Stripe Dashboard](https://dashboard.stripe.com/settings/payment_methods).
-	// It is required in `setup` mode.
+	// You can omit this attribute to manage your payment methods from the [Stripe Dashboard](https://dashboard.stripe.com/settings/payment_methods).
+	// See [Dynamic Payment Methods](https://stripe.com/docs/payments/payment-methods/integration-options#using-dynamic-payment-methods) for more details.
 	//
 	// Read more about the supported payment methods and their requirements in our [payment
 	// method details guide](https://stripe.com/docs/payments/checkout/payment-methods).
@@ -1800,14 +1868,15 @@ type CheckoutSessionParams struct {
 	// Describes the type of transaction being performed by Checkout in order to customize
 	// relevant text on the page, such as the submit button. `submit_type` can only be
 	// specified on Checkout Sessions in `payment` mode, but not Checkout Sessions
-	// in `subscription` or `setup` mode.
+	// in `subscription` or `setup` mode. Possible values are `auto`, `pay`, `book`, `donate`. If blank or `auto`, `pay` is used.
 	SubmitType *string `form:"submit_type"`
 	// A subset of parameters to be passed to subscription creation for Checkout Sessions in `subscription` mode.
 	SubscriptionData *CheckoutSessionSubscriptionDataParams `form:"subscription_data"`
 	// The URL to which Stripe should send customers when payment or setup
 	// is complete.
-	// If you'd like to use information from the successful Checkout Session on your page,
-	// read the guide on [customizing your success page](https://stripe.com/docs/payments/checkout/custom-success-page).
+	// This parameter is not allowed if ui_mode is `embedded`. If you'd like to use
+	// information from the successful Checkout Session on your page, read the
+	// guide on [customizing your success page](https://stripe.com/docs/payments/checkout/custom-success-page).
 	SuccessURL *string `form:"success_url"`
 	// Controls tax ID collection settings for the session.
 	TaxIDCollection *CheckoutSessionTaxIDCollectionParams `form:"tax_id_collection"`
@@ -1891,8 +1960,18 @@ type CheckoutSessionConsent struct {
 	TermsOfService CheckoutSessionConsentTermsOfService `json:"terms_of_service"`
 }
 
+// If set to `hidden`, it will hide legal text related to the reuse of a payment method.
+type CheckoutSessionConsentCollectionPaymentMethodReuseAgreement struct {
+	// Determines the position and visibility of the payment method reuse agreement in the UI. When set to `auto`, Stripe's defaults will be used.
+	//
+	// When set to `hidden`, the payment method reuse agreement text will always be hidden in the UI.
+	Position CheckoutSessionConsentCollectionPaymentMethodReuseAgreementPosition `json:"position"`
+}
+
 // When set, provides configuration for the Checkout Session to gather active consent from customers.
 type CheckoutSessionConsentCollection struct {
+	// If set to `hidden`, it will hide legal text related to the reuse of a payment method.
+	PaymentMethodReuseAgreement *CheckoutSessionConsentCollectionPaymentMethodReuseAgreement `json:"payment_method_reuse_agreement"`
 	// If set to `auto`, enables the collection of customer consent for promotional communications. The Checkout
 	// Session will determine whether to display an option to opt into promotional communication
 	// from the merchant depending on the customer's locale. Only available to US merchants.
@@ -1963,6 +2042,12 @@ type CheckoutSessionCustomField struct {
 	Type CheckoutSessionCustomFieldType `json:"type"`
 }
 
+// Custom text that should be displayed after the payment confirmation button.
+type CheckoutSessionCustomTextAfterSubmit struct {
+	// Text may be up to 1200 characters in length.
+	Message string `json:"message"`
+}
+
 // Custom text that should be displayed alongside shipping address collection.
 type CheckoutSessionCustomTextShippingAddress struct {
 	// Text may be up to 1200 characters in length.
@@ -1981,6 +2066,8 @@ type CheckoutSessionCustomTextTermsOfServiceAcceptance struct {
 	Message string `json:"message"`
 }
 type CheckoutSessionCustomText struct {
+	// Custom text that should be displayed after the payment confirmation button.
+	AfterSubmit *CheckoutSessionCustomTextAfterSubmit `json:"after_submit"`
 	// Custom text that should be displayed alongside shipping address collection.
 	ShippingAddress *CheckoutSessionCustomTextShippingAddress `json:"shipping_address"`
 	// Custom text that should be displayed alongside the payment confirmation button.
@@ -2279,10 +2366,25 @@ type CheckoutSessionPaymentMethodOptionsPayNow struct {
 	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
 	SetupFutureUsage CheckoutSessionPaymentMethodOptionsPayNowSetupFutureUsage `json:"setup_future_usage"`
 }
+type CheckoutSessionPaymentMethodOptionsPaypal struct {
+	// Controls when the funds will be captured from the customer's account.
+	CaptureMethod CheckoutSessionPaymentMethodOptionsPaypalCaptureMethod `json:"capture_method"`
+	// Preferred locale of the PayPal checkout page that the customer is redirected to.
+	PreferredLocale string `json:"preferred_locale"`
+	// A reference of the PayPal transaction visible to customer which is mapped to PayPal's invoice ID. This must be a globally unique ID if you have configured in your PayPal settings to block multiple payments per invoice ID.
+	Reference string `json:"reference"`
+	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
+	//
+	// Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+	//
+	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+	SetupFutureUsage CheckoutSessionPaymentMethodOptionsPaypalSetupFutureUsage `json:"setup_future_usage"`
+}
 type CheckoutSessionPaymentMethodOptionsPix struct {
 	// The number of seconds after which Pix payment will expire.
 	ExpiresAfterSeconds int64 `json:"expires_after_seconds"`
 }
+type CheckoutSessionPaymentMethodOptionsRevolutPay struct{}
 type CheckoutSessionPaymentMethodOptionsSEPADebit struct {
 	// Indicates that you intend to make future payments with this PaymentIntent's payment method.
 	//
@@ -2343,7 +2445,9 @@ type CheckoutSessionPaymentMethodOptions struct {
 	OXXO             *CheckoutSessionPaymentMethodOptionsOXXO             `json:"oxxo"`
 	P24              *CheckoutSessionPaymentMethodOptionsP24              `json:"p24"`
 	PayNow           *CheckoutSessionPaymentMethodOptionsPayNow           `json:"paynow"`
+	Paypal           *CheckoutSessionPaymentMethodOptionsPaypal           `json:"paypal"`
 	Pix              *CheckoutSessionPaymentMethodOptionsPix              `json:"pix"`
+	RevolutPay       *CheckoutSessionPaymentMethodOptionsRevolutPay       `json:"revolut_pay"`
 	SEPADebit        *CheckoutSessionPaymentMethodOptionsSEPADebit        `json:"sepa_debit"`
 	Sofort           *CheckoutSessionPaymentMethodOptionsSofort           `json:"sofort"`
 	USBankAccount    *CheckoutSessionPaymentMethodOptionsUSBankAccount    `json:"us_bank_account"`
@@ -2564,7 +2668,7 @@ type CheckoutSession struct {
 	// Describes the type of transaction being performed by Checkout in order to customize
 	// relevant text on the page, such as the submit button. `submit_type` can only be
 	// specified on Checkout Sessions in `payment` mode, but not Checkout Sessions
-	// in `subscription` or `setup` mode.
+	// in `subscription` or `setup` mode. Possible values are `auto`, `pay`, `book`, `donate`. If blank or `auto`, `pay` is used.
 	SubmitType CheckoutSessionSubmitType `json:"submit_type"`
 	// The ID of the subscription for Checkout Sessions in `subscription` mode.
 	Subscription *Subscription `json:"subscription"`

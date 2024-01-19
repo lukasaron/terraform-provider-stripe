@@ -4,7 +4,7 @@ github.com/agext/levenshtein
 # github.com/apparentlymart/go-textseg/v15 v15.0.0
 ## explicit; go 1.16
 github.com/apparentlymart/go-textseg/v15/textseg
-# github.com/fatih/color v1.15.0
+# github.com/fatih/color v1.16.0
 ## explicit; go 1.17
 github.com/fatih/color
 # github.com/golang/protobuf v1.5.3
@@ -25,7 +25,6 @@ github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
 # github.com/hashicorp/errwrap v1.1.0
 ## explicit
-github.com/hashicorp/errwrap
 # github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 ## explicit; go 1.12
 github.com/hashicorp/go-cty/cty
@@ -34,16 +33,16 @@ github.com/hashicorp/go-cty/cty/gocty
 github.com/hashicorp/go-cty/cty/json
 github.com/hashicorp/go-cty/cty/msgpack
 github.com/hashicorp/go-cty/cty/set
-# github.com/hashicorp/go-hclog v1.5.0
+# github.com/hashicorp/go-hclog v1.6.2
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
 # github.com/hashicorp/go-multierror v1.1.1
 ## explicit; go 1.13
-github.com/hashicorp/go-multierror
-# github.com/hashicorp/go-plugin v1.5.2
+# github.com/hashicorp/go-plugin v1.6.0
 ## explicit; go 1.17
 github.com/hashicorp/go-plugin
 github.com/hashicorp/go-plugin/internal/cmdrunner
+github.com/hashicorp/go-plugin/internal/grpcmux
 github.com/hashicorp/go-plugin/internal/plugin
 github.com/hashicorp/go-plugin/runner
 # github.com/hashicorp/go-uuid v1.0.3
@@ -52,7 +51,7 @@ github.com/hashicorp/go-uuid
 # github.com/hashicorp/go-version v1.6.0
 ## explicit
 github.com/hashicorp/go-version
-# github.com/hashicorp/hcl/v2 v2.18.1
+# github.com/hashicorp/hcl/v2 v2.19.1
 ## explicit; go 1.18
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
@@ -60,7 +59,7 @@ github.com/hashicorp/hcl/v2/hclsyntax
 # github.com/hashicorp/logutils v1.0.0
 ## explicit
 github.com/hashicorp/logutils
-# github.com/hashicorp/terraform-plugin-go v0.19.0
+# github.com/hashicorp/terraform-plugin-go v0.20.0
 ## explicit; go 1.20
 github.com/hashicorp/terraform-plugin-go/internal/logging
 github.com/hashicorp/terraform-plugin-go/tfprotov5
@@ -85,7 +84,7 @@ github.com/hashicorp/terraform-plugin-log/internal/hclogutils
 github.com/hashicorp/terraform-plugin-log/internal/logging
 github.com/hashicorp/terraform-plugin-log/tflog
 github.com/hashicorp/terraform-plugin-log/tfsdklog
-# github.com/hashicorp/terraform-plugin-sdk/v2 v2.29.0
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.31.0
 ## explicit; go 1.20
 github.com/hashicorp/terraform-plugin-sdk/v2/diag
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging
@@ -101,7 +100,7 @@ github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags
 github.com/hashicorp/terraform-plugin-sdk/v2/meta
 github.com/hashicorp/terraform-plugin-sdk/v2/plugin
 github.com/hashicorp/terraform-plugin-sdk/v2/terraform
-# github.com/hashicorp/terraform-registry-address v0.2.2
+# github.com/hashicorp/terraform-registry-address v0.2.3
 ## explicit; go 1.19
 github.com/hashicorp/terraform-registry-address
 # github.com/hashicorp/terraform-svchost v0.1.1
@@ -113,7 +112,7 @@ github.com/hashicorp/yamux
 # github.com/mattn/go-colorable v0.1.13
 ## explicit; go 1.15
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.19
+# github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
 # github.com/mitchellh/copystructure v1.2.0
@@ -134,7 +133,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.1.0
 ## explicit; go 1.13
 github.com/oklog/run
-# github.com/stripe/stripe-go/v76 v76.1.0
+# github.com/stripe/stripe-go/v76 v76.13.0
 ## explicit; go 1.13
 github.com/stripe/stripe-go/v76
 github.com/stripe/stripe-go/v76/account
@@ -154,12 +153,16 @@ github.com/stripe/stripe-go/v76/cashbalance
 github.com/stripe/stripe-go/v76/charge
 github.com/stripe/stripe-go/v76/checkout/session
 github.com/stripe/stripe-go/v76/client
+github.com/stripe/stripe-go/v76/climate/order
+github.com/stripe/stripe-go/v76/climate/product
+github.com/stripe/stripe-go/v76/climate/supplier
 github.com/stripe/stripe-go/v76/countryspec
 github.com/stripe/stripe-go/v76/coupon
 github.com/stripe/stripe-go/v76/creditnote
 github.com/stripe/stripe-go/v76/customer
 github.com/stripe/stripe-go/v76/customerbalancetransaction
 github.com/stripe/stripe-go/v76/customercashbalancetransaction
+github.com/stripe/stripe-go/v76/customersession
 github.com/stripe/stripe-go/v76/dispute
 github.com/stripe/stripe-go/v76/ephemeralkey
 github.com/stripe/stripe-go/v76/event
@@ -168,6 +171,7 @@ github.com/stripe/stripe-go/v76/file
 github.com/stripe/stripe-go/v76/filelink
 github.com/stripe/stripe-go/v76/financialconnections/account
 github.com/stripe/stripe-go/v76/financialconnections/session
+github.com/stripe/stripe-go/v76/financialconnections/transaction
 github.com/stripe/stripe-go/v76/form
 github.com/stripe/stripe-go/v76/identity/verificationreport
 github.com/stripe/stripe-go/v76/identity/verificationsession
@@ -212,6 +216,7 @@ github.com/stripe/stripe-go/v76/subscription
 github.com/stripe/stripe-go/v76/subscriptionitem
 github.com/stripe/stripe-go/v76/subscriptionschedule
 github.com/stripe/stripe-go/v76/tax/calculation
+github.com/stripe/stripe-go/v76/tax/registration
 github.com/stripe/stripe-go/v76/tax/settings
 github.com/stripe/stripe-go/v76/tax/transaction
 github.com/stripe/stripe-go/v76/taxcode
@@ -254,7 +259,7 @@ github.com/stripe/stripe-go/v76/webhookendpoint
 ## explicit
 github.com/vmihailenco/msgpack
 github.com/vmihailenco/msgpack/codes
-# github.com/vmihailenco/msgpack/v5 v5.4.0
+# github.com/vmihailenco/msgpack/v5 v5.4.1
 ## explicit; go 1.19
 github.com/vmihailenco/msgpack/v5
 github.com/vmihailenco/msgpack/v5/msgpcode
@@ -273,20 +278,20 @@ github.com/zclconf/go-cty/cty/function/stdlib
 github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
 github.com/zclconf/go-cty/cty/set
-# golang.org/x/net v0.17.0
-## explicit; go 1.17
+# golang.org/x/net v0.20.0
+## explicit; go 1.18
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.13.0
-## explicit; go 1.17
+# golang.org/x/sys v0.16.0
+## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.13.0
-## explicit; go 1.17
+# golang.org/x/text v0.14.0
+## explicit; go 1.18
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
@@ -304,10 +309,10 @@ google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20231012201019-e917dd12ba7a
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240116215550-a9fa1716bcac
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.58.3
+# google.golang.org/grpc v1.60.1
 ## explicit; go 1.19
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -345,6 +350,7 @@ google.golang.org/grpc/internal/metadata
 google.golang.org/grpc/internal/pretty
 google.golang.org/grpc/internal/resolver
 google.golang.org/grpc/internal/resolver/dns
+google.golang.org/grpc/internal/resolver/dns/internal
 google.golang.org/grpc/internal/resolver/passthrough
 google.golang.org/grpc/internal/resolver/unix
 google.golang.org/grpc/internal/serviceconfig
@@ -359,12 +365,13 @@ google.golang.org/grpc/reflection
 google.golang.org/grpc/reflection/grpc_reflection_v1
 google.golang.org/grpc/reflection/grpc_reflection_v1alpha
 google.golang.org/grpc/resolver
+google.golang.org/grpc/resolver/dns
 google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.31.0
-## explicit; go 1.11
+# google.golang.org/protobuf v1.32.0
+## explicit; go 1.17
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
