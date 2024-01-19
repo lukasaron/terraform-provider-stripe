@@ -11,6 +11,10 @@ With this resource, you can create a product - [Stripe API product documentation
 Products describe the specific goods or services you offer to your customers. For example, 
 you might offer a Standard and Premium version of your goods or service; each version would be a separate Product.
 
+~> When there is at least one price used in the product, Stripe returns error when delete operation is performed. 
+This provider updates the active status of the product to archived in this scenario and removes product from the 
+terraform state.
+
 ## Example Usage
 
 ```hcl
