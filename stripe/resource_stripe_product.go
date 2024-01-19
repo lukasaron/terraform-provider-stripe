@@ -316,6 +316,17 @@ func resourceStripeProductDelete(_ context.Context, d *schema.ResourceData, m in
 
 	err = retryWithBackOff(func() error {
 		_, err = c.Products.Del(d.Id(), nil)
+		if err != nil {
+			stripeErr := toStripeError(err)
+			/*
+				When ErrorTypeInvalidRequest error is returned on delete endpoint (price resources were attached)
+				the product is de-activated (archived).
+			*/
+			if stripeErr.Type == stripe.ErrorTypeInvalidRequest {
+				params := &stripe.ProductParams{Active: stripe.Bool(false)}
+				_, err = c.Products.Update(d.Id(), params)
+			}
+		}
 		return err
 	})
 	if err != nil {
