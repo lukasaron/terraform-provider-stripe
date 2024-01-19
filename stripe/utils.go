@@ -1,6 +1,7 @@
 package stripe
 
 import (
+	"errors"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -237,4 +238,11 @@ func retryWithBackOff(call func() error) error {
 			return err
 		}
 	}
+}
+
+func toStripeError(err error) (stripeErr *stripe.Error) {
+	if errors.As(err, &stripeErr) {
+		return stripeErr
+	}
+	return stripeErr
 }
