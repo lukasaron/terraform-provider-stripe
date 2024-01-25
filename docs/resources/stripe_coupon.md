@@ -28,9 +28,9 @@ resource "stripe_coupon" "coupon" {
 
 // coupon for the percentage off discount
 resource "stripe_coupon" "coupon" {
-  name            = "33.3% discount"
-  percentage_off  = 33.3
-  duration        = "forever"
+  name        = "33.3% discount"
+  percent_off = 33.3
+  duration    = "forever"
 }
 
 // coupon with limitation to a date and the product only
