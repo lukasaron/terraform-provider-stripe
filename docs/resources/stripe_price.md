@@ -135,7 +135,7 @@ Arguments accepted by this resource include:
   Allowed values are `sum` for summing up all usage during a period, `last_during_period` for using the last usage
   record reported within a period, `last_ever` for using the last usage record ever (across period bounds) or `max`
   which uses the usage record with the maximum reported usage during a period.
-* `interval_count` - (Optional) Int. The number of intervals between subscription billings. For
+* `interval_count` - (Optional) Int. This parameter is (Required) when interval value is set. The number of intervals between subscription billings. For
   example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of one year interval allowed (1 year,
   12 months, or 52 weeks).
 * `usage_type` - (Optional) String. Configures how the quantity per period should be determined. Can be either `metered`
