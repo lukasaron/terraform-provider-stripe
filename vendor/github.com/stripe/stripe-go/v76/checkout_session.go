@@ -6,6 +6,15 @@
 
 package stripe
 
+// Type of the account referenced.
+type CheckoutSessionAutomaticTaxLiabilityType string
+
+// List of values that CheckoutSessionAutomaticTaxLiabilityType can take
+const (
+	CheckoutSessionAutomaticTaxLiabilityTypeAccount CheckoutSessionAutomaticTaxLiabilityType = "account"
+	CheckoutSessionAutomaticTaxLiabilityTypeSelf    CheckoutSessionAutomaticTaxLiabilityType = "self"
+)
+
 // The status of the most recent automated tax calculation for this session.
 type CheckoutSessionAutomaticTaxStatus string
 
@@ -183,6 +192,15 @@ const (
 	CheckoutSessionCustomerDetailsTaxIDTypeVERIF    CheckoutSessionCustomerDetailsTaxIDType = "ve_rif"
 	CheckoutSessionCustomerDetailsTaxIDTypeVNTIN    CheckoutSessionCustomerDetailsTaxIDType = "vn_tin"
 	CheckoutSessionCustomerDetailsTaxIDTypeZAVAT    CheckoutSessionCustomerDetailsTaxIDType = "za_vat"
+)
+
+// Type of the account referenced.
+type CheckoutSessionInvoiceCreationInvoiceDataIssuerType string
+
+// List of values that CheckoutSessionInvoiceCreationInvoiceDataIssuerType can take
+const (
+	CheckoutSessionInvoiceCreationInvoiceDataIssuerTypeAccount CheckoutSessionInvoiceCreationInvoiceDataIssuerType = "account"
+	CheckoutSessionInvoiceCreationInvoiceDataIssuerTypeSelf    CheckoutSessionInvoiceCreationInvoiceDataIssuerType = "self"
 )
 
 // The mode of the Checkout Session.
@@ -698,8 +716,7 @@ const (
 
 // Describes the type of transaction being performed by Checkout in order to customize
 // relevant text on the page, such as the submit button. `submit_type` can only be
-// specified on Checkout Sessions in `payment` mode, but not Checkout Sessions
-// in `subscription` or `setup` mode. Possible values are `auto`, `pay`, `book`, `donate`. If blank or `auto`, `pay` is used.
+// specified on Checkout Sessions in `payment` mode. If blank or `auto`, `pay` is used.
 type CheckoutSessionSubmitType string
 
 // List of values that CheckoutSessionSubmitType can take
@@ -791,10 +808,20 @@ type CheckoutSessionAfterExpirationParams struct {
 	Recovery *CheckoutSessionAfterExpirationRecoveryParams `form:"recovery"`
 }
 
+// The account that's liable for tax. If set, the business address and tax registrations required to perform the tax calculation are loaded from this account. The tax transaction is returned in the report of the connected account.
+type CheckoutSessionAutomaticTaxLiabilityParams struct {
+	// The connected account being referenced when `type` is `account`.
+	Account *string `form:"account"`
+	// Type of the account referenced in the request.
+	Type *string `form:"type"`
+}
+
 // Settings for automatic tax lookup for this session and resulting payments, invoices, and subscriptions.
 type CheckoutSessionAutomaticTaxParams struct {
 	// Set to true to enable automatic taxes.
 	Enabled *bool `form:"enabled"`
+	// The account that's liable for tax. If set, the business address and tax registrations required to perform the tax calculation are loaded from this account. The tax transaction is returned in the report of the connected account.
+	Liability *CheckoutSessionAutomaticTaxLiabilityParams `form:"liability"`
 }
 
 // Determines the display of payment method reuse agreement text in the UI. If set to `hidden`, it will hide legal text related to the reuse of a payment method.
@@ -855,7 +882,7 @@ type CheckoutSessionCustomFieldTextParams struct {
 	MinimumLength *int64 `form:"minimum_length"`
 }
 
-// Collect additional information from your customer using custom fields. Up to 2 fields are supported.
+// Collect additional information from your customer using custom fields. Up to 3 fields are supported.
 type CheckoutSessionCustomFieldParams struct {
 	// Configuration for `type=dropdown` fields.
 	Dropdown *CheckoutSessionCustomFieldDropdownParams `form:"dropdown"`
@@ -937,6 +964,14 @@ type CheckoutSessionInvoiceCreationInvoiceDataCustomFieldParams struct {
 	Value *string `form:"value"`
 }
 
+// The connected account that issues the invoice. The invoice is presented with the branding and support information of the specified account.
+type CheckoutSessionInvoiceCreationInvoiceDataIssuerParams struct {
+	// The connected account being referenced when `type` is `account`.
+	Account *string `form:"account"`
+	// Type of the account referenced in the request.
+	Type *string `form:"type"`
+}
+
 // Default options for invoice PDF rendering for this customer.
 type CheckoutSessionInvoiceCreationInvoiceDataRenderingOptionsParams struct {
 	// How line-item prices and amounts will be displayed with respect to tax on invoice PDFs. One of `exclude_tax` or `include_inclusive_tax`. `include_inclusive_tax` will include inclusive tax (and exclude exclusive tax) in invoice PDF amounts. `exclude_tax` will exclude all tax (inclusive and exclusive alike) from invoice PDF amounts.
@@ -953,6 +988,8 @@ type CheckoutSessionInvoiceCreationInvoiceDataParams struct {
 	Description *string `form:"description"`
 	// Default footer to be displayed on invoices for this customer.
 	Footer *string `form:"footer"`
+	// The connected account that issues the invoice. The invoice is presented with the branding and support information of the specified account.
+	Issuer *CheckoutSessionInvoiceCreationInvoiceDataIssuerParams `form:"issuer"`
 	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
 	Metadata map[string]string `form:"metadata"`
 	// Default options for invoice PDF rendering for this customer.
@@ -1013,7 +1050,7 @@ func (p *CheckoutSessionLineItemPriceDataProductDataParams) AddMetadata(key stri
 type CheckoutSessionLineItemPriceDataRecurringParams struct {
 	// Specifies billing frequency. Either `day`, `week`, `month` or `year`.
 	Interval *string `form:"interval"`
-	// The number of intervals between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of one year interval allowed (1 year, 12 months, or 52 weeks).
+	// The number of intervals between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of three years interval allowed (3 years, 36 months, or 156 weeks).
 	IntervalCount *int64 `form:"interval_count"`
 }
 
@@ -1470,6 +1507,12 @@ type CheckoutSessionPaymentMethodOptionsSofortParams struct {
 	SetupFutureUsage *string `form:"setup_future_usage"`
 }
 
+// contains details about the Swish payment method options.
+type CheckoutSessionPaymentMethodOptionsSwishParams struct {
+	// The order reference that will be displayed to customers in the Swish application. Defaults to the `id` of the Payment Intent.
+	Reference *string `form:"reference"`
+}
+
 // Additional fields for Financial Connections Session creation
 type CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsParams struct {
 	// The list of permissions to request. If this parameter is passed, the `payment_method` permission must be included. Valid permissions include: `balances`, `ownership`, `payment_method`, and `transactions`.
@@ -1562,6 +1605,8 @@ type CheckoutSessionPaymentMethodOptionsParams struct {
 	SEPADebit *CheckoutSessionPaymentMethodOptionsSEPADebitParams `form:"sepa_debit"`
 	// contains details about the Sofort payment method options.
 	Sofort *CheckoutSessionPaymentMethodOptionsSofortParams `form:"sofort"`
+	// contains details about the Swish payment method options.
+	Swish *CheckoutSessionPaymentMethodOptionsSwishParams `form:"swish"`
 	// contains details about the Us Bank Account payment method options.
 	USBankAccount *CheckoutSessionPaymentMethodOptionsUSBankAccountParams `form:"us_bank_account"`
 	// contains details about the WeChat Pay payment method options.
@@ -1680,6 +1725,20 @@ type CheckoutSessionShippingOptionParams struct {
 	ShippingRateData *CheckoutSessionShippingOptionShippingRateDataParams `form:"shipping_rate_data"`
 }
 
+// The connected account that issues the invoice. The invoice is presented with the branding and support information of the specified account.
+type CheckoutSessionSubscriptionDataInvoiceSettingsIssuerParams struct {
+	// The connected account being referenced when `type` is `account`.
+	Account *string `form:"account"`
+	// Type of the account referenced in the request.
+	Type *string `form:"type"`
+}
+
+// All invoices will be billed using the specified settings.
+type CheckoutSessionSubscriptionDataInvoiceSettingsParams struct {
+	// The connected account that issues the invoice. The invoice is presented with the branding and support information of the specified account.
+	Issuer *CheckoutSessionSubscriptionDataInvoiceSettingsIssuerParams `form:"issuer"`
+}
+
 // If specified, the funds from the subscription's invoices will be transferred to the destination and the ID of the resulting transfers will be found on the resulting charges.
 type CheckoutSessionSubscriptionDataTransferDataParams struct {
 	// A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice total that will be transferred to the destination account. By default, the entire amount is transferred to the destination.
@@ -1714,6 +1773,8 @@ type CheckoutSessionSubscriptionDataParams struct {
 	// Use this field to optionally store an explanation of the subscription
 	// for rendering in the [customer portal](https://stripe.com/docs/customer-management).
 	Description *string `form:"description"`
+	// All invoices will be billed using the specified settings.
+	InvoiceSettings *CheckoutSessionSubscriptionDataInvoiceSettingsParams `form:"invoice_settings"`
 	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
 	Metadata map[string]string `form:"metadata"`
 	// The account on behalf of which to charge, for each of the subscription's invoices.
@@ -1799,7 +1860,7 @@ type CheckoutSessionParams struct {
 	CustomerEmail *string `form:"customer_email"`
 	// Controls what fields on Customer can be updated by the Checkout Session. Can only be provided when `customer` is provided.
 	CustomerUpdate *CheckoutSessionCustomerUpdateParams `form:"customer_update"`
-	// Collect additional information from your customer using custom fields. Up to 2 fields are supported.
+	// Collect additional information from your customer using custom fields. Up to 3 fields are supported.
 	CustomFields []*CheckoutSessionCustomFieldParams `form:"custom_fields"`
 	// Display additional text for your customers using custom text.
 	CustomText *CheckoutSessionCustomTextParams `form:"custom_text"`
@@ -1867,8 +1928,7 @@ type CheckoutSessionParams struct {
 	ShippingOptions []*CheckoutSessionShippingOptionParams `form:"shipping_options"`
 	// Describes the type of transaction being performed by Checkout in order to customize
 	// relevant text on the page, such as the submit button. `submit_type` can only be
-	// specified on Checkout Sessions in `payment` mode, but not Checkout Sessions
-	// in `subscription` or `setup` mode. Possible values are `auto`, `pay`, `book`, `donate`. If blank or `auto`, `pay` is used.
+	// specified on Checkout Sessions in `payment` mode. If blank or `auto`, `pay` is used.
 	SubmitType *string `form:"submit_type"`
 	// A subset of parameters to be passed to subscription creation for Checkout Sessions in `subscription` mode.
 	SubscriptionData *CheckoutSessionSubscriptionDataParams `form:"subscription_data"`
@@ -1944,9 +2004,19 @@ type CheckoutSessionAfterExpiration struct {
 	// When set, configuration used to recover the Checkout Session on expiry.
 	Recovery *CheckoutSessionAfterExpirationRecovery `json:"recovery"`
 }
+
+// The account that's liable for tax. If set, the business address and tax registrations required to perform the tax calculation are loaded from this account. The tax transaction is returned in the report of the connected account.
+type CheckoutSessionAutomaticTaxLiability struct {
+	// The connected account being referenced when `type` is `account`.
+	Account *Account `json:"account"`
+	// Type of the account referenced.
+	Type CheckoutSessionAutomaticTaxLiabilityType `json:"type"`
+}
 type CheckoutSessionAutomaticTax struct {
 	// Indicates whether automatic tax is enabled for the session
 	Enabled bool `json:"enabled"`
+	// The account that's liable for tax. If set, the business address and tax registrations required to perform the tax calculation are loaded from this account. The tax transaction is returned in the report of the connected account.
+	Liability *CheckoutSessionAutomaticTaxLiability `json:"liability"`
 	// The status of the most recent automated tax calculation for this session.
 	Status CheckoutSessionAutomaticTaxStatus `json:"status"`
 }
@@ -2028,7 +2098,7 @@ type CheckoutSessionCustomFieldText struct {
 	Value string `json:"value"`
 }
 
-// Collect additional information from your customer using custom fields. Up to 2 fields are supported.
+// Collect additional information from your customer using custom fields. Up to 3 fields are supported.
 type CheckoutSessionCustomField struct {
 	Dropdown *CheckoutSessionCustomFieldDropdown `json:"dropdown"`
 	// String of your choice that your integration can use to reconcile this field. Must be unique to this field, alphanumeric, and up to 200 characters.
@@ -2109,6 +2179,14 @@ type CheckoutSessionInvoiceCreationInvoiceDataCustomField struct {
 	Value string `json:"value"`
 }
 
+// The connected account that issues the invoice. The invoice is presented with the branding and support information of the specified account.
+type CheckoutSessionInvoiceCreationInvoiceDataIssuer struct {
+	// The connected account being referenced when `type` is `account`.
+	Account *Account `json:"account"`
+	// Type of the account referenced.
+	Type CheckoutSessionInvoiceCreationInvoiceDataIssuerType `json:"type"`
+}
+
 // Options for invoice PDF rendering.
 type CheckoutSessionInvoiceCreationInvoiceDataRenderingOptions struct {
 	// How line-item prices and amounts will be displayed with respect to tax on invoice PDFs.
@@ -2123,6 +2201,8 @@ type CheckoutSessionInvoiceCreationInvoiceData struct {
 	Description string `json:"description"`
 	// Footer displayed on the invoice.
 	Footer string `json:"footer"`
+	// The connected account that issues the invoice. The invoice is presented with the branding and support information of the specified account.
+	Issuer *CheckoutSessionInvoiceCreationInvoiceDataIssuer `json:"issuer"`
 	// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
 	Metadata map[string]string `json:"metadata"`
 	// Options for invoice PDF rendering.
@@ -2401,6 +2481,10 @@ type CheckoutSessionPaymentMethodOptionsSofort struct {
 	// When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
 	SetupFutureUsage CheckoutSessionPaymentMethodOptionsSofortSetupFutureUsage `json:"setup_future_usage"`
 }
+type CheckoutSessionPaymentMethodOptionsSwish struct {
+	// The order reference that will be displayed to customers in the Swish application. Defaults to the `id` of the Payment Intent.
+	Reference string `json:"reference"`
+}
 type CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnections struct {
 	// The list of permissions to request. The `payment_method` permission must be included.
 	Permissions []CheckoutSessionPaymentMethodOptionsUSBankAccountFinancialConnectionsPermission `json:"permissions"`
@@ -2450,6 +2534,7 @@ type CheckoutSessionPaymentMethodOptions struct {
 	RevolutPay       *CheckoutSessionPaymentMethodOptionsRevolutPay       `json:"revolut_pay"`
 	SEPADebit        *CheckoutSessionPaymentMethodOptionsSEPADebit        `json:"sepa_debit"`
 	Sofort           *CheckoutSessionPaymentMethodOptionsSofort           `json:"sofort"`
+	Swish            *CheckoutSessionPaymentMethodOptionsSwish            `json:"swish"`
 	USBankAccount    *CheckoutSessionPaymentMethodOptionsUSBankAccount    `json:"us_bank_account"`
 }
 type CheckoutSessionPhoneNumberCollection struct {
@@ -2607,7 +2692,7 @@ type CheckoutSession struct {
 	// on file. To access information about the customer once the payment flow is
 	// complete, use the `customer` attribute.
 	CustomerEmail string `json:"customer_email"`
-	// Collect additional information from your customer using custom fields. Up to 2 fields are supported.
+	// Collect additional information from your customer using custom fields. Up to 3 fields are supported.
 	CustomFields []*CheckoutSessionCustomField `json:"custom_fields"`
 	CustomText   *CheckoutSessionCustomText    `json:"custom_text"`
 	// The timestamp at which the Checkout Session will expire.
@@ -2667,8 +2752,7 @@ type CheckoutSession struct {
 	Status CheckoutSessionStatus `json:"status"`
 	// Describes the type of transaction being performed by Checkout in order to customize
 	// relevant text on the page, such as the submit button. `submit_type` can only be
-	// specified on Checkout Sessions in `payment` mode, but not Checkout Sessions
-	// in `subscription` or `setup` mode. Possible values are `auto`, `pay`, `book`, `donate`. If blank or `auto`, `pay` is used.
+	// specified on Checkout Sessions in `payment` mode. If blank or `auto`, `pay` is used.
 	SubmitType CheckoutSessionSubmitType `json:"submit_type"`
 	// The ID of the subscription for Checkout Sessions in `subscription` mode.
 	Subscription *Subscription `json:"subscription"`
