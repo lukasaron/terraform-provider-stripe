@@ -860,8 +860,7 @@ func (s *BackendImplementation) shouldRetry(err error, req *http.Request, resp *
 
 	stripeErr, _ := err.(*Error)
 
-	// Don't retry if the context was was canceled or its deadline was
-	// exceeded.
+	// Don't retry if the context was canceled or its deadline was exceeded.
 	if req.Context() != nil && req.Context().Err() != nil {
 		switch req.Context().Err() {
 		case context.Canceled:
@@ -1284,7 +1283,7 @@ func StringSlice(v []string) []*string {
 //
 
 // clientversion is the binding version
-const clientversion = "76.16.0"
+const clientversion = "76.21.0"
 
 // defaultHTTPTimeout is the default timeout on the http.Client used by the library.
 // This is chosen to be consistent with the other Stripe language libraries and

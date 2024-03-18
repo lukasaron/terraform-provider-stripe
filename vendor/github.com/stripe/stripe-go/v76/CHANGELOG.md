@@ -1,5 +1,42 @@
 # Changelog
 
+## 76.21.0 - 2024-03-14
+* [#1824](https://github.com/stripe/stripe-go/pull/1824) Update generated code
+  * Add support for new resources `Issuing.PersonalizationDesign` and `Issuing.PhysicalBundle`
+  * Add support for `Get`, `List`, `New`, and `Update` methods on resource `PersonalizationDesign`
+  * Add support for `Get` and `List` methods on resource `PhysicalBundle`
+  * Add support for `PersonalizationDesign` on `IssuingCardListParams`, `IssuingCardParams`, and `IssuingCard`
+  * Change type of `SubscriptionApplicationFeePercentParams` from `number` to `emptyStringable(number)`
+  * Add support for `SEPADebit` on `SubscriptionPaymentSettingsPaymentMethodOptionsParams` and `SubscriptionPaymentSettingsPaymentMethodOptions`
+
+## 76.20.0 - 2024-03-07
+* [#1823](https://github.com/stripe/stripe-go/pull/1823) Update generated code
+  * Add support for `Documents` on `AccountSessionComponentsParams` and `AccountSessionComponents`
+  * Add support for `RequestThreeDSecure` on `CheckoutSessionPaymentMethodOptionsCardParams` and `CheckoutSessionPaymentMethodOptionsCard`
+  * Add support for `Created` on `CreditNoteListParams`
+  * Add support for `SEPADebit` on `InvoicePaymentSettingsPaymentMethodOptionsParams` and `InvoicePaymentSettingsPaymentMethodOptions`
+
+## 76.19.0 - 2024-02-29
+* [#1818](https://github.com/stripe/stripe-go/pull/1818) Update generated code
+  * Add support for `Number` on `InvoiceParams`
+  * Add support for `EnableCustomerCancellation` on `TerminalReaderActionProcessPaymentIntentProcessConfig`, `TerminalReaderActionProcessSetupIntentProcessConfig`, `TerminalReaderProcessPaymentIntentProcessConfigParams`, and `TerminalReaderProcessSetupIntentProcessConfigParams`
+  * Add support for `RefundPaymentConfig` on `TerminalReaderActionRefundPayment` and `TerminalReaderRefundPaymentParams`
+* [#1820](https://github.com/stripe/stripe-go/pull/1820) Update README to use AddBetaVersion 
+* [#1817](https://github.com/stripe/stripe-go/pull/1817) Fix typo
+
+## 76.18.0 - 2024-02-22
+* [#1814](https://github.com/stripe/stripe-go/pull/1814) Update generated code
+  * Add support for `ClientReferenceID` on `IdentityVerificationReportListParams`, `IdentityVerificationReport`, `IdentityVerificationSessionListParams`, `IdentityVerificationSessionParams`, and `IdentityVerificationSession`
+  * Remove support for value `service_tax` from enum `TaxRateTaxType`
+  * Add support for `Created` on `TreasuryOutboundPaymentListParams`
+
+## 76.17.0 - 2024-02-15
+* [#1812](https://github.com/stripe/stripe-go/pull/1812) Update generated code
+  * Add support for `Networks` on `Card`, `PaymentMethodCardParams`, and `TokenCardParams`
+  * Add support for new value `no_voec` on enums `CheckoutSessionCustomerDetailsTaxIdsType`, `InvoiceCustomerTaxIdsType`, `TaxCalculationCustomerDetailsTaxIdsType`, `TaxIdType`, and `TaxTransactionCustomerDetailsTaxIdsType`
+  * Add support for new value `financial_connections.account.refreshed_ownership` on enum `EventType`
+  * Add support for `DisplayBrand` on `PaymentMethodCard`
+
 ## 76.16.0 - 2024-02-08
 * [#1811](https://github.com/stripe/stripe-go/pull/1811) Update generated code
   * Add support for new value `velobank` on enums `ChargePaymentMethodDetailsP24Bank` and `PaymentMethodP24Bank`

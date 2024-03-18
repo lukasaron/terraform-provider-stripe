@@ -90,11 +90,15 @@ const (
 
 // Returns a list of existing payouts sent to third-party bank accounts or payouts that Stripe sent to you. The payouts return in sorted order, with the most recently created payouts appearing first.
 type PayoutListParams struct {
-	ListParams       `form:"*"`
-	ArrivalDate      *int64            `form:"arrival_date"`
+	ListParams `form:"*"`
+	// Only return payouts that are expected to arrive during the given date interval.
+	ArrivalDate *int64 `form:"arrival_date"`
+	// Only return payouts that are expected to arrive during the given date interval.
 	ArrivalDateRange *RangeQueryParams `form:"arrival_date"`
-	Created          *int64            `form:"created"`
-	CreatedRange     *RangeQueryParams `form:"created"`
+	// Only return payouts that were created during the given date interval.
+	Created *int64 `form:"created"`
+	// Only return payouts that were created during the given date interval.
+	CreatedRange *RangeQueryParams `form:"created"`
 	// The ID of an external account - only return payouts sent to this external account.
 	Destination *string `form:"destination"`
 	// Specifies which fields in the response should be expanded.
