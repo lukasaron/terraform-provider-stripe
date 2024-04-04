@@ -26,7 +26,7 @@ github.com/hashicorp/go-cty/cty/gocty
 github.com/hashicorp/go-cty/cty/json
 github.com/hashicorp/go-cty/cty/msgpack
 github.com/hashicorp/go-cty/cty/set
-# github.com/hashicorp/go-hclog v1.6.2
+# github.com/hashicorp/go-hclog v1.6.3
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
 # github.com/hashicorp/go-plugin v1.6.0
@@ -42,7 +42,7 @@ github.com/hashicorp/go-uuid
 # github.com/hashicorp/go-version v1.6.0
 ## explicit
 github.com/hashicorp/go-version
-# github.com/hashicorp/hcl/v2 v2.20.0
+# github.com/hashicorp/hcl/v2 v2.20.1
 ## explicit; go 1.18
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
@@ -126,7 +126,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.1.0
 ## explicit; go 1.13
 github.com/oklog/run
-# github.com/stripe/stripe-go/v76 v76.21.0
+# github.com/stripe/stripe-go/v76 v76.23.0
 ## explicit; go 1.13
 github.com/stripe/stripe-go/v76
 github.com/stripe/stripe-go/v76/account
@@ -138,6 +138,10 @@ github.com/stripe/stripe-go/v76/apps/secret
 github.com/stripe/stripe-go/v76/balance
 github.com/stripe/stripe-go/v76/balancetransaction
 github.com/stripe/stripe-go/v76/bankaccount
+github.com/stripe/stripe-go/v76/billing/meter
+github.com/stripe/stripe-go/v76/billing/meterevent
+github.com/stripe/stripe-go/v76/billing/metereventadjustment
+github.com/stripe/stripe-go/v76/billing/metereventsummary
 github.com/stripe/stripe-go/v76/billingportal/configuration
 github.com/stripe/stripe-go/v76/billingportal/session
 github.com/stripe/stripe-go/v76/capability
@@ -149,6 +153,7 @@ github.com/stripe/stripe-go/v76/client
 github.com/stripe/stripe-go/v76/climate/order
 github.com/stripe/stripe-go/v76/climate/product
 github.com/stripe/stripe-go/v76/climate/supplier
+github.com/stripe/stripe-go/v76/confirmationtoken
 github.com/stripe/stripe-go/v76/countryspec
 github.com/stripe/stripe-go/v76/coupon
 github.com/stripe/stripe-go/v76/creditnote
@@ -166,6 +171,7 @@ github.com/stripe/stripe-go/v76/financialconnections/account
 github.com/stripe/stripe-go/v76/financialconnections/session
 github.com/stripe/stripe-go/v76/financialconnections/transaction
 github.com/stripe/stripe-go/v76/form
+github.com/stripe/stripe-go/v76/forwarding/request
 github.com/stripe/stripe-go/v76/identity/verificationreport
 github.com/stripe/stripe-go/v76/identity/verificationsession
 github.com/stripe/stripe-go/v76/invoice
@@ -222,6 +228,7 @@ github.com/stripe/stripe-go/v76/terminal/configuration
 github.com/stripe/stripe-go/v76/terminal/connectiontoken
 github.com/stripe/stripe-go/v76/terminal/location
 github.com/stripe/stripe-go/v76/terminal/reader
+github.com/stripe/stripe-go/v76/testhelpers/confirmationtoken
 github.com/stripe/stripe-go/v76/testhelpers/customer
 github.com/stripe/stripe-go/v76/testhelpers/issuing/authorization
 github.com/stripe/stripe-go/v76/testhelpers/issuing/card
@@ -265,7 +272,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# github.com/zclconf/go-cty v1.14.3
+# github.com/zclconf/go-cty v1.14.4
 ## explicit; go 1.18
 github.com/zclconf/go-cty/cty
 github.com/zclconf/go-cty/cty/convert
@@ -278,7 +285,7 @@ github.com/zclconf/go-cty/cty/set
 # golang.org/x/mod v0.16.0
 ## explicit; go 1.18
 golang.org/x/mod/semver
-# golang.org/x/net v0.22.0
+# golang.org/x/net v0.23.0
 ## explicit; go 1.18
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -330,10 +337,10 @@ google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.62.1
+# google.golang.org/grpc v1.63.0
 ## explicit; go 1.19
 google.golang.org/grpc
 google.golang.org/grpc/attributes

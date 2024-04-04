@@ -847,7 +847,7 @@ type ChargePaymentMethodDetailsCardPresentReceipt struct {
 	AuthorizationCode string `json:"authorization_code"`
 	// EMV tag 8A. A code returned by the card issuer.
 	AuthorizationResponseCode string `json:"authorization_response_code"`
-	// How the cardholder verified ownership of the card.
+	// Describes the method used by the cardholder to verify ownership of the card. One of the following: `approval`, `failure`, `none`, `offline_pin`, `offline_pin_and_signature`, `online_pin`, or `signature`.
 	CardholderVerificationMethod string `json:"cardholder_verification_method"`
 	// EMV tag 84. Similar to the application identifier stored on the integrated circuit chip.
 	DedicatedFileName string `json:"dedicated_file_name"`
@@ -971,7 +971,7 @@ type ChargePaymentMethodDetailsInteracPresentReceipt struct {
 	AuthorizationCode string `json:"authorization_code"`
 	// EMV tag 8A. A code returned by the card issuer.
 	AuthorizationResponseCode string `json:"authorization_response_code"`
-	// How the cardholder verified ownership of the card.
+	// Describes the method used by the cardholder to verify ownership of the card. One of the following: `approval`, `failure`, `none`, `offline_pin`, `offline_pin_and_signature`, `online_pin`, or `signature`.
 	CardholderVerificationMethod string `json:"cardholder_verification_method"`
 	// EMV tag 84. Similar to the application identifier stored on the integrated circuit chip.
 	DedicatedFileName string `json:"dedicated_file_name"`
@@ -1042,6 +1042,21 @@ type ChargePaymentMethodDetailsLink struct {
 	// Two-letter ISO code representing the funding source country beneath the Link payment.
 	// You could use this attribute to get a sense of international fees.
 	Country string `json:"country"`
+}
+type ChargePaymentMethodDetailsMobilepayCard struct {
+	// Brand of the card used in the transaction
+	Brand string `json:"brand"`
+	// Two-letter ISO code representing the country of the card
+	Country string `json:"country"`
+	// Two digit number representing the card's expiration month
+	ExpMonth int64 `json:"exp_month"`
+	// Two digit number representing the card's expiration year
+	ExpYear int64 `json:"exp_year"`
+	// The last 4 digits of the card
+	Last4 string `json:"last4"`
+}
+type ChargePaymentMethodDetailsMobilepay struct {
+	Card *ChargePaymentMethodDetailsMobilepayCard `json:"card"`
 }
 type ChargePaymentMethodDetailsMultibanco struct {
 	// Entity number associated with this Multibanco payment.
@@ -1162,6 +1177,10 @@ type ChargePaymentMethodDetailsUSBankAccount struct {
 	Fingerprint string `json:"fingerprint"`
 	// Last four digits of the bank account number.
 	Last4 string `json:"last4"`
+	// ID of the mandate used to make this payment.
+	Mandate *Mandate `json:"mandate"`
+	// Reference number to locate ACH payments with customer's bank.
+	PaymentReference string `json:"payment_reference"`
 	// Routing number of the bank account.
 	RoutingNumber string `json:"routing_number"`
 }
@@ -1200,6 +1219,7 @@ type ChargePaymentMethodDetails struct {
 	Klarna             *ChargePaymentMethodDetailsKlarna             `json:"klarna"`
 	Konbini            *ChargePaymentMethodDetailsKonbini            `json:"konbini"`
 	Link               *ChargePaymentMethodDetailsLink               `json:"link"`
+	Mobilepay          *ChargePaymentMethodDetailsMobilepay          `json:"mobilepay"`
 	Multibanco         *ChargePaymentMethodDetailsMultibanco         `json:"multibanco"`
 	OXXO               *ChargePaymentMethodDetailsOXXO               `json:"oxxo"`
 	P24                *ChargePaymentMethodDetailsP24                `json:"p24"`

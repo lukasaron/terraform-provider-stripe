@@ -1,5 +1,31 @@
 # Changelog
 
+## 76.23.0 - 2024-03-28
+* [#1830](https://github.com/stripe/stripe-go/pull/1830) Update generated code
+  * Add support for new resources `Billing.MeterEventAdjustment`, `Billing.MeterEvent`, and `Billing.Meter`
+  * Add support for `Deactivate`, `Get`, `List`, `New`, `Reactivate`, and `Update` methods on resource `Meter`
+  * Add support for `New` method on resources `MeterEventAdjustment` and `MeterEvent`
+  * Add support for `AmazonPayPayments` on `AccountCapabilitiesParams` and `AccountCapabilities`
+  * Add support for new value `verification_failed_representative_authority` on enums `AccountFutureRequirementsErrorsCode`, `AccountRequirementsErrorsCode`, `BankAccountFutureRequirementsErrorsCode`, and `BankAccountRequirementsErrorsCode`
+  * Add support for `DestinationOnBehalfOfChargeManagement` on `AccountSessionComponentsPaymentDetailsFeaturesParams`, `AccountSessionComponentsPaymentDetailsFeatures`, `AccountSessionComponentsPaymentsFeaturesParams`, and `AccountSessionComponentsPaymentsFeatures`
+  * Add support for `Mandate` on `ChargePaymentMethodDetailsUsBankAccount`, `TreasuryInboundTransferOriginPaymentMethodDetailsUsBankAccount`, `TreasuryOutboundPaymentDestinationPaymentMethodDetailsUsBankAccount`, and `TreasuryOutboundTransferDestinationPaymentMethodDetailsUsBankAccount`
+  * Add support for `SecondLine` on `IssuingCardParams`
+  * Add support for `Meter` on `PlanParams`, `Plan`, `PriceListRecurringParams`, `PriceRecurringParams`, and `PriceRecurring`
+
+## 76.22.0 - 2024-03-21
+* [#1828](https://github.com/stripe/stripe-go/pull/1828) Update generated code
+  * Add support for new resources `ConfirmationToken` and `Forwarding.Request`
+  * Add support for `Get` method on resource `ConfirmationToken`
+  * Add support for `Get`, `List`, and `New` methods on resource `Request`
+  * Add support for `MobilepayPayments` on `AccountCapabilitiesParams` and `AccountCapabilities`
+  * Add support for new values `forwarding_api_inactive`, `forwarding_api_invalid_parameter`, `forwarding_api_upstream_connection_error`, and `forwarding_api_upstream_connection_timeout` on enums `InvoiceLastFinalizationErrorCode`, `PaymentIntentLastPaymentErrorCode`, `SetupAttemptSetupErrorCode`, `SetupIntentLastSetupErrorCode`, and `StripeErrorCode`
+  * Add support for `Mobilepay` on `ChargePaymentMethodDetails`, `PaymentIntentConfirmPaymentMethodDataParams`, `PaymentIntentConfirmPaymentMethodOptionsParams`, `PaymentIntentPaymentMethodDataParams`, `PaymentIntentPaymentMethodOptionsParams`, `PaymentIntentPaymentMethodOptions`, `PaymentMethodParams`, `PaymentMethod`, `SetupIntentConfirmPaymentMethodDataParams`, and `SetupIntentPaymentMethodDataParams`
+  * Add support for `PaymentReference` on `ChargePaymentMethodDetailsUsBankAccount`
+  * Add support for `ConfirmationToken` on `PaymentIntentConfirmParams`, `PaymentIntentParams`, `SetupIntentConfirmParams`, and `SetupIntentParams`
+  * Add support for new value `mobilepay` on enum `PaymentMethodType`
+  * Add support for `Name` on `TerminalConfigurationParams` and `TerminalConfiguration`
+  * Add support for `Payout` on `TreasuryReceivedDebitLinkedFlows`
+
 ## 76.21.0 - 2024-03-14
 * [#1824](https://github.com/stripe/stripe-go/pull/1824) Update generated code
   * Add support for new resources `Issuing.PersonalizationDesign` and `Issuing.PhysicalBundle`
