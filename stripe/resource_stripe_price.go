@@ -293,7 +293,7 @@ func resourceStripePrice() *schema.Resource {
 				Description: "If set to true, will atomically remove the lookup key from the existing price, " +
 					"and assign it to this price.",
 			},
-			"tax_behaviour": {
+			"tax_behavior": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  stripe.PriceTaxBehaviorUnspecified,
@@ -461,7 +461,7 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 			return nil
 		}(),
 		d.Set("lookup_key", price.LookupKey),
-		d.Set("tax_behaviour", price.TaxBehavior),
+		d.Set("tax_behavior", price.TaxBehavior),
 		func() error {
 			if price.TransformQuantity != nil {
 				return d.Set("transform_quantity", []map[string]interface{}{
@@ -620,7 +620,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	if transferLookupKey, set := d.GetOk("transfer_lookup_key"); set {
 		params.TransferLookupKey = stripe.Bool(ToBool(transferLookupKey))
 	}
-	if taxBehaviour, set := d.GetOk("tax_behaviour"); set {
+	if taxBehaviour, set := d.GetOk("tax_behavior"); set {
 		params.TaxBehavior = stripe.String(ToString(taxBehaviour))
 	}
 	if transformQuantity, set := d.GetOk("transform_quantity"); set {
@@ -738,8 +738,8 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 	if d.HasChange("transfer_lookup_key") {
 		params.TransferLookupKey = stripe.Bool(ExtractBool(d, "transfer_lookup_key"))
 	}
-	if d.HasChange("tax_behaviour") {
-		params.TaxBehavior = stripe.String(ExtractString(d, "tax_behaviour"))
+	if d.HasChange("tax_behavior") {
+		params.TaxBehavior = stripe.String(ExtractString(d, "tax_behavior"))
 	}
 	if d.HasChange("metadata") {
 		params.Metadata = nil

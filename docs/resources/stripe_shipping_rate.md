@@ -83,7 +83,7 @@ Arguments accepted by this resource include:
    meant to be displayable to the customer. This will appear on CheckoutSessions. 
    For details please see [Delivery Estimate](#delivery-estimate).
 * `active` - (Optional) Bool. Whether the shipping rate is active (can't be used when creating). Defaults to `true`.
-* `tax_behaviour` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
+* `tax_behavior` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
   taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified it cannot be changed, default is `unspecified`.
 * `tax_code` - (Optional) String. A tax code ID. The Shipping tax code is `txcd_92010001`.
 * `metadata` - (Optional) Map(String). Set of key-value pairs that you can attach to an object. This can be useful for
@@ -108,7 +108,7 @@ Currency option support the following arguments:
 
 * `currency` - (Required) String. Three-letter ISO currency code, in lowercase - [supported currencies](https://stripe.com/docs/currencies).
 * `amount` - (Required) Int. (Required) Int. A non-negative integer in cents representing how much to charge.
-* `tax_behaviour` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
+* `tax_behavior` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
   taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified it cannot be changed, default is `unspecified`.
 
 ### Delivery Estimate
@@ -137,6 +137,6 @@ Attributes exported by this resource include:
 * `active` - Bool. Whether the shipping rate can be used.
 * `fixed_amount` - List(Resource). Describes a fixed amount to charge for shipping.
 * `delivery_estimate` - List(Resource). The estimated range for how long shipping will take, meant to be displayable to the customer.
-* `tax_behaviour` - String. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. 
+* `tax_behavior` - String. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. 
 * `tax_code` - String. A tax code ID.
 * `livemode` - Bool. Has the value true if the object exists in live mode or the value false if the object exists in test mode.

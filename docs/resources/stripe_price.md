@@ -117,7 +117,7 @@ Arguments accepted by this resource include:
 * `lookup_key` - (Optional) String. A lookup key used to retrieve prices dynamically from a static string.
 * `transfer_lookup_key` - (Optional) Bool. If set to `true`, will atomically remove the lookup key from the existing
   price, and assign it to this price.
-* `tax_behaviour` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
+* `tax_behavior` - (Optional) String. Specifies whether the price is considered inclusive of taxes or exclusive of
   taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it
   cannot be changed, default is `unspecified`.
 * `transform_quantity` - (Optional) List(Resource). Apply a transformation to the reported usage or set quantity before
@@ -211,7 +211,7 @@ Attributes exported by this resource include:
 * `billing_scheme` - String. Describes how to compute the price per period.
 * `lookup_key` - String. A lookup key used to retrieve prices dynamically from a static string.
 * `transfer_lookup_key` - Bool. `true` when lookup key was transferred.
-* `tax_behaviour` - String. Specifies whether the price is considered inclusive of taxes or exclusive of taxes.
+* `tax_behavior` - String. Specifies whether the price is considered inclusive of taxes or exclusive of taxes.
 * `transform_quantity` - List(Resource). Apply a transformation to the reported usage or set quantity before computing
   the billed price.
 * `type` - String. One of `one_time` or `recurring` depending on whether the price is for a one-time purchase or a
@@ -220,7 +220,7 @@ Attributes exported by this resource include:
 
 ## Note on updating prices
 
-Once created, you can update the `active`, `metadata`, `nickname`, `lookup_key`, `tax_behaviour` (only if unspecified)
+Once created, you can update the `active`, `metadata`, `nickname`, `lookup_key`, `tax_behavior` (only if unspecified)
 and `transfer_lookup_key` attributes.
 
 Other attribute edits will trigger a destroy action (archival) and creation of a new price entry.
