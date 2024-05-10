@@ -1,7 +1,7 @@
 ## 2.0.0
 
 * BUGFIXES:
-  * `tax_behaviour` renamed to `tax_behavior` to be consistent with the Stripe language. This is the breaking change!
+  * `tax_behaviour` was renamed to `tax_behavior` to be consistent with the Stripe language. This is the breaking change!
 
 * DEPENDENCIES UPGRADE:
     * github.com/hashicorp/go-plugin v1.6.0 => v1.6.1
