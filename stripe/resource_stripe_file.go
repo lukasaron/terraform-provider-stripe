@@ -254,7 +254,9 @@ func resourceStripeFileCreate(ctx context.Context, d *schema.ResourceData, m int
 }
 
 func resourceStripeFileDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe SDK doesn't support File deletion through API!")
+	log.Println(
+		"[WARN] Stripe SDK doesn't support File deletion through API! " +
+			"It's gonna be removed from TF state only. ")
 	d.SetId("")
 	return nil
 }

@@ -69,20 +69,6 @@ func resourceStripeCustomer() *schema.Resource {
 					"A negative amount represents a credit that decreases the amount due on an invoice; " +
 					"a positive amount increases the amount due on an invoice.",
 			},
-			//TODO "coupon": {
-			//	Type:     schema.TypeString,
-			//	Optional: true,
-			//	Description: "If you provide a coupon code, " +
-			//		"the customer will have a discount applied on all recurring charges. " +
-			//		"Charges you create through the API will not have the discount.",
-			//},
-			//TODO "promotion_code": {
-			//	Type:     schema.TypeString,
-			//	Optional: true,
-			//	Description: "The API ID of a promotion code to apply to the customer. " +
-			//		"The customer will have a discount applied on all recurring payments. " +
-			//		"Charges you create through the API will not have the discount.",
-			//},
 			"default_invoice_prefix": {
 				Type:     schema.TypeString,
 				Computed: true,
