@@ -169,7 +169,46 @@ func resourceStripePaymentLink() *schema.Resource {
 				Description: "Configuration for collecting the customer’s billing address. Defaults to auto.",
 			},
 			"consent_collection": {
-				// FIXME
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"payment_method_reuse_agreement": {
+							Type:     schema.TypeList,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"position": {
+										Type:     schema.TypeString,
+										Required: true,
+										Description: "Determines the position and visibility of the payment method " +
+											"reuse agreement in the UI. When set to auto, " +
+											"Stripe’s defaults will be used. When set to hidden, " +
+											"the payment method reuse agreement text will always be hidden in the UI.",
+									},
+								},
+							},
+							Description: "Determines the display of payment method reuse agreement text in the UI. " +
+								"If set to hidden, it will hide legal text related to the reuse of a payment method.",
+						},
+						"promotions": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Description: "If set to auto, enables the collection of customer consent for promotional " +
+								"communications. The Checkout Session will determine whether to display an option " +
+								"to opt into promotional communication from the merchant depending on the customer’s " +
+								"locale. Only available to US merchants.",
+						},
+						"terms_of_service": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Description: "If set to required, it requires customers to check a terms of service " +
+								"checkbox before being able to pay. There must be a valid terms of service URL " +
+								"set in your Dashboard settings.",
+						},
+					},
+				},
 			},
 			"currency": {
 				Type:     schema.TypeString,
@@ -178,10 +217,114 @@ func resourceStripePaymentLink() *schema.Resource {
 					"Must be a supported currency and supported by each line item’s price.",
 			},
 			"custom_fields": {
-				// FIXME
+				Type: schema.TypeList,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Type:     schema.TypeString,
+							Required: true,
+							Description: "String of your choice that your integration can use to reconcile this field. " +
+								"Must be unique to this field, alphanumeric, and up to 200 characters.",
+						},
+						"label": {
+							Type:     schema.TypeList,
+							MaxItems: 1,
+							Required: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"custom": {
+										Type:     schema.TypeString,
+										Required: true,
+										Description: "Custom text for the label, displayed to the customer. " +
+											"Up to 50 characters.",
+									},
+									"type": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Default:     "custom",
+										Description: "The type of the label.",
+									},
+								},
+							},
+							Description: "The label for the field, displayed to the customer.",
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The type of the field.",
+						},
+						"dropdown": {
+							Type:        schema.TypeList,
+							Description: "Configuration for type=dropdown fields.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"label": {
+										Type:     schema.TypeString,
+										Required: true,
+										Description: "The label for the option, displayed to the customer. " +
+											"Up to 100 characters.",
+									},
+									"value": {
+										Type:     schema.TypeString,
+										Required: true,
+										Description: "The value for this option, not displayed to the customer, " +
+											"used by your integration to reconcile the option selected by the " +
+											"customer. Must be unique to this option, alphanumeric, " +
+											"and up to 100 characters.",
+									},
+								},
+							},
+						},
+						"numeric": {
+							Type:        schema.TypeList,
+							MaxItems:    1,
+							Description: "Configuration for type=numeric fields.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"maximum_length": {
+										Type:        schema.TypeInt,
+										Optional:    true,
+										Description: "The maximum character length constraint for the customer’s input.",
+									},
+									"minimum_length": {
+										Type:        schema.TypeInt,
+										Optional:    true,
+										Description: "The minimum character length requirement for the customer’s input.",
+									},
+								},
+							},
+						},
+						"optional": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Description: "Whether the customer is required to complete the field before completing " +
+								"the Checkout Session. Defaults to false.",
+						},
+						"text": {
+							Type:        schema.TypeList,
+							MaxItems:    1,
+							Optional:    true,
+							Description: "Configuration for type=text fields",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"maximum_length": {
+										Type:        schema.TypeInt,
+										Optional:    true,
+										Description: "The maximum character length constraint for the customer’s input.",
+									},
+									"minimum_length": {
+										Type:        schema.TypeInt,
+										Optional:    true,
+										Description: "The minimum character length requirement for the customer’s input.",
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			"custom_text": {
-				// FIXME
+				Type: schema.TypeList, // TODO continue here
 			},
 			"customer_creation": {
 				Type:        schema.TypeString,
