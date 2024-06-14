@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+	"github.com/stripe/stripe-go/v78"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
