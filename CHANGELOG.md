@@ -6,6 +6,15 @@
 
 * DEPENDENCIES UPGRADE:
   * github.com/stripe/stripe-go/v76 v76.25.0 => v78.11.0
+  * github.com/hashicorp/go-version v1.6.0 => v1.7.0
+  * golang.org/x/mod v0.17.0 => v0.18.0
+  * golang.org/x/net v0.25.0 => v0.26.0
+  * golang.org/x/sys v0.20.0 => v0.21.0
+  * golang.org/x/text v0.15.0 => v0.16.0
+  * golang.org/x/tools v0.21.0 => v0.22.0
+  * google.golang.org/genproto/googleapis/rpc v0.0.0-20240515191416-fc5f0ca64291 => v0.0.0-20240610135401-a8a62080eff3
+  * google.golang.org/protobuf v1.34.1 => v1.34.2
+
 
 ## 2.0.0
 
