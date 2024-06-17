@@ -95,9 +95,6 @@ resource "stripe_portal_configuration" "portal_configuration" {
       mode               = "at_period_end"
       proration_behavior = "none"
     }
-    subscription_pause {
-      enabled = true
-    }
     subscription_update {
       enabled                 = true
       default_allowed_updates = ["price", "quantity", "promotion_code"]
@@ -147,7 +144,6 @@ Arguments accepted by this resource include:
 * `invoice_history` - (Optional) List(Resource). Information about showing the billing history in the portal. See [Invoice History](#features-invoice-history).
 * `payment_method_update` - (Optional) List(Resource). Information about updating payment methods in the portal. See [Payment Method Update](#features-payment-method-update).
 * `subscription_cancel` - (Optional) List(Resource). Information about canceling subscriptions in the portal. See [Subscription Cancel](#features-subscription-cancel).
-* `subscription_pause`- (Optional) List(Resource). Information about pausing subscriptions in the portal. See [Subscription Pause](#features-subscription-pause).
 * `subscription_update`- (Optional) List(Resource). Information about updating subscriptions in the portal. See [Subscription Update](#features-subscription-update).
 
 ### Features Customer Update
@@ -184,13 +180,6 @@ Arguments accepted by this resource include:
 
 * `enabled` - (Required) Bool. Whether the feature is enabled.
 * `options` - (Required) List(String). Which cancellation reasons will be given as options to the customer. Supported values are `too_expensive`, `missing_features`, `switched_service`, `unused`, `customer_service`, `too_complex`, `low_quality`, and `other`.
-
-
-### Features Subscription Pause
-
-`subscription_pause` Implements only one argument:
-
-* `enabled` - (Required) Bool. Whether the feature is enabled.
 
 ### Features Subscription Update
 
