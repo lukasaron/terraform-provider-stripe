@@ -6,8 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/stripe/stripe-go/v76"
-	"github.com/stripe/stripe-go/v76/client"
+	"github.com/stripe/stripe-go/v78"
+	"github.com/stripe/stripe-go/v78/client"
 )
 
 func resourceStripePortalConfiguration() *schema.Resource {
@@ -193,21 +193,6 @@ func resourceStripePortalConfiguration() *schema.Resource {
 								},
 							},
 						},
-						"subscription_pause": {
-							Type:        schema.TypeList,
-							Optional:    true,
-							Computed:    true,
-							Description: "Information about pausing subscriptions in the portal.",
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"enabled": {
-										Type:        schema.TypeBool,
-										Optional:    true,
-										Description: "Whether the feature is enabled.",
-									},
-								},
-							},
-						},
 						"subscription_update": {
 							Type:        schema.TypeList,
 							Optional:    true,
@@ -361,13 +346,6 @@ func resourceStripePortalConfigurationRead(_ context.Context, d *schema.Resource
 						subsCancelMap,
 					}
 				}
-				if portal.Features.SubscriptionPause != nil {
-					featureMap["subscription_pause"] = []map[string]interface{}{
-						{
-							"enabled": portal.Features.SubscriptionPause.Enabled,
-						},
-					}
-				}
 				if portal.Features.SubscriptionUpdate != nil {
 					subsUpdateMap := map[string]interface{}{
 						"enabled":                 portal.Features.SubscriptionUpdate.Enabled,
@@ -498,16 +476,6 @@ func resourceStripePortalConfigurationCreate(ctx context.Context, d *schema.Reso
 										}
 									}
 								}
-							}
-						}
-					}
-				case "subscription_pause":
-					for _, subsPauseMap := range ToMapSlice(v) {
-						params.Features.SubscriptionPause = &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
-						for k, v := range subsPauseMap {
-							switch k {
-							case "enabled":
-								params.Features.SubscriptionPause.Enabled = stripe.Bool(ToBool(v))
 							}
 						}
 					}
@@ -661,16 +629,6 @@ func resourceStripePortalConfigurationUpdate(ctx context.Context, d *schema.Reso
 										}
 									}
 								}
-							}
-						}
-					}
-				case "subscription_pause":
-					for _, subsPauseMap := range ToMapSlice(v) {
-						params.Features.SubscriptionPause = &stripe.BillingPortalConfigurationFeaturesSubscriptionPauseParams{}
-						for k, v := range subsPauseMap {
-							switch k {
-							case "enabled":
-								params.Features.SubscriptionPause.Enabled = stripe.Bool(ToBool(v))
 							}
 						}
 					}

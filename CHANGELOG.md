@@ -1,3 +1,12 @@
+## 3.0.0
+
+* BREAKING CHANGES:
+  * Remove `SubscriptionPause` from `BillingPortalConfigurationFeatures` and `BillingPortalConfigurationFeaturesParams` as the feature to pause subscription on the portal has been deprecated.
+  * Rename `Features` to `MarketingFeatures` on `ProductCreateOptions`, `ProductUpdateOptions`, and `Product`
+
+* DEPENDENCIES UPGRADE:
+  * github.com/stripe/stripe-go/v76 v76.25.0 => v78.11.0
+
 ## 2.0.0
 
 * BUGFIXES:
