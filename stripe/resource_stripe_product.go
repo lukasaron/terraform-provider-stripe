@@ -2,10 +2,10 @@ package stripe
 
 import (
 	"context"
-	"github.com/stripe/stripe-go/v78"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/client"
 )
 
@@ -46,11 +46,12 @@ func resourceStripeProduct() *schema.Resource {
 					"Use this field to optionally store a long form explanation of the product " +
 					"being sold for your own rendering purposes.",
 			},
-			"features": {
-				Type:        schema.TypeList,
-				Optional:    true,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "A list of up to 15 features for this product. These are displayed in pricing tables. ",
+			"marketing_features": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "A list of up to 15 marketing features for this product. " +
+					"These are displayed in pricing tables.",
 			},
 			"images": {
 				Type:     schema.TypeList,
@@ -127,12 +128,12 @@ func resourceStripeProductRead(_ context.Context, d *schema.ResourceData, m inte
 		d.Set("active", product.Active),
 		d.Set("description", product.Description),
 		func() error {
-			if len(product.Features) > 0 {
-				var features []string
-				for _, feature := range product.Features {
-					features = append(features, feature.Name)
+			if len(product.MarketingFeatures) > 0 {
+				var marketingFeatures []string
+				for _, feature := range product.MarketingFeatures {
+					marketingFeatures = append(marketingFeatures, feature.Name)
 				}
-				return d.Set("features", features)
+				return d.Set("marketing_features", marketingFeatures)
 			}
 			return nil
 		}(),
@@ -179,9 +180,12 @@ func resourceStripeProductCreate(ctx context.Context, d *schema.ResourceData, m 
 	if description, set := d.GetOk("description"); set {
 		params.Description = stripe.String(ToString(description))
 	}
-	if features, set := d.GetOk("features"); set {
-		for _, feature := range ToStringSlice(features) {
-			params.Features = append(params.Features, &stripe.ProductFeatureParams{Name: stripe.String(feature)})
+	if marketingFeatures, set := d.GetOk("marketing_features"); set {
+		for _, feature := range ToStringSlice(marketingFeatures) {
+			params.MarketingFeatures = append(
+				params.MarketingFeatures,
+				&stripe.ProductMarketingFeatureParams{Name: stripe.String(feature)},
+			)
 		}
 	}
 	if images, set := d.GetOk("images"); set {
@@ -255,9 +259,12 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 	if d.HasChange("description") {
 		params.Description = stripe.String(ExtractString(d, "description"))
 	}
-	if d.HasChange("features") {
-		for _, feature := range ExtractStringSlice(d, "features") {
-			params.Features = append(params.Features, &stripe.ProductFeatureParams{Name: stripe.String(feature)})
+	if d.HasChange("marketing_features") {
+		for _, feature := range ExtractStringSlice(d, "marketing_features") {
+			params.MarketingFeatures = append(
+				params.MarketingFeatures,
+				&stripe.ProductMarketingFeatureParams{Name: stripe.String(feature)},
+			)
 		}
 	}
 	if d.HasChange("images") {
