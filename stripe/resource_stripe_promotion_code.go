@@ -85,13 +85,13 @@ func resourceStripePromotionCode() *schema.Resource {
 						},
 						"minimum_amount": {
 							Type:     schema.TypeInt,
-							Required: true,
+							Optional: true,
 							Description: "Minimum amount required to redeem this Promotion Code into a Coupon " +
 								"(e.g., a purchase must be $100 or more to work).",
 						},
 						"minimum_amount_currency": {
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 							Description: "Three-letter ISO code for minimum_amount",
 						},
 					},
