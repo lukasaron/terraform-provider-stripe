@@ -71,8 +71,8 @@ Arguments accepted by this resource include:
 `restrictions` Supports the following arguments:
 
 * `first_time_transaction` - (Required) Bool. A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices.
-* `minimum_amount` - (Required) Int. Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
-* `minimum_amount_currency` - (Required) String. Three-letter ISO code for `minimum_amount`.
+* `minimum_amount` - (Optional) Int. Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
+* `minimum_amount_currency` - (Optional) String. Three-letter ISO code for `minimum_amount`.
 
 ## Attribute Reference
 
