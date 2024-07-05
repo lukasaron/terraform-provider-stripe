@@ -1,3 +1,8 @@
+## 3.0.1
+
+* BUGFIXES:
+  * Code Promotion restrictions `minimum_amount` and `minimum_amount_currency` are optional.
+
 ## 3.0.0
 
 * BREAKING CHANGES:
