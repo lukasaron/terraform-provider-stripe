@@ -194,16 +194,32 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 			return nil
 		}(),
 		d.Set("max_redemptions", promotionCode.MaxRedemptions),
-		d.Set("expires_at", time.Unix(promotionCode.ExpiresAt, 0).Format(time.RFC3339)),
+
+		// ExpiresAt is 0 iff it's not set, so we should ignore it.
+		func() error {
+			if promotionCode.ExpiresAt == 0 {
+				expiryTime := time.Unix(promotionCode.ExpiresAt, 0)
+				return d.Set("expires_at", expiryTime.Format(time.RFC3339))
+			}
+			return nil
+		}(),
+
 		func() error {
 			if promotionCode.Restrictions != nil {
-				return d.Set("restrictions", []map[string]interface{}{
-					{
-						"first_time_transaction":  promotionCode.Restrictions.FirstTimeTransaction,
-						"minimum_amount":          promotionCode.Restrictions.MinimumAmount,
-						"minimum_amount_currency": promotionCode.Restrictions.MinimumAmountCurrency,
-					},
-				})
+				restrictions := map[string]interface{}{
+					"first_time_transaction": promotionCode.Restrictions.FirstTimeTransaction,
+				}
+
+				// If minimum amount is 0, it means it's not set and we should ignore it.
+				// Stripe API does accept minimum_amount iff > 1 and raise an error otherwise.
+				if minAmount := promotionCode.Restrictions.MinimumAmount; minAmount != 0 {
+					restrictions["minimum_amount"] = minAmount
+					restrictions["minimum_amount_currency"] = promotionCode.Restrictions.MinimumAmountCurrency
+				}
+		
+				if len(restrictions) > 0 {
+					return d.Set("restrictions", []map[string]interface{}{restrictions})
+				}
 			}
 			return nil
 		}(),
