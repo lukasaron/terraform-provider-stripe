@@ -206,7 +206,7 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 		}(),
 		d.Set("max_redemptions", promotionCode.MaxRedemptions),
 
-		// Stripe go client library has ExpiresAt as 0 iff it's not set.
+		// stripe go client library has ExpiresAt as 0 iff it's not set.
 		func() error {
 			if promotionCode.ExpiresAt != 0 {
 				expiryTime := time.Unix(promotionCode.ExpiresAt, 0)
@@ -221,8 +221,8 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 					"first_time_transaction": promotionCode.Restrictions.FirstTimeTransaction,
 				}
 
-				// Stripe go client library has MinimumAmount as 0 iff it's not set. Stripe API
-				// actually accepts minimum_amount iff > 1 and raise an error otherwise.
+				// stripe go client library has MinimumAmount as 0 iff it's not set.
+				// stripe API accepts minimum_amount iff > 1 and raise an error otherwise.
 				if minAmount := promotionCode.Restrictions.MinimumAmount; minAmount != 0 {
 					restrictions["minimum_amount"] = minAmount
 					restrictions["minimum_amount_currency"] = promotionCode.Restrictions.MinimumAmountCurrency
@@ -234,7 +234,7 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 			}
 			return nil
 		}(),
-		// Only set metadata if it's not empty map
+		// only set metadata if it's not empty map
 		func() error {
 			if len(promotionCode.Metadata) > 0 {
 				return d.Set("metadata", promotionCode.Metadata)
