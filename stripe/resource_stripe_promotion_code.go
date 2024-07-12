@@ -132,9 +132,8 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		expiresAtUnixStripeValue := stripe.Int64(t.Unix())
-		if *expiresAtUnixStripeValue > 0 {
-			params.ExpiresAt = expiresAtUnixStripeValue
+		if !t.IsZero() {
+			params.ExpiresAt = stripe.Int64(t.Unix())
 		}
 	}
 
@@ -149,7 +148,7 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 
 		if v, min_amount_set := restrictionsMap["minimum_amount"]; min_amount_set {
 			amount := ToInt64(v)
-			if amount >= 1 {
+			if amount > 0 {
 				params.Restrictions.MinimumAmount = stripe.Int64(amount)
 				if currency, set := restrictionsMap["minimum_amount_currency"]; set {
 					params.Restrictions.MinimumAmountCurrency = stripe.String(ToString(currency))
@@ -234,13 +233,7 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 			}
 			return nil
 		}(),
-		// only set metadata if it's not empty map
-		func() error {
-			if len(promotionCode.Metadata) > 0 {
-				return d.Set("metadata", promotionCode.Metadata)
-			}
-			return nil
-		}(),
+		d.Set("metadata", promotionCode.Metadata),
 	)
 }
 
