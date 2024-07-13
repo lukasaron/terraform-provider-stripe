@@ -132,21 +132,31 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		params.ExpiresAt = stripe.Int64(t.Unix())
+		if !t.IsZero() {
+			params.ExpiresAt = stripe.Int64(t.Unix())
+		}
 	}
-	if restrictions, set := d.GetOk("restrictions"); set {
+
+	if restrictions, restrictions_set := d.GetOk("restrictions"); restrictions_set {
 		params.Restrictions = &stripe.PromotionCodeRestrictionsParams{}
-		for k, v := range ToMap(restrictions) {
-			switch k {
-			case "first_time_transaction":
-				params.Restrictions.FirstTimeTransaction = stripe.Bool(ToBool(v))
-			case "minimum_amount":
-				params.Restrictions.MinimumAmount = stripe.Int64(ToInt64(v))
-			case "minimum_amount_currency":
-				params.Restrictions.MinimumAmountCurrency = stripe.String(ToString(v))
+
+		restrictionsMap := ToMap(restrictions)
+
+		if v, set := restrictionsMap["first_time_transaction"]; set {
+			params.Restrictions.FirstTimeTransaction = stripe.Bool(ToBool(v))
+		}
+
+		if v, min_amount_set := restrictionsMap["minimum_amount"]; min_amount_set {
+			amount := ToInt64(v)
+			if amount > 0 {
+				params.Restrictions.MinimumAmount = stripe.Int64(amount)
+				if currency, set := restrictionsMap["minimum_amount_currency"]; set {
+					params.Restrictions.MinimumAmountCurrency = stripe.String(ToString(currency))
+				}
 			}
 		}
 	}
+	
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
 			params.AddMetadata(k, ToString(v))
@@ -194,16 +204,32 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 			return nil
 		}(),
 		d.Set("max_redemptions", promotionCode.MaxRedemptions),
-		d.Set("expires_at", time.Unix(promotionCode.ExpiresAt, 0).Format(time.RFC3339)),
+
+		// stripe go client library has ExpiresAt as 0 iff it's not set.
+		func() error {
+			if promotionCode.ExpiresAt != 0 {
+				expiryTime := time.Unix(promotionCode.ExpiresAt, 0)
+				return d.Set("expires_at", expiryTime.Format(time.RFC3339))
+			}
+			return nil
+		}(),
+
 		func() error {
 			if promotionCode.Restrictions != nil {
-				return d.Set("restrictions", []map[string]interface{}{
-					{
-						"first_time_transaction":  promotionCode.Restrictions.FirstTimeTransaction,
-						"minimum_amount":          promotionCode.Restrictions.MinimumAmount,
-						"minimum_amount_currency": promotionCode.Restrictions.MinimumAmountCurrency,
-					},
-				})
+				restrictions := map[string]interface{}{
+					"first_time_transaction": promotionCode.Restrictions.FirstTimeTransaction,
+				}
+
+				// stripe go client library has MinimumAmount as 0 iff it's not set.
+				// stripe API accepts minimum_amount iff > 1 and raise an error otherwise.
+				if minAmount := promotionCode.Restrictions.MinimumAmount; minAmount != 0 {
+					restrictions["minimum_amount"] = minAmount
+					restrictions["minimum_amount_currency"] = promotionCode.Restrictions.MinimumAmountCurrency
+				}
+		
+				if len(restrictions) > 0 {
+					return d.Set("restrictions", []map[string]interface{}{restrictions})
+				}
 			}
 			return nil
 		}(),
