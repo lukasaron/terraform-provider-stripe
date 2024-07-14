@@ -1,3 +1,8 @@
+## 3.0.2
+
+* BUGFIXES:
+  * Code Promotion: `expires_at` and `restrictions.minimum_amount` fields are misinterpreted as 0 when they are nil.
+
 ## 3.0.1
 
 * BUGFIXES:
