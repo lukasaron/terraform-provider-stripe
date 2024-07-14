@@ -137,7 +137,7 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 
-	if restrictions, restrictions_set := d.GetOk("restrictions"); restrictions_set {
+	if restrictions, set := d.GetOk("restrictions"); set {
 		params.Restrictions = &stripe.PromotionCodeRestrictionsParams{}
 
 		restrictionsMap := ToMap(restrictions)
@@ -146,7 +146,7 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 			params.Restrictions.FirstTimeTransaction = stripe.Bool(ToBool(v))
 		}
 
-		if v, min_amount_set := restrictionsMap["minimum_amount"]; min_amount_set {
+		if v, set := restrictionsMap["minimum_amount"]; set {
 			amount := ToInt64(v)
 			if amount > 0 {
 				params.Restrictions.MinimumAmount = stripe.Int64(amount)
@@ -156,7 +156,7 @@ func resourceStripePromotionCodeCreate(ctx context.Context, d *schema.ResourceDa
 			}
 		}
 	}
-	
+
 	if meta, set := d.GetOk("metadata"); set {
 		for k, v := range ToMap(meta) {
 			params.AddMetadata(k, ToString(v))
@@ -226,7 +226,7 @@ func resourceStripePromotionCodeRead(_ context.Context, d *schema.ResourceData, 
 					restrictions["minimum_amount"] = minAmount
 					restrictions["minimum_amount_currency"] = promotionCode.Restrictions.MinimumAmountCurrency
 				}
-		
+
 				if len(restrictions) > 0 {
 					return d.Set("restrictions", []map[string]interface{}{restrictions})
 				}
