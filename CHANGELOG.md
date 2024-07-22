@@ -1,3 +1,19 @@
+## 3.1.0
+
+* BUGFIXES:
+  * Price has `custom_unit_amount` block implementation.
+
+* DEPENDENCIES UPGRADE:
+  * github.com/hashicorp/hcl/v2 v2.20.1 => v2.21.0
+  *  github.com/stripe/stripe-go/v78 v78.11.0 => v78.12.0
+  *  github.com/zclconf/go-cty v1.14.4 => v1.15.0
+  *  golang.org/x/mod v0.18.0 => v0.19.0
+  *  golang.org/x/net v0.26.0 => v0.27.0
+  *  golang.org/x/sys v0.21.0 => v0.22.0
+  *  golang.org/x/tools v0.22.0 => v0.23.0
+  *  google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 => v0.0.0-20240711142825-46eb208f015d
+  *  google.golang.org/grpc v1.64.0 => v1.65.0
+
 ## 3.0.2
 
 * BUGFIXES:
