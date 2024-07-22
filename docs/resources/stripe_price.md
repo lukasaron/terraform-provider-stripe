@@ -39,13 +39,24 @@ resource "stripe_price" "price" {
   unit_amount = -1
 }
 
+// price with custom unit amount 
+resource "stripe_price" "price" {
+  product  = stripe_product.product.id
+  currency = "aud"
+  custom_unit_amount {
+    enabled = true
+    minimum = 500
+    maximum = 50000
+    preset  = 1000
+  }
+}
 // recurring price for the product
 resource "stripe_price" "price" {
   // product needs to be defined
   product        = stripe_product.product.id
   currency       = "aud"
   billing_scheme = "per_unit"
-  unit_amount    = "100"
+  unit_amount    = 100
 
   recurring {
     interval       = "week"
@@ -114,6 +125,9 @@ Arguments accepted by this resource include:
   defined using the `tiers` and `tiers_mode` attributes.
 * `currency_options` - (Optional) List(Resource). Prices defined in each available currency option. For details
   of individual arguments see [Currency Options](#currency-options).
+* `custom_unit_amount` - (Optional) List(Resource). When set, provides configuration for the amount to be adjusted by 
+  the customer during Checkout Sessions and Payment Links. 
+  For individual fields see [Custom Unit Amount](#custom-unit-amount).
 * `lookup_key` - (Optional) String. A lookup key used to retrieve prices dynamically from a static string.
 * `transfer_lookup_key` - (Optional) Bool. If set to `true`, will atomically remove the lookup key from the existing
   price, and assign it to this price.
@@ -171,7 +185,7 @@ Arguments accepted by this resource include:
   decimal places. Only one of unit_amount and unit_amount_decimal can be set.
 * `custom_unit_amount` - (Optional) List(Resource). When set, 
   provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.
-  See details in [custom unit amount](#custom-unit-amount).
+  See details in [Custom Unit Amount](#custom-unit-amount).
 * `tiers` - (Optional) List(Resource). Each element represents a pricing tier. 
   This parameter requires `billing_scheme` to be set to `tiered`. This resource can be used more than once and follows
   the same fields as the [root tiers block](#tiers)

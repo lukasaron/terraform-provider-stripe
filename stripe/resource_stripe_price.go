@@ -281,6 +281,42 @@ func resourceStripePrice() *schema.Resource {
 					},
 				},
 			},
+			"custom_unit_amount": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				ForceNew:    true,
+				MaxItems:    1,
+				Description: "When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							ForceNew:    true,
+							Required:    true,
+							Description: "Pass in true to enable custom_unit_amount, otherwise omit custom_unit_amount",
+						},
+						"maximum": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							ForceNew:    true,
+							Description: "The maximum unit amount the customer can specify for this item.",
+						},
+						"minimum": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							ForceNew: true,
+							Description: "The minimum unit amount the customer can specify for this item." +
+								" Must be at least the minimum charge amount.",
+						},
+						"preset": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							ForceNew:    true,
+							Description: "The starting unit amount which can be updated by the customer.",
+						},
+					},
+				},
+			},
 			"lookup_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -460,6 +496,20 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 			}
 			return nil
 		}(),
+		func() error {
+			if price.CustomUnitAmount != nil {
+				return d.Set("custom_unit_amount",
+					[]map[string]interface{}{
+						{
+							"enabled": true,
+							"maximum": price.CustomUnitAmount.Maximum,
+							"minimum": price.CustomUnitAmount.Minimum,
+							"preset":  price.CustomUnitAmount.Preset,
+						},
+					})
+			}
+			return nil
+		}(),
 		d.Set("lookup_key", price.LookupKey),
 		d.Set("tax_behavior", price.TaxBehavior),
 		func() error {
@@ -509,7 +559,6 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 				params.Recurring.IntervalCount = stripe.Int64(ToInt64(v))
 			case k == "aggregate_usage" && ToString(v) != "":
 				params.Recurring.AggregateUsage = stripe.String(ToString(v))
-
 			case k == "usage_type" && ToString(v) != "":
 				params.Recurring.UsageType = stripe.String(ToString(v))
 			}
@@ -612,6 +661,25 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 				}
 			}
 		}
+	}
+
+	if customUnitAmount, set := d.GetOk("custom_unit_amount"); set {
+		priceCustomUnitAmount := &stripe.PriceCustomUnitAmountParams{}
+		for _, cuaMap := range ToMapSlice(customUnitAmount) {
+			for k, v := range cuaMap {
+				switch k {
+				case "enabled":
+					priceCustomUnitAmount.Enabled = stripe.Bool(ToBool(v))
+				case "maximum":
+					priceCustomUnitAmount.Maximum = NonZeroInt64(v)
+				case "minimum":
+					priceCustomUnitAmount.Minimum = NonZeroInt64(v)
+				case "preset":
+					priceCustomUnitAmount.Preset = NonZeroInt64(v)
+				}
+			}
+		}
+		params.CustomUnitAmount = priceCustomUnitAmount
 	}
 
 	if lookupKey, set := d.GetOk("lookup_key"); set {
