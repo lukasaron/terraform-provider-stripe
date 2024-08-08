@@ -1,3 +1,14 @@
+## 3.X.X
+
+* DEPENDENCIES UPGRADE:
+  * golang.org/x/mod v0.19.0 => v0.20.0
+  *  golang.org/x/net v0.27.0 => v0.28.0
+  *  golang.org/x/sync v0.7.0 => v0.8.0
+  *  golang.org/x/sys v0.22.0 => v0.23.0
+  *  golang.org/x/text v0.16.0 => v0.17.0
+  *  golang.org/x/tools v0.23.0 => v0.24.0
+  *  google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d => v0.0.0-20240805194559-2c9e96a0b5d4
+
 ## 3.1.0
 
 * BUGFIXES:
