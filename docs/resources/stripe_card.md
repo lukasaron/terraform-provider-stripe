@@ -22,6 +22,8 @@ on how to treat sensitive data in Terraform State.
 ## Example Usage
 
 ```hcl
+
+
 // card for the customer
 resource "stripe_card" "card" {
   // stripe_customer.customer has to be created separately
