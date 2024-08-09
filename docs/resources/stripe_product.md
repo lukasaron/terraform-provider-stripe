@@ -18,11 +18,12 @@ terraform state.
 ## Example Usage
 
 ```hcl
-// the most basic product
+// The minimal product
 resource "stripe_product" "product" {
   name = "minimalist product"
 }
 
+// The product with more fields filled
 resource "stripe_product" "product" {
   name        = "full product"
   unit_label  = "piece"
