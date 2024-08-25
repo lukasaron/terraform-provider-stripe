@@ -1,3 +1,13 @@
+## 3.2.1
+
+* BUGFIXES:
+  * Price is fetching/populating `tiers` values to TF state in the read function.
+
+* DEPENDENCIES UPGRADE:
+  *  google.golang.org/genproto v0.0.0-20240823204242-4ba0660f739c
+  *  golang.org/x/sys v0.23.0 => v0.24.0
+  *  google.golang.org/genproto/googleapis/rpc v0.0.0-20240805194559-2c9e96a0b5d4 => v0.0.0-20240823204242-4ba0660f739c
+
 ## 3.2.0
 * NEW RESOURCES:
   * Entitlements Feature
