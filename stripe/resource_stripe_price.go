@@ -384,6 +384,7 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 	err = retryWithBackOff(func() error {
 		params := &stripe.PriceParams{}
 		params.AddExpand("tiers")
+
 		price, err = c.Prices.Get(d.Id(), params)
 		return err
 	})
