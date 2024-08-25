@@ -1,5 +1,4 @@
 ## 3.2.1
-
 * BUGFIXES:
   * Price is fetching/populating `tiers` values to TF state in the read function.
 
