@@ -12,6 +12,15 @@ about specific resources are described on the [official Stripe API reference web
 ## Example Usage
 
 ```hcl
+terraform {
+  required_providers {
+    stripe = {
+      source  = "lukasaron/stripe"
+      version = "3.2.1"
+    }
+  }
+}
+
 provider "stripe" {
   api_key = "<api-key>"
 }
