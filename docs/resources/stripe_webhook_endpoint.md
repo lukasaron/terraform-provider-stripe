@@ -46,5 +46,6 @@ Attributes exported by this resource include:
 * `disabled` - Bool. Informs whether the webhook endpoint is disabled.
 * `connect` - Bool. Whether this endpoint should receive events from connected accounts, or from your account.
 * `secret` - String. The endpoint’s secret, used to generate webhook signatures. This field is marked as `sensitive`.
-* `metadata` - Map(String). Set of key-value pairs attached to an object.
 * `api_version` - String. Stripe API version when set previously.
+* `application` - String. The ID of the associated Connect application.
+* `metadata` - Map(String). Set of key-value pairs attached to an object.

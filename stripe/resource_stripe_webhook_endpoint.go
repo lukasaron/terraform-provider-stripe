@@ -67,6 +67,11 @@ func resourceStripeWebhookEndpoint() *schema.Resource {
 				ForceNew:    true,
 				Description: "Events sent to this endpoint will be generated with this Stripe Version instead of your account’s default Stripe Version.",
 			},
+			"application": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The ID of the associated Connect application.",
+			},
 			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
@@ -99,6 +104,7 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		// TODO revisit this part in the future - now hardcoded the value from the state
 		d.Set("connect", ExtractBool(d, "connect")),
 		d.Set("api_version", webhookEndpoint.APIVersion),
+		d.Set("application", webhookEndpoint.Application),
 		d.Set("metadata", webhookEndpoint.Metadata),
 	)
 }
