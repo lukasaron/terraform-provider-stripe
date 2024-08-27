@@ -101,8 +101,7 @@ func resourceStripeWebhookEndpointRead(_ context.Context, d *schema.ResourceData
 		d.Set("url", webhookEndpoint.URL),
 		d.Set("description", webhookEndpoint.Description),
 		d.Set("disabled", webhookEndpoint.Status != "enabled"),
-		// TODO revisit this part in the future - now hardcoded the value from the state
-		d.Set("connect", ExtractBool(d, "connect")),
+		d.Set("connect", webhookEndpoint.Application != ""),
 		d.Set("api_version", webhookEndpoint.APIVersion),
 		d.Set("application", webhookEndpoint.Application),
 		d.Set("metadata", webhookEndpoint.Metadata),
