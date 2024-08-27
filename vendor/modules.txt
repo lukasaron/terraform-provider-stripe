@@ -42,7 +42,7 @@ github.com/hashicorp/go-uuid
 # github.com/hashicorp/go-version v1.7.0
 ## explicit
 github.com/hashicorp/go-version
-# github.com/hashicorp/hcl/v2 v2.21.0
+# github.com/hashicorp/hcl/v2 v2.22.0
 ## explicit; go 1.18
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
@@ -341,7 +341,7 @@ google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240823204242-4ba0660f739c
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7
 ## explicit; go 1.21
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.65.0

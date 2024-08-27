@@ -1,3 +1,12 @@
+## 3.2.2
+* BUGFIXES:
+  * Webhook Endpoint exposes the `application` attribute.
+  * Webhook Endpoint `connect` field reflects the `application` field value.
+
+* DEPENDENCIES UPGRADE:
+  * github.com/hashicorp/hcl/v2 v2.21.0 => v2.22.0
+  * google.golang.org/genproto/googleapis/rpc v0.0.0-20240823204242-4ba0660f739c => v0.0.0-20240826202546-f6391c0de4c7
+
 ## 3.2.1
 * BUGFIXES:
   * Price is fetching/populating `tiers` values to TF state in the read function.
