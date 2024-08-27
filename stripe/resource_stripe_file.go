@@ -17,6 +17,9 @@ func resourceStripeFile() *schema.Resource {
 		ReadContext:   resourceStripeFileRead,
 		CreateContext: resourceStripeFileCreate,
 		DeleteContext: resourceStripeFileDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_webhook_endpoint"
-description: |- The Stripe Webhook Endpoint can be created, modified, configured and removed by this resource.
+description: |- 
+  The Stripe Webhook Endpoint can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_webhook_endpoint
@@ -49,3 +50,11 @@ Attributes exported by this resource include:
 * `api_version` - String. Stripe API version when set previously.
 * `application` - String. The ID of the associated Connect application.
 * `metadata` - Map(String). Set of key-value pairs attached to an object.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_webhook_endpoint.webhook <webhook_endpoint_id>
+```

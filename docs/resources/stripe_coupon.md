@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_coupon"
-description: |- The Stripe Coupon can be created, modified, configured and removed by this resource.
+description: |- 
+  The Stripe Coupon can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_coupon
@@ -76,3 +77,11 @@ Attributes exported by this resource include:
 * `applies_to` - List(String). A list of product IDs this coupon applies to.
 * `valid` - Bool. Taking account of the above properties, whether this coupon can still be applied to a customer.
 * `metadata` - Map(String). Set of key-value pairs attached to an object.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_coupon.coupon <coupon_id>
+```

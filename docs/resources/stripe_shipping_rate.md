@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_shipping_rate"
-description: |- The Stripe Shipping Rate can be created, modified and configured by this resource.
+description: |- 
+  The Stripe Shipping Rate can be created, modified and configured by this resource.
 ---
 
 # stripe_shipping_rate
@@ -140,3 +141,11 @@ Attributes exported by this resource include:
 * `tax_behavior` - String. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. 
 * `tax_code` - String. A tax code ID.
 * `livemode` - Bool. Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_shipping_rate.rate <shipping_rate_id>
+```

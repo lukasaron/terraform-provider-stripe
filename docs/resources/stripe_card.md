@@ -105,3 +105,11 @@ Attributes exported by this resource include:
 * `country` - String. Two-letter ISO code representing the country of the card. You could use this attribute to get a
   sense of the international breakdown of cards you’ve collected.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_card.card <card_id>
+```

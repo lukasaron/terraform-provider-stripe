@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_entitlements_feature"
-description: |- The Stripe Product Feature can be created, configured and removed by this resource.
+description: |- 
+  The Stripe Product Feature can be created, configured and removed by this resource.
 ---
 
 # stripe_product_feature
@@ -40,3 +41,11 @@ Attributes exported by this resource include:
 * `product` - String. The ID of the product.
 * `livemode` - Bool. Has the value `true` if the object exists in live mode or the value `false`
   if the object exists in test mode.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_product_feature.product_feature <product_feature_id>
+```

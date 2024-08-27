@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_price"
-description: |- The Stripe Price can be created, modified and configured by this resource.
+description: |- 
+  The Stripe Price can be created, modified and configured by this resource.
 ---
 
 # stripe_price
@@ -238,3 +239,11 @@ Once created, you can update the `active`, `metadata`, `nickname`, `lookup_key`,
 and `transfer_lookup_key` attributes.
 
 Other attribute edits will trigger a destroy action (archival) and creation of a new price entry.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_price.price <price_id>
+```

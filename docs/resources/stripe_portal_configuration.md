@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_portal_configuration"
-description: |- The Stripe Customer Portal Configuration can be created and modified by this resource.
+description: |- 
+  The Stripe Customer Portal Configuration can be created and modified by this resource.
 ---
 
 # stripe_portal_configuration
@@ -209,3 +210,11 @@ Attributes exported by this resource include:
 * `features` - Map(String). Information about the features available in the portal.
 * `is_default`: Bool. Whether the configuration is the default.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_portal_configuration.configuration <portal_configuration_id>
+```

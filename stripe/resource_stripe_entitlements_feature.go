@@ -16,6 +16,9 @@ func resourceStripeEntitlementsFeature() *schema.Resource {
 		CreateContext: resourceStripeEntitlementsFeatureCreate,
 		UpdateContext: resourceStripeEntitlementsFeatureUpdate,
 		DeleteContext: resourceStripeEntitlementsFeatureDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,

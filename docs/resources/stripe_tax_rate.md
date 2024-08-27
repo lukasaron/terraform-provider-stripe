@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_tax_rate"
-description: |- The Stripe Tax Rate can be created, modified and configured by this resource.
+description: |- 
+  The Stripe Tax Rate can be created, modified and configured by this resource.
 ---
 
 # stripe_tax_rate
@@ -65,3 +66,11 @@ Attributes exported by this resource include:
 * `object` - String. String representing the object’s type. Objects of the same type share the same value.
 * `created` - Int. Time at which the object was created. Measured in seconds since the Unix epoch.
 * `livemode` - Bool. Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_tax_rate.rate <tax_rate_id>
+```

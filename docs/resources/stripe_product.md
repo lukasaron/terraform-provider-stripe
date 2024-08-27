@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_product"
-description: |- The Stripe Product can be created, modified, configured and removed by this resource.
+description: |- 
+  The Stripe Product can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_product
@@ -69,3 +70,11 @@ Attributes exported by this resource include:
 * `unit_label` - String. A label that represents units of this product in Stripe and on customers’ receipts and invoices. 
 * `url` - String. A URL of a publicly-accessible webpage for this product.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_product.product <product_id>
+```

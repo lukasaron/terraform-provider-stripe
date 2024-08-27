@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_customer"
-description: |- The Stripe Customer can be created, modified, configured and removed by this resource.
+description: |- 
+  The Stripe Customer can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_customer
@@ -122,3 +123,11 @@ Attributes exported by this resource include:
 * `next_invoice_sequence` - Int. The sequence to be used on the customer’s next invoice.
 * `preferred_locales` - List(String). Customer’s preferred languages.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_customer.customer <customer_id>
+```

@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_promotion_code"
-description: |- The Stripe Promotion Code can be created, modified and configured by this resource.
+description: |- 
+  The Stripe Promotion Code can be created, modified and configured by this resource.
 ---
 
 # stripe_promotion_code
@@ -87,3 +88,11 @@ Attributes exported by this resource include:
 * `expires_at` - String. The timestamp at which this promotion code will expire.
 * `restrictions` - List. Settings that restrict the redemption of the promotion code - `first_time_transaction`, `minimum_amount` and `minimum_amount_currency`.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object. 
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_promotion_code.code <promotion_code_id>
+```

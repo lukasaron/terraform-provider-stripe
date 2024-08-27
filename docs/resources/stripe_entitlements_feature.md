@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_entitlements_feature"
-description: |- The Stripe Entitlements Feature can be created, modified, and configured by this resource.
+description: |- 
+  The Stripe Entitlements Feature can be created, modified, and configured by this resource.
 ---
 
 # stripe_entitlements_feature
@@ -43,3 +44,11 @@ Attributes exported by this resource include:
 * `active` - Inactive features cannot be attached to new products.
 * `livemode` - Bool. Has the value `true` if the object exists in live mode or the value `false`
   if the object exists in test mode.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_entitlements_feature.feature <feature_id>
+```

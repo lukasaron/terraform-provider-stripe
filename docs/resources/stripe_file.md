@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_file"
-description: |- The Stripe File can be created by this resource.
+description: |- 
+  The Stripe File can be created by this resource.
 ---
 
 # stripe_file
@@ -91,3 +92,11 @@ Attributes exported by this resource include:
    if the object exists in test mode.
 * `metadata` - Map(String). Set of key-value pairs that you can attach to an object.
 * `url` - String. The publicly accessible URL to download the file.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+$ terraform import stripe_file.file <file_id>
+```
