@@ -1,7 +1,8 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_card"
-description: |- The Stripe Card can be created, modified, configured and removed by this resource.
+description: |- 
+  The Stripe Card can be created, modified, configured and removed by this resource.
 ---
 
 # stripe_card
