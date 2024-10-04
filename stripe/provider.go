@@ -25,6 +25,7 @@ func Provider() *schema.Provider {
 			"stripe_customer":             resourceStripeCustomer(),
 			"stripe_entitlements_feature": resourceStripeEntitlementsFeature(),
 			"stripe_file":                 resourceStripeFile(),
+			"stripe_meter":                resourceStripeMeter(),
 			"stripe_price":                resourceStripePrice(),
 			"stripe_portal_configuration": resourceStripePortalConfiguration(),
 			"stripe_product":              resourceStripeProduct(),
