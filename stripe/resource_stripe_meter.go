@@ -22,6 +22,7 @@ func resourceStripeMeter() *schema.Resource {
 			"default_aggregation": {
 				Type:        schema.TypeList,
 				Required:    true,
+				ForceNew:    true,
 				MaxItems:    1,
 				Description: "The default settings to aggregate a meter’s events with",
 				Elem: &schema.Resource{
@@ -44,12 +45,14 @@ func resourceStripeMeter() *schema.Resource {
 			"event_name": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 				Description: "The name of the meter event to record usage for. " +
 					"Corresponds with the event_name field on meter events",
 			},
 			"customer_mapping": {
 				Type:        schema.TypeList,
 				Optional:    true,
+				ForceNew:    true,
 				MaxItems:    1,
 				Description: "Fields that specify how to map a meter event to a customer.",
 				Elem: &schema.Resource{
@@ -72,11 +75,13 @@ func resourceStripeMeter() *schema.Resource {
 			"event_time_window": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				ForceNew:    true,
 				Description: "The time window to pre-aggregate meter events for, if any.",
 			},
 			"value_settings": {
 				Type:        schema.TypeList,
 				Optional:    true,
+				ForceNew:    true,
 				MaxItems:    1,
 				Description: "Fields that specify how to calculate a meter event’s value.",
 				Elem: &schema.Resource{
@@ -219,6 +224,49 @@ func resourceStripeMeterUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 	if d.HasChange("display_name") {
 		params.DisplayName = stripe.String(ExtractString(d, "display_name"))
+	}
+
+	if d.HasChange("event_name") {
+		params.EventName = stripe.String(ExtractString(d, "event_name"))
+	}
+
+	if d.HasChange("event_time_window") {
+		params.EventTimeWindow = stripe.String(ExtractString(d, "event_time_window"))
+	}
+
+	if d.HasChange("default_aggregation") {
+		params.DefaultAggregation = &stripe.BillingMeterDefaultAggregationParams{}
+		defaultAggregationMap := ToMap(ExtractMap(d, "default_aggregation"))
+		for k, v := range defaultAggregationMap {
+			switch {
+			case k == "formula" && ToString(v) != "":
+				params.DefaultAggregation.Formula = stripe.String(ToString(v))
+			}
+		}
+	}
+
+	if d.HasChange("customer_mapping") {
+		params.CustomerMapping = &stripe.BillingMeterCustomerMappingParams{}
+		customerMappingMap := ToMap(ExtractMap(d, "customer_mapping"))
+		for k, v := range customerMappingMap {
+			switch {
+			case k == "event_payload_key" && ToString(v) != "":
+				params.CustomerMapping.EventPayloadKey = stripe.String(ToString(v))
+			case k == "type" && ToString(v) != "":
+				params.CustomerMapping.Type = stripe.String(ToString(v))
+			}
+		}
+	}
+
+	if d.HasChange("value_settings") {
+		params.ValueSettings = &stripe.BillingMeterValueSettingsParams{}
+		valueSettingsMap := ToMap(ExtractMap(d, "value_settings"))
+		for k, v := range valueSettingsMap {
+			switch {
+			case k == "event_payload_key" && ToString(v) != "":
+				params.ValueSettings.EventPayloadKey = stripe.String(ToString(v))
+			}
+		}
 	}
 
 	err = retryWithBackOff(func() error {
