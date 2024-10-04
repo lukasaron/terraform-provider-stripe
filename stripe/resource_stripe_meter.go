@@ -155,10 +155,13 @@ func resourceStripeMeterCreate(ctx context.Context, d *schema.ResourceData, m in
 	var err error
 
 	params := &stripe.BillingMeterParams{
-		DisplayName:     stripe.String(ExtractString(d, "display_name")),
-		EventName:       stripe.String(ExtractString(d, "event_name")),
-		EventTimeWindow: stripe.String(ExtractString(d, "event_time_window")),
-		ValueSettings:   &stripe.BillingMeterValueSettingsParams{},
+		DisplayName:   stripe.String(ExtractString(d, "display_name")),
+		EventName:     stripe.String(ExtractString(d, "event_name")),
+		ValueSettings: &stripe.BillingMeterValueSettingsParams{},
+	}
+
+	if eventTimeWindow, set := d.GetOk("event_time_window"); set {
+		params.EventTimeWindow = stripe.String(ToString(eventTimeWindow))
 	}
 
 	if defaultAggregation, set := d.GetOk("default_aggregation"); set {
