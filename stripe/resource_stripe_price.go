@@ -562,15 +562,15 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 		recurringMap := ToMap(recurring)
 		for k, v := range recurringMap {
 			switch {
-			case k == "interval" && ToString(v) != "":
+			case k == "interval":
 				params.Recurring.Interval = stripe.String(ToString(v))
 			case k == "interval_count" && ToString(recurringMap["interval"]) != "":
 				params.Recurring.IntervalCount = stripe.Int64(ToInt64(v))
-			case k == "aggregate_usage" && ToString(v) != "":
+			case k == "aggregate_usage":
 				params.Recurring.AggregateUsage = stripe.String(ToString(v))
-			case k == "usage_type" && ToString(v) != "":
+			case k == "usage_type":
 				params.Recurring.UsageType = stripe.String(ToString(v))
-			case k == "meter" && ToString(v) != "":
+			case k == "meter":
 				params.Recurring.Meter = stripe.String(ToString(v))
 			}
 		}
