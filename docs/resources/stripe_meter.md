@@ -78,11 +78,14 @@ resource "stripe_price" "price" {
 
 Arguments accepted by this resource include:
 
+* `default_aggregation` - (Required) Resource. The default settings to aggregate a meter’s events with.
 * `display_name` - (Required) String. The display name of the meter.
 * `event_name` - (Required) String. The name of the meter event to record usage for. Corresponds with the `event_name` field on meter events.
+* `customer_mapping` - Resource. Fields that specify how to map a meter event to a customer.
 * `event_time_window` - (Optional) String. The time window to pre-aggregate meter events for, if any. Possible values are:
  - `day` - Events are pre-aggregated in daily buckets
  - `hour` - Events are pre-aggregated in hourly buckets
+* `value_settings` - Resource. Fields that specify how to calculate a meter event’s value.
 
 ### Default Aggregation
 
