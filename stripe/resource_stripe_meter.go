@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -19,6 +20,11 @@ func resourceStripeMeter() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Unique identifier for the object.",
+			},
 			"default_aggregation": {
 				Type:        schema.TypeList,
 				Required:    true,
@@ -160,9 +166,8 @@ func resourceStripeMeterCreate(ctx context.Context, d *schema.ResourceData, m in
 	var err error
 
 	params := &stripe.BillingMeterParams{
-		DisplayName:   stripe.String(ExtractString(d, "display_name")),
-		EventName:     stripe.String(ExtractString(d, "event_name")),
-		ValueSettings: &stripe.BillingMeterValueSettingsParams{},
+		DisplayName: stripe.String(ExtractString(d, "display_name")),
+		EventName:   stripe.String(ExtractString(d, "event_name")),
 	}
 
 	if eventTimeWindow, set := d.GetOk("event_time_window"); set {
@@ -174,7 +179,7 @@ func resourceStripeMeterCreate(ctx context.Context, d *schema.ResourceData, m in
 		defaultAggregationMap := ToMap(defaultAggregation)
 		for k, v := range defaultAggregationMap {
 			switch {
-			case k == "formula" && ToString(v) != "":
+			case k == "formula":
 				params.DefaultAggregation.Formula = stripe.String(ToString(v))
 			}
 		}
@@ -185,9 +190,9 @@ func resourceStripeMeterCreate(ctx context.Context, d *schema.ResourceData, m in
 		customerMappingMap := ToMap(customerMapping)
 		for k, v := range customerMappingMap {
 			switch {
-			case k == "event_payload_key" && ToString(v) != "":
+			case k == "event_payload_key":
 				params.CustomerMapping.EventPayloadKey = stripe.String(ToString(v))
-			case k == "type" && ToString(v) != "":
+			case k == "type":
 				params.CustomerMapping.Type = stripe.String(ToString(v))
 			}
 		}
@@ -198,7 +203,7 @@ func resourceStripeMeterCreate(ctx context.Context, d *schema.ResourceData, m in
 		valueSettingsMap := ToMap(valueSettings)
 		for k, v := range valueSettingsMap {
 			switch {
-			case k == "event_payload_key" && ToString(v) != "":
+			case k == "event_payload_key":
 				params.ValueSettings.EventPayloadKey = stripe.String(ToString(v))
 			}
 		}
@@ -239,7 +244,7 @@ func resourceStripeMeterUpdate(ctx context.Context, d *schema.ResourceData, m in
 		defaultAggregationMap := ToMap(ExtractMap(d, "default_aggregation"))
 		for k, v := range defaultAggregationMap {
 			switch {
-			case k == "formula" && ToString(v) != "":
+			case k == "formula":
 				params.DefaultAggregation.Formula = stripe.String(ToString(v))
 			}
 		}
@@ -250,9 +255,9 @@ func resourceStripeMeterUpdate(ctx context.Context, d *schema.ResourceData, m in
 		customerMappingMap := ToMap(ExtractMap(d, "customer_mapping"))
 		for k, v := range customerMappingMap {
 			switch {
-			case k == "event_payload_key" && ToString(v) != "":
+			case k == "event_payload_key":
 				params.CustomerMapping.EventPayloadKey = stripe.String(ToString(v))
-			case k == "type" && ToString(v) != "":
+			case k == "type":
 				params.CustomerMapping.Type = stripe.String(ToString(v))
 			}
 		}
@@ -263,7 +268,7 @@ func resourceStripeMeterUpdate(ctx context.Context, d *schema.ResourceData, m in
 		valueSettingsMap := ToMap(ExtractMap(d, "value_settings"))
 		for k, v := range valueSettingsMap {
 			switch {
-			case k == "event_payload_key" && ToString(v) != "":
+			case k == "event_payload_key":
 				params.ValueSettings.EventPayloadKey = stripe.String(ToString(v))
 			}
 		}
@@ -286,6 +291,7 @@ func resourceStripeMeterDelete(_ context.Context, d *schema.ResourceData, m inte
 
 	params := stripe.BillingMeterDeactivateParams{}
 
+	log.Println("[WARN] Stripe doesn't support deletion of billing meters. Billing meter will be deactivated but not deleted")
 	err = retryWithBackOff(func() error {
 		_, err = c.BillingMeters.Deactivate(d.Id(), &params)
 		return err

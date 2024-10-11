@@ -94,6 +94,7 @@ resource "stripe_price" "price" {
     aggregate_usage = "sum"
     interval_count  = 2
     usage_type      = "metered"
+    meter           = "mtr_1234567890"
   }
 }
 
@@ -156,6 +157,7 @@ Arguments accepted by this resource include:
 * `usage_type` - (Optional) String. Configures how the quantity per period should be determined. Can be either `metered`
   or `licensed`. `licensed` automatically bills the quantity set when adding it to a subscription. `metered` aggregates
   the total usage based on usage records. Defaults to `licensed`.
+* `meter` - (Optional) String. The meter tracking the usage of a metered price.
 
 ### Tiers
 

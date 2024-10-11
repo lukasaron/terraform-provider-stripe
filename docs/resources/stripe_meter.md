@@ -37,7 +37,6 @@ resource "stripe_meter" "sample_meter" {
 }
 
 
-// tiered price for the product using the meter above
 resource "stripe_price" "price" {
   // product needs to be defined
   product        = stripe_product.product.id
@@ -105,12 +104,12 @@ Arguments accepted by this resource include:
 Attributes exported by this resource include:
 
 * `id` - String. The unique identifier for the object.
-- `display_name` - String. The display name of the meter.
-- `event_name` - String. The name of the meter event to record usage for. Corresponds with the `event_name` field on meter events.
-- `event_time_window` - String. The time window to pre-aggregate meter events for, if any.
-- `default_aggregation` - Resource. The default settings to aggregate a meter’s events with. Fields that specify how to aggregate a meter event such as `formula`.
-- `customer_mapping` - Resource. Fields that specify how to map a meter event to a customer such as `event_payload_key` and `type`.
-- `value_settings` - Resource. Fields that specify how to calculate a meter event’s value such as `event_payload_key`.
+* `display_name` - String. The display name of the meter.
+* `event_name` - String. The name of the meter event to record usage for. Corresponds with the `event_name` field on meter events.
+* `event_time_window` - String. The time window to pre-aggregate meter events for, if any.
+* `default_aggregation` - Resource. The default settings to aggregate a meter’s events with. Fields that specify how to aggregate a meter event such as `formula`.
+* `customer_mapping` - Resource. Fields that specify how to map a meter event to a customer such as `event_payload_key` and `type`.
+* `value_settings` - Resource. Fields that specify how to calculate a meter event’s value such as `event_payload_key`.
 
 ## Note on updating meters
 
