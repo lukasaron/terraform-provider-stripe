@@ -13,6 +13,10 @@ A billing meter is a resource that allows you to track usage of a particular eve
 
 Related guide: [Usage based billing](https://docs.stripe.com/billing/subscriptions/usage-based)
 
+~> Removal of the Billing Meter isn't supported through the Stripe SDK. The best practice, which this provider follows,
+is to deactivate the Billing Meter by marking it as inactive on destroy, which indicates that resource is no longer
+available.
+
 
 ## Example Usage
 
