@@ -566,11 +566,11 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 				params.Recurring.Interval = stripe.String(ToString(v))
 			case k == "interval_count" && ToString(recurringMap["interval"]) != "":
 				params.Recurring.IntervalCount = stripe.Int64(ToInt64(v))
-			case k == "aggregate_usage":
+			case k == "aggregate_usage" && ToString(v) != "":
 				params.Recurring.AggregateUsage = stripe.String(ToString(v))
-			case k == "usage_type":
+			case k == "usage_type" && ToString(v) != "":
 				params.Recurring.UsageType = stripe.String(ToString(v))
-			case k == "meter":
+			case k == "meter" && ToString(v) != "":
 				params.Recurring.Meter = stripe.String(ToString(v))
 			}
 		}

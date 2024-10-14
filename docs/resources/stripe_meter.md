@@ -39,53 +39,20 @@ resource "stripe_meter" "sample_meter" {
     event_payload_key = "value"
   }
 }
-
-
-resource "stripe_price" "price" {
-  // product needs to be defined
-  product        = stripe_product.product.id
-  currency       = "aud"
-  billing_scheme = "tiered"
-  tiers_mode     = "graduated"
-
-  # free up to ten
-  tiers {
-    up_to       = 10
-    unit_amount = 0 // can be omitted
-  }
-
-  tiers {
-    up_to       = 100
-    unit_amount = 300
-  }
-
-  tiers {
-    up_to               = -1
-    unit_amount_decimal = 100.5
-  }
-
-  recurring {
-    interval        = "week"
-    interval_count  = 2
-    usage_type      = "metered"
-    meter          = stripe_meter.sample_meter.id
-  }
-}
-
 ```
 
 ## Argument Reference
 
 Arguments accepted by this resource include:
 
-* `default_aggregation` - (Required) Resource. The default settings to aggregate a meter’s events with.
+* `default_aggregation` - (Required) List(Resource). The default settings to aggregate a meter’s events with.
 * `display_name` - (Required) String. The display name of the meter.
 * `event_name` - (Required) String. The name of the meter event to record usage for. Corresponds with the `event_name` field on meter events.
-* `customer_mapping` - Resource. Fields that specify how to map a meter event to a customer.
+* `customer_mapping` - (Optional) Lst(Resource). Fields that specify how to map a meter event to a customer.
 * `event_time_window` - (Optional) String. The time window to pre-aggregate meter events for, if any. Possible values are:
- - `day` - Events are pre-aggregated in daily buckets
- - `hour` - Events are pre-aggregated in hourly buckets
-* `value_settings` - Resource. Fields that specify how to calculate a meter event’s value.
+  * `day` - Events are pre-aggregated in daily buckets
+  * `hour` - Events are pre-aggregated in hourly buckets
+* `value_settings` - (Optional) List(Resource). Fields that specify how to calculate a meter event’s value.
 
 ### Default Aggregation
 
@@ -114,9 +81,9 @@ Attributes exported by this resource include:
 * `display_name` - String. The display name of the meter.
 * `event_name` - String. The name of the meter event to record usage for. Corresponds with the `event_name` field on meter events.
 * `event_time_window` - String. The time window to pre-aggregate meter events for, if any.
-* `default_aggregation` - Resource. The default settings to aggregate a meter’s events with. Fields that specify how to aggregate a meter event such as `formula`.
-* `customer_mapping` - Resource. Fields that specify how to map a meter event to a customer such as `event_payload_key` and `type`.
-* `value_settings` - Resource. Fields that specify how to calculate a meter event’s value such as `event_payload_key`.
+* `default_aggregation` - List(Resource). The default settings to aggregate a meter’s events with. Fields that specify how to aggregate a meter event such as `formula`.
+* `customer_mapping` - List(Resource). Fields that specify how to map a meter event to a customer such as `event_payload_key` and `type`.
+* `value_settings` - List(Resource). Fields that specify how to calculate a meter event’s value such as `event_payload_key`.
 
 ## Note on updating meters
 
@@ -129,6 +96,6 @@ Other attribute edits will trigger a destroy action (archival) and creation of a
 Import is supported using the following syntax:
 
 ```shell
-$ terraform import stripe_price.meter <meter_id>
+$ terraform import stripe_meter.meter <meter_id>
 ```
 
