@@ -1,7 +1,7 @@
 ---
 layout: "stripe"
 page_title: "Stripe: stripe_price"
-description: |- 
+description: |-
   The Stripe Price can be created, modified and configured by this resource.
 ---
 
@@ -40,7 +40,7 @@ resource "stripe_price" "price" {
   unit_amount = -1
 }
 
-// price with custom unit amount 
+// price with custom unit amount
 resource "stripe_price" "price" {
   product  = stripe_product.product.id
   currency = "aud"
@@ -94,6 +94,7 @@ resource "stripe_price" "price" {
     aggregate_usage = "sum"
     interval_count  = 2
     usage_type      = "metered"
+    meter           = "mtr_1234567890"
   }
 }
 
@@ -126,8 +127,8 @@ Arguments accepted by this resource include:
   defined using the `tiers` and `tiers_mode` attributes.
 * `currency_options` - (Optional) List(Resource). Prices defined in each available currency option. For details
   of individual arguments see [Currency Options](#currency-options).
-* `custom_unit_amount` - (Optional) List(Resource). When set, provides configuration for the amount to be adjusted by 
-  the customer during Checkout Sessions and Payment Links. 
+* `custom_unit_amount` - (Optional) List(Resource). When set, provides configuration for the amount to be adjusted by
+  the customer during Checkout Sessions and Payment Links.
   For individual fields see [Custom Unit Amount](#custom-unit-amount).
 * `lookup_key` - (Optional) String. A lookup key used to retrieve prices dynamically from a static string.
 * `transfer_lookup_key` - (Optional) Bool. If set to `true`, will atomically remove the lookup key from the existing
@@ -156,6 +157,7 @@ Arguments accepted by this resource include:
 * `usage_type` - (Optional) String. Configures how the quantity per period should be determined. Can be either `metered`
   or `licensed`. `licensed` automatically bills the quantity set when adding it to a subscription. `metered` aggregates
   the total usage based on usage records. Defaults to `licensed`.
+* `meter` - (Optional) String. The meter tracking the usage of a metered price.
 
 ### Tiers
 
@@ -173,21 +175,21 @@ Arguments accepted by this resource include:
 
 ### Currency Options
 
-`currency_options` Can be used multiple times within the price resource (one block per currency) and supports the 
+`currency_options` Can be used multiple times within the price resource (one block per currency) and supports the
  following arguments:
 
 * `currency` - (Required) String. Three-letter ISO currency code, in lowercase - [supported currencies](https://stripe.com/docs/currencies).
-* `tax_behavior` - (Optional) String. Only required if a default tax behavior was not provided in the Stripe Tax settings. 
-  Specifies whether the price is considered inclusive of taxes or exclusive of taxes. 
-  One of `inclusive`, `exclusive`, or `unspecified`. 
+* `tax_behavior` - (Optional) String. Only required if a default tax behavior was not provided in the Stripe Tax settings.
+  Specifies whether the price is considered inclusive of taxes or exclusive of taxes.
+  One of `inclusive`, `exclusive`, or `unspecified`.
   Once specified as either inclusive or exclusive, it cannot be changed.
 * `unit_amount` - (Optional) Int. A positive integer in cents (or -1 for a free price) representing how much to charge.
 * `unit_amount_decimal` - (Optional) Float. Same as unit_amount, but accepts a decimal value in cents with at most 12
   decimal places. Only one of unit_amount and unit_amount_decimal can be set.
-* `custom_unit_amount` - (Optional) List(Resource). When set, 
+* `custom_unit_amount` - (Optional) List(Resource). When set,
   provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.
   See details in [Custom Unit Amount](#custom-unit-amount).
-* `tiers` - (Optional) List(Resource). Each element represents a pricing tier. 
+* `tiers` - (Optional) List(Resource). Each element represents a pricing tier.
   This parameter requires `billing_scheme` to be set to `tiered`. This resource can be used more than once and follows
   the same fields as the [root tiers block](#tiers)
 
@@ -197,7 +199,7 @@ Arguments accepted by this resource include:
 
 * `enabled` - (Required) Bool. Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
 * `maximum` - (Optional) Int. The maximum unit amount the customer can specify for this item.
-* `minimum` - (Optional) Int. The minimum unit amount the customer can specify for this item. 
+* `minimum` - (Optional) Int. The minimum unit amount the customer can specify for this item.
   Must be at least the minimum charge amount.
 * `preset` - (Optional) Int. The starting unit amount which can be updated by the customer.
 
@@ -220,7 +222,7 @@ Attributes exported by this resource include:
   places.
 * `active` - Bool. Whether the price can be used for new purchases. Defaults to `true`.
 * `nickname` - String. A brief description of the price, hidden from customers.
-* `recurring` - List(Resource). The recurring components of a price such as `interval` and `usage_type`.
+* `recurring` - List(Resource). The recurring components of a price such as `meter`, `interval` and `usage_type`.
 * `tiers` - List(Resource). Each element represents a pricing tier.
 * `tiers_mode` - String. Defines if the tiering price should be `graduated` or `volume` based.
 * `billing_scheme` - String. Describes how to compute the price per period.

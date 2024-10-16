@@ -103,6 +103,11 @@ func resourceStripePrice() *schema.Resource {
 								"set when adding it to a subscription. metered aggregates the total usage " +
 								"based on usage records. Defaults to licensed.",
 						},
+						"meter": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The meter tracking the usage of a metered price",
+						},
 					},
 				},
 			},
@@ -428,6 +433,7 @@ func resourceStripePriceRead(_ context.Context, d *schema.ResourceData, m interf
 						"aggregate_usage": price.Recurring.AggregateUsage,
 						"interval_count":  price.Recurring.IntervalCount,
 						"usage_type":      price.Recurring.UsageType,
+						"meter":           price.Recurring.Meter,
 					},
 				})
 			}
@@ -566,7 +572,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 		recurringMap := ToMap(recurring)
 		for k, v := range recurringMap {
 			switch {
-			case k == "interval" && ToString(v) != "":
+			case k == "interval":
 				params.Recurring.Interval = stripe.String(ToString(v))
 			case k == "interval_count" && ToString(recurringMap["interval"]) != "":
 				params.Recurring.IntervalCount = stripe.Int64(ToInt64(v))
@@ -574,6 +580,8 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 				params.Recurring.AggregateUsage = stripe.String(ToString(v))
 			case k == "usage_type" && ToString(v) != "":
 				params.Recurring.UsageType = stripe.String(ToString(v))
+			case k == "meter" && ToString(v) != "":
+				params.Recurring.Meter = stripe.String(ToString(v))
 			}
 		}
 	}
