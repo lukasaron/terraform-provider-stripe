@@ -1,3 +1,19 @@
+## 3.3.0
+* NEW RESOURCES:
+  * Meter
+
+* DEPENDENCIES UPGRADE:
+  * github.com/hashicorp/terraform-plugin-go v0.23.0 => v0.24.0
+  * github.com/hashicorp/yamux v0.1.1 => v0.1.2
+  * golang.org/x/mod v0.20.0 => v0.21.0
+  * golang.org/x/net v0.28.0 => v0.30.0
+  * golang.org/x/sys v0.24.0 => v0.26.0
+  * golang.org/x/text v0.17.0 => v0.19.0
+  * golang.org/x/tools v0.24.0 => v0.26.0
+  * google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 => v0.0.0-20241007155032-5fefd90f89a9
+  * google.golang.org/grpc v1.65.0 => v1.67.1
+  * google.golang.org/protobuf v1.34.2 => v1.35.1
+
 ## 3.2.2
 * BUGFIXES:
   * Webhook Endpoint exposes the `application` attribute.
