@@ -161,9 +161,8 @@ func (w *webhookEndpointResource) Schema(_ context.Context, _ resource.SchemaReq
 }
 
 func (w *webhookEndpointResource) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	var plan webhookEndpointModel
-	diags := req.Plan.Get(ctx, &plan)
-	res.Diagnostics.Append(diags...)
+	var state, plan webhookEndpointModel
+	res.Diagnostics = req.Plan.Get(ctx, &plan)
 	if res.Diagnostics.HasError() {
 		return
 	}
@@ -215,26 +214,28 @@ func (w *webhookEndpointResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	plan.ID = types.StringValue(webhookEndpoint.ID)
-	plan.Secret = types.StringValue(webhookEndpoint.Secret)
-
-	res.Diagnostics = w.read(ctx, &plan)
+	// Transition from Plan to State which is then stored
+	state, res.Diagnostics = w.read(ctx, webhookEndpoint.ID)
 	if res.Diagnostics.HasError() {
 		return
 	}
 
-	res.Diagnostics = res.State.Set(ctx, plan)
+	// Secret is visible when Webhook is created ONLY
+	state.Secret = types.StringValue(webhookEndpoint.Secret)
+
+	res.Diagnostics = res.State.Set(ctx, state)
 }
 
 func (w *webhookEndpointResource) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
 	var state webhookEndpointModel
-	diags := req.State.Get(ctx, &state)
-	if diags.HasError() {
-		res.Diagnostics.Append(diags...)
+	res.Diagnostics = req.State.Get(ctx, &state)
+	if res.Diagnostics.HasError() {
 		return
 	}
 
-	res.Diagnostics = w.read(ctx, &state)
+	secret := state.Secret // save secret for overriding in the next operation
+	state, res.Diagnostics = w.read(ctx, state.ID.ValueString())
+	state.Secret = secret // put secret back
 	if res.Diagnostics.HasError() {
 		return
 	}
@@ -252,6 +253,7 @@ func (w *webhookEndpointResource) Update(ctx context.Context, req resource.Updat
 	}
 
 	params := &stripe.WebhookEndpointUpdateParams{}
+
 	if !state.URL.Equal(plan.URL) {
 		params.URL = stripe.String(plan.URL.ValueString())
 	}
@@ -275,29 +277,23 @@ func (w *webhookEndpointResource) Update(ctx context.Context, req resource.Updat
 	}
 
 	if !state.Metadata.Equal(plan.Metadata) {
-		var stateMeta, planMeta map[string]string
-		res.Diagnostics.Append(plan.Metadata.ElementsAs(ctx, &planMeta, true)...)
-		res.Diagnostics.Append(state.Metadata.ElementsAs(ctx, &stateMeta, true)...)
-		if res.Diagnostics.HasError() {
+		metadata, diags := MetaData(ctx, state.Metadata, plan.Metadata)
+		if diags.HasError() {
+			res.Diagnostics = diags
 			return
 		}
-		for key, value := range planMeta {
-			params.AddMetadata(key, value)
-		}
-		for key := range stateMeta {
-			if _, set := params.Metadata[key]; !set {
-				params.AddMetadata(key, "")
-			}
-		}
+		params.Metadata = metadata
 	}
 
-	_, err := w.client.V1WebhookEndpoints.Update(ctx, state.ID.ValueString(), params)
+	webhookEndpoint, err := w.client.V1WebhookEndpoints.Update(ctx, state.ID.ValueString(), params)
 	if err != nil {
 		res.Diagnostics.AddError("WebhookEndpoint Update failed", err.Error())
 		return
 	}
 
-	res.Diagnostics = w.read(ctx, &state)
+	secret := state.Secret // save secret for overriding in the next operation
+	state, res.Diagnostics = w.read(ctx, webhookEndpoint.ID)
+	state.Secret = secret // put secret back
 	if res.Diagnostics.HasError() {
 		return
 	}
@@ -307,8 +303,7 @@ func (w *webhookEndpointResource) Update(ctx context.Context, req resource.Updat
 
 func (w *webhookEndpointResource) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
 	var state webhookEndpointModel
-	diags := req.State.Get(ctx, &state)
-	res.Diagnostics.Append(diags...)
+	res.Diagnostics = req.State.Get(ctx, &state)
 	if res.Diagnostics.HasError() {
 		return
 	}
@@ -323,31 +318,41 @@ func (w *webhookEndpointResource) ImportState(ctx context.Context, req resource.
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, res)
 }
 
-func (w *webhookEndpointResource) read(ctx context.Context, state *webhookEndpointModel) diag.Diagnostics {
+// ---------------------------------------------------------------------------------------------------------------------
+func (w *webhookEndpointResource) read(ctx context.Context, id string) (webhookEndpointModel, diag.Diagnostics) {
 	diags := diag.Diagnostics{}
 
-	webhookEndpoint, err := w.client.V1WebhookEndpoints.Retrieve(ctx, state.ID.ValueString(), nil)
+	webhookEndpoint, err := w.client.V1WebhookEndpoints.Retrieve(ctx, id, nil)
 	if err != nil {
 		diags.AddError("WebhookEndpoint Retrieve failed", err.Error())
-		return diags
+		return webhookEndpointModel{}, diags
 	}
 
-	state.ID = types.StringValue(webhookEndpoint.ID)
-	state.APIVersion = types.StringValue(webhookEndpoint.APIVersion)
-	state.Description = types.StringValue(webhookEndpoint.Description)
-	state.EnabledEvents, diags = types.ListValueFrom(ctx, types.StringType, webhookEndpoint.EnabledEvents)
-	diags.Append(diags...)
-
-	state.Metadata, diags = types.MapValueFrom(ctx, types.StringType, webhookEndpoint.Metadata)
-	diags.Append(diags...)
-
-	state.URL = types.StringValue(webhookEndpoint.URL)
-	state.Object = types.StringValue(webhookEndpoint.Object)
-	state.Application = types.StringValue(webhookEndpoint.Application)
-	state.Connect = types.BoolValue(webhookEndpoint.Application != "")
-	state.Created = types.Int64Value(webhookEndpoint.Created)
-	state.LiveMode = types.BoolValue(webhookEndpoint.Livemode)
-	state.Disabled = types.BoolValue(webhookEndpoint.Status == "disabled")
-
-	return diags
+	return webhookEndpointModel{
+			ID:          types.StringValue(webhookEndpoint.ID),
+			APIVersion:  types.StringValue(webhookEndpoint.APIVersion),
+			Application: types.StringValue(webhookEndpoint.Application),
+			Connect:     types.BoolValue(webhookEndpoint.Application != ""),
+			Created:     types.Int64Value(webhookEndpoint.Created),
+			Description: types.StringValue(webhookEndpoint.Description),
+			Disabled:    types.BoolValue(webhookEndpoint.Status == "disabled"),
+			LiveMode:    types.BoolValue(webhookEndpoint.Livemode),
+			Object:      types.StringValue(webhookEndpoint.Object),
+			URL:         types.StringValue(webhookEndpoint.URL),
+			EnabledEvents: func() types.List {
+				events, d := types.ListValueFrom(ctx, types.StringType, webhookEndpoint.EnabledEvents)
+				if d.HasError() {
+					diags.Append(d...)
+				}
+				return events
+			}(),
+			Metadata: func() types.Map {
+				meta, d := types.MapValueFrom(ctx, types.StringType, webhookEndpoint.Metadata)
+				if d.HasError() {
+					diags.Append(d...)
+				}
+				return meta
+			}(),
+		},
+		diags
 }
