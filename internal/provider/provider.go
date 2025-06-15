@@ -74,12 +74,13 @@ func (s stripeProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	res.DataSourceData = client
 }
 
-func (s stripeProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (s stripeProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{}
 }
 
-func (s stripeProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (s stripeProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		resources.NewProductResource,
 		resources.NewWebhookEndpointResource,
 	}
 }

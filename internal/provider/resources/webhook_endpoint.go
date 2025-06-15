@@ -27,18 +27,18 @@ var (
 
 type webhookEndpointModel struct {
 	ID            types.String `tfsdk:"id"`
-	Object        types.String `tfsdk:"object"`
 	APIVersion    types.String `tfsdk:"api_version"`
 	Application   types.String `tfsdk:"application"`
+	Connect       types.Bool   `tfsdk:"connect"`
 	Created       types.Int64  `tfsdk:"created"`
 	Description   types.String `tfsdk:"description"`
+	Disabled      types.Bool   `tfsdk:"disabled"`
 	EnabledEvents types.List   `tfsdk:"enabled_events"`
 	LiveMode      types.Bool   `tfsdk:"livemode"`
 	Metadata      types.Map    `tfsdk:"metadata"`
 	Secret        types.String `tfsdk:"secret"`
-	Disabled      types.Bool   `tfsdk:"disabled"`
+	Object        types.String `tfsdk:"object"`
 	URL           types.String `tfsdk:"url"`
-	Connect       types.Bool   `tfsdk:"connect"`
 }
 
 func NewWebhookEndpointResource() resource.Resource {
@@ -88,21 +88,46 @@ func (w *webhookEndpointResource) Schema(_ context.Context, _ resource.SchemaReq
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"description": schema.StringAttribute{
-				Optional: true,
+			"application": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"connect": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				Default:  booldefault.StaticBool(false),
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+					boolplanmodifier.RequiresReplace(),
+				},
+			},
+			"created": schema.Int64Attribute{
+				Computed: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+			},
+			"description": schema.StringAttribute{
+				Optional: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"disabled": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				Default:  booldefault.StaticBool(false),
+			},
 			"enabled_events": schema.ListAttribute{
 				Required:    true,
 				ElementType: types.StringType,
 			},
-			"object": schema.StringAttribute{
+			"livemode": schema.BoolAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"metadata": schema.MapAttribute{
@@ -121,40 +146,14 @@ func (w *webhookEndpointResource) Schema(_ context.Context, _ resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"url": schema.StringAttribute{
-				Required: true,
-			},
-			"application": schema.StringAttribute{
+			"object": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"created": schema.Int64Attribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
-			},
-			"livemode": schema.BoolAttribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"disabled": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-				Default:  booldefault.StaticBool(false),
-			},
-			"connect": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-				Default:  booldefault.StaticBool(false),
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-					boolplanmodifier.RequiresReplace(),
-				},
+			"url": schema.StringAttribute{
+				Required: true,
 			},
 		},
 	}
@@ -168,6 +167,18 @@ func (w *webhookEndpointResource) Create(ctx context.Context, req resource.Creat
 	}
 
 	params := &stripe.WebhookEndpointCreateParams{}
+
+	if !plan.APIVersion.IsUnknown() {
+		params.APIVersion = stripe.String(plan.APIVersion.ValueString())
+	}
+
+	if !plan.Connect.IsUnknown() {
+		params.Connect = stripe.Bool(plan.Connect.ValueBool())
+	}
+
+	if !plan.Description.IsNull() {
+		params.Description = stripe.String(plan.Description.ValueString())
+	}
 
 	if plan.Disabled.ValueBool() {
 		res.Diagnostics.AddError(
@@ -186,14 +197,6 @@ func (w *webhookEndpointResource) Create(ctx context.Context, req resource.Creat
 		params.EnabledEvents = stripe.StringSlice(enabledEvents)
 	}
 
-	if !plan.URL.IsNull() {
-		params.URL = stripe.String(plan.URL.ValueString())
-	}
-
-	if !plan.Description.IsUnknown() {
-		params.Description = stripe.String(plan.Description.ValueString())
-	}
-
 	if !plan.Metadata.IsUnknown() {
 		var metadata map[string]string
 		res.Diagnostics.Append(plan.Metadata.ElementsAs(ctx, &metadata, false)...)
@@ -204,13 +207,13 @@ func (w *webhookEndpointResource) Create(ctx context.Context, req resource.Creat
 		params.Metadata = metadata
 	}
 
-	if !plan.Connect.IsNull() {
-		params.Connect = stripe.Bool(plan.Connect.ValueBool())
+	if !plan.URL.IsNull() {
+		params.URL = stripe.String(plan.URL.ValueString())
 	}
 
 	webhookEndpoint, err := w.client.V1WebhookEndpoints.Create(ctx, params)
 	if err != nil {
-		res.Diagnostics.AddError("WebhookEndpoint Create failed", err.Error())
+		res.Diagnostics.AddError("WebhookEndpoint Create operation failed", err.Error())
 		return
 	}
 
@@ -254,8 +257,12 @@ func (w *webhookEndpointResource) Update(ctx context.Context, req resource.Updat
 
 	params := &stripe.WebhookEndpointUpdateParams{}
 
-	if !state.URL.Equal(plan.URL) {
-		params.URL = stripe.String(plan.URL.ValueString())
+	if !state.Description.Equal(plan.Description) {
+		params.Description = stripe.String(plan.Description.ValueString())
+	}
+
+	if !state.Disabled.Equal(plan.Disabled) {
+		params.Disabled = stripe.Bool(plan.Disabled.ValueBool())
 	}
 
 	if !state.EnabledEvents.Equal(plan.EnabledEvents) {
@@ -268,14 +275,6 @@ func (w *webhookEndpointResource) Update(ctx context.Context, req resource.Updat
 		params.EnabledEvents = stripe.StringSlice(enabledEvents)
 	}
 
-	if !state.Description.Equal(plan.Description) {
-		params.Description = stripe.String(plan.Description.ValueString())
-	}
-
-	if !state.Disabled.Equal(plan.Disabled) {
-		params.Disabled = stripe.Bool(plan.Disabled.ValueBool())
-	}
-
 	if !state.Metadata.Equal(plan.Metadata) {
 		metadata, diags := MetaData(ctx, state.Metadata, plan.Metadata)
 		if diags.HasError() {
@@ -285,9 +284,13 @@ func (w *webhookEndpointResource) Update(ctx context.Context, req resource.Updat
 		params.Metadata = metadata
 	}
 
+	if !state.URL.Equal(plan.URL) {
+		params.URL = stripe.String(plan.URL.ValueString())
+	}
+
 	webhookEndpoint, err := w.client.V1WebhookEndpoints.Update(ctx, state.ID.ValueString(), params)
 	if err != nil {
-		res.Diagnostics.AddError("WebhookEndpoint Update failed", err.Error())
+		res.Diagnostics.AddError("WebhookEndpoint Update operation failed", err.Error())
 		return
 	}
 
@@ -310,7 +313,7 @@ func (w *webhookEndpointResource) Delete(ctx context.Context, req resource.Delet
 
 	_, err := w.client.V1WebhookEndpoints.Delete(ctx, state.ID.ValueString(), nil)
 	if err != nil {
-		res.Diagnostics.AddError("WebhookEndpoint Delete failed", err.Error())
+		res.Diagnostics.AddError("WebhookEndpoint Delete operation failed", err.Error())
 	}
 }
 
@@ -324,7 +327,7 @@ func (w *webhookEndpointResource) read(ctx context.Context, id string) (webhookE
 
 	webhookEndpoint, err := w.client.V1WebhookEndpoints.Retrieve(ctx, id, nil)
 	if err != nil {
-		diags.AddError("WebhookEndpoint Retrieve failed", err.Error())
+		diags.AddError("WebhookEndpoint Read operation failed", err.Error())
 		return webhookEndpointModel{}, diags
 	}
 
@@ -334,11 +337,16 @@ func (w *webhookEndpointResource) read(ctx context.Context, id string) (webhookE
 			Application: types.StringValue(webhookEndpoint.Application),
 			Connect:     types.BoolValue(webhookEndpoint.Application != ""),
 			Created:     types.Int64Value(webhookEndpoint.Created),
-			Description: types.StringValue(webhookEndpoint.Description),
 			Disabled:    types.BoolValue(webhookEndpoint.Status == "disabled"),
 			LiveMode:    types.BoolValue(webhookEndpoint.Livemode),
 			Object:      types.StringValue(webhookEndpoint.Object),
 			URL:         types.StringValue(webhookEndpoint.URL),
+			Description: func() types.String {
+				if webhookEndpoint.Description == "" {
+					return types.StringNull()
+				}
+				return types.StringValue(webhookEndpoint.Description)
+			}(),
 			EnabledEvents: func() types.List {
 				events, d := types.ListValueFrom(ctx, types.StringType, webhookEndpoint.EnabledEvents)
 				if d.HasError() {
