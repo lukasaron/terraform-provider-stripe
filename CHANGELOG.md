@@ -1,3 +1,7 @@
+## 3.3.1
+* BUGFIXES:
+  * Price forces recreation when  `transform_quantity` changes.
+
 ## 3.3.0
 * NEW RESOURCES:
   * Meter
