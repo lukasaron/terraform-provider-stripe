@@ -364,10 +364,12 @@ func resourceStripePrice() *schema.Resource {
 						"divide_by": {
 							Type:        schema.TypeInt,
 							Required:    true,
+							ForceNew:    true,
 							Description: "Divide usage by this number.",
 						},
 						"round": {
 							Type:        schema.TypeString,
+							ForceNew:    true,
 							Required:    true,
 							Description: "After division, either round the result up or down",
 						},
