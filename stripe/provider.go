@@ -41,5 +41,8 @@ func Provider() *schema.Provider {
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	key := ExtractString(d, "api_key")
+	if key == "" {
+		return nil, diag.Errorf("api_key is required")
+	}
 	return client.New(key, nil), nil
 }
