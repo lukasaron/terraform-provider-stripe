@@ -14,7 +14,7 @@ func Provider() *schema.Provider {
 			"api_key": {
 				Type:        schema.TypeString,
 				Description: "The Stripe secret API key",
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("STRIPE_API_KEY", nil),
 			},
