@@ -1,3 +1,8 @@
+## 3.3.2
+* NOTES:
+  * api_key is optional to unblock CDKTF.
+    * api key value is still checked for availability
+
 ## 3.3.1
 * BUGFIXES:
   * Price forces recreation when  `transform_quantity` changes.
