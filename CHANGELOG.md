@@ -1,3 +1,29 @@
+## 3.3.3
+* BUGFIXES:
+  * Remove resources from the state when it is not found.
+  
+* DEPENDENCIES UPGRADE
+  * github.com/fatih/color v1.17.0 => v1.18.0
+  * github.com/google/go-cmp v0.6.0 => v0.7.0
+  * github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320 => v1.5.0
+  * github.com/hashicorp/go-plugin v1.6.1 => v1.6.3
+  * github.com/hashicorp/hcl/v2 v2.22.0 => v2.24.0
+  * github.com/hashicorp/terraform-plugin-go v0.24.0 => v0.28.0
+  * github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0 => v2.37.0
+  * github.com/hashicorp/terraform-registry-address v0.2.3 => v0.3.0
+  * github.com/mattn/go-colorable v0.1.13 => v0.1.14
+  * github.com/oklog/run v1.1.0 => v1.2.0
+  * github.com/zclconf/go-cty v1.15.0 => v1.16.3
+  * golang.org/x/mod v0.21.0 => v0.27.0
+  * golang.org/x/net v0.30.0 => v0.43.0
+  * golang.org/x/sync v0.8.0 => v0.16.0
+  * golang.org/x/sys v0.26.0 => v0.35.0
+  * golang.org/x/text v0.19.0 => v0.28.0
+  * golang.org/x/tools v0.26.0 => v0.36.0
+  * google.golang.org/genproto/googleapis/rpc v0.0.0-20241007155032-5fefd90f89a9 => v0.0.0-20250804133106-a7a43d27e69b
+  * google.golang.org/grpc v1.67.1 => v1.74.2
+  * google.golang.org/protobuf v1.35.1 => v1.36.7
+
 ## 3.3.2
 * NOTES:
   * api_key is optional to unblock CDKTF.

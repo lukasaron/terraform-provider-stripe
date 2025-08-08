@@ -220,8 +220,15 @@ func UpdateMetadata(d *schema.ResourceData, adder MetadataAdder) {
 }
 
 func isRateLimitErr(e error) bool {
-	err, ok := e.(*stripe.Error)
+	var err *stripe.Error
+	ok := errors.As(e, &err)
 	return ok && err.HTTPStatusCode == 429
+}
+
+func isNotFoundErr(e error) bool {
+	var err *stripe.Error
+	ok := errors.As(e, &err)
+	return ok && err.HTTPStatusCode == 404
 }
 
 func retryWithBackOff(call func() error) error {

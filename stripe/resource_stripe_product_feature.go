@@ -61,7 +61,11 @@ func resourceStripeProductFeatureRead(_ context.Context, d *schema.ResourceData,
 		productFeature, err = c.ProductFeatures.Get(d.Id(), &stripe.ProductFeatureParams{Product: productID})
 		return err
 	})
-	if err != nil {
+	switch {
+	case isNotFoundErr(err):
+		d.SetId("") // remove when resource does not exist
+		return nil
+	case err != nil:
 		return diag.FromErr(err)
 	}
 

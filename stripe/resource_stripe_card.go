@@ -156,7 +156,11 @@ func resourceStripeCardRead(_ context.Context, d *schema.ResourceData, m interfa
 		card, err = c.Cards.Get(d.Id(), params)
 		return err
 	})
-	if err != nil {
+	switch {
+	case isNotFoundErr(err):
+		d.SetId("") // remove when resource does not exist
+		return nil
+	case err != nil:
 		return diag.FromErr(err)
 	}
 
