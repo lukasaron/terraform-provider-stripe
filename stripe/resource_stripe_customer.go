@@ -147,27 +147,31 @@ func resourceStripeCustomerRead(_ context.Context, d *schema.ResourceData, m int
 		d.Set("description", customer.Description),
 		d.Set("phone", customer.Phone),
 		func() error {
-			addressMap := make(map[string]interface{})
-			if customer.Address.Line1 != "" {
-				addressMap["line1"] = customer.Address.Line1
-			}
-			if customer.Address.Line2 != "" {
-				addressMap["line2"] = customer.Address.Line2
-			}
-			if customer.Address.City != "" {
-				addressMap["city"] = customer.Address.City
-			}
-			if customer.Address.State != "" {
-				addressMap["state"] = customer.Address.State
-			}
-			if customer.Address.PostalCode != "" {
-				addressMap["postal_code"] = customer.Address.PostalCode
-			}
-			if customer.Address.Country != "" {
-				addressMap["country"] = customer.Address.Country
+			if customer.Address != nil {
+				addressMap := make(map[string]interface{})
+				if customer.Address.Line1 != "" {
+					addressMap["line1"] = customer.Address.Line1
+				}
+				if customer.Address.Line2 != "" {
+					addressMap["line2"] = customer.Address.Line2
+				}
+				if customer.Address.City != "" {
+					addressMap["city"] = customer.Address.City
+				}
+				if customer.Address.State != "" {
+					addressMap["state"] = customer.Address.State
+				}
+				if customer.Address.PostalCode != "" {
+					addressMap["postal_code"] = customer.Address.PostalCode
+				}
+				if customer.Address.Country != "" {
+					addressMap["country"] = customer.Address.Country
+				}
+
+				return d.Set("address", addressMap)
 			}
 
-			return d.Set("address", addressMap)
+			return nil
 		}(),
 		func() error {
 			if customer.Shipping != nil {
