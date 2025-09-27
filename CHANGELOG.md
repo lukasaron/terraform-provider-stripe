@@ -1,3 +1,10 @@
+## 3.4.0
+* NOTES
+  * Removal of resources is united based on Stripe API.
+    * When resource has support for delete it is used.
+    * Otherwise, it will be removed from Terraform state and WARN log will be printed.
+    * Artificial set fields like active, archive, enabled/disabled has been removed.
+
 ## 3.3.5
 * BUGFIXES:
     *  Customer creation crashed, missing condition to Address field added.
