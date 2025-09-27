@@ -241,7 +241,7 @@ func resourceStripeTaxRateUpdate(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourceStripeTaxRateDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe SDK doesn't support Tax Rate deletion through API!")
+	log.Println("[WARN] Stripe API doesn't support deletion of tax rate")
 	d.SetId("")
 	return nil
 }
