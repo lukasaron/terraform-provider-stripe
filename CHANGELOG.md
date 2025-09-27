@@ -1,3 +1,24 @@
+## 3.3.5
+* BUGFIXES:
+    *  Customer creation crashed, missing condition to Address field added.
+
+* DEPENDENCIES UPGRADE
+    * Go 1.24 => 1.25
+    * github.com/hashicorp/go-plugin v1.6.3 => v1.7.0 
+    * github.com/hashicorp/terraform-plugin-go v0.28.0 => v0.29.0 
+    * github.com/hashicorp/terraform-plugin-sdk/v2 v2.37.0 => v2.38.1 
+    * github.com/hashicorp/terraform-registry-address v0.3.0 => v0.4.0 
+    * github.com/zclconf/go-cty v1.16.3 => v1.17.0 
+    * golang.org/x/mod v0.27.0 => v0.28.0 
+    * golang.org/x/net v0.43.0 => v0.44.0 
+    * golang.org/x/sync v0.16.0 => v0.17.0 
+    * golang.org/x/sys v0.35.0 => v0.36.0 
+    * golang.org/x/text v0.28.0 => v0.29.0 
+    * golang.org/x/tools v0.36.0 => v0.37.0 
+    * google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b => v0.0.0-20250922171735-9219d122eba9 
+    * google.golang.org/grpc v1.74.2 => v1.75.1 
+    * google.golang.org/protobuf v1.36.7 => v1.36.9
+
 ## 3.3.3
 * BUGFIXES:
   * Remove resources from the state when it is not found.
