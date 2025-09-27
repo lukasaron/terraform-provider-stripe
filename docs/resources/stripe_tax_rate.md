@@ -11,6 +11,8 @@ With this resource, you can create a tax rate - [Stripe API tax rate  documentat
 
 Tax rates can be applied to invoices, subscriptions and Checkout Sessions to collect tax.
 
+~> Removal of the tax rate isn't supported through the Stripe API.
+
 ## Example Usage
 
 ```hcl

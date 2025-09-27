@@ -2,8 +2,8 @@ package stripe
 
 import (
 	"context"
-	"log"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v78"
@@ -240,8 +240,8 @@ func resourceStripeTaxRateUpdate(ctx context.Context, d *schema.ResourceData, m 
 	return resourceStripeTaxRateRead(ctx, d, m)
 }
 
-func resourceStripeTaxRateDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe API doesn't support deletion of tax rate")
+func resourceStripeTaxRateDelete(ctx context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	tflog.Warn(ctx, "[WARN] Stripe API doesn't support deletion of tax rate")
 	d.SetId("")
 	return nil
 }

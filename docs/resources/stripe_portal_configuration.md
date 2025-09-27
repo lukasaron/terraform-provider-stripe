@@ -13,9 +13,7 @@ The Billing customer portal is a Stripe-hosted UI for subscription and billing m
 
 A portal configuration describes the functionality and features that you want to provide to your customers through the portal.
 
-~> Removal of the Customer Portal isn't supported through the Stripe SDK. The best practice, which this provider follows,
-is to deactivate the Customer Portal by marking it as inactive on destroy, which indicates that resource is no longer
-available.
+~> Removal of the Customer Portal isn't supported through the Stripe API.
 
 ## Example Usage
 

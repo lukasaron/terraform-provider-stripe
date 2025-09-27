@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v78"
@@ -321,7 +322,9 @@ func resourceStripeProductUpdate(ctx context.Context, d *schema.ResourceData, m 
 	return resourceStripeProductRead(ctx, d, m)
 }
 
-func resourceStripeProductDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceStripeProductDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	tflog.Warn(ctx, "[WARN] Deleting a product is only possible if it has no prices associated with it.")
+
 	c := m.(*client.API)
 	var err error
 
@@ -331,11 +334,10 @@ func resourceStripeProductDelete(_ context.Context, d *schema.ResourceData, m in
 			stripeErr := toStripeError(err)
 			/*
 				When ErrorTypeInvalidRequest error is returned on delete endpoint (price resources were attached)
-				the product is de-activated (archived).
+				the product is kept as it is.
 			*/
 			if stripeErr.Type == stripe.ErrorTypeInvalidRequest {
-				params := &stripe.ProductParams{Active: stripe.Bool(false)}
-				_, err = c.Products.Update(d.Id(), params)
+				return nil
 			}
 		}
 		return err

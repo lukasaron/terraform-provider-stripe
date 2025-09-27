@@ -12,7 +12,7 @@ You can upload files with the create file request (for example, when uploading d
 
 Stripe File upload [guide](https://stripe.com/docs/file-upload#uploading-a-file)
 
-~> Update or removal of the file isn't supported through the Stripe SDK.
+~> Update or removal of the file isn't supported through the Stripe API.
 
 ## Example Usage
 

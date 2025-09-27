@@ -11,7 +11,7 @@ With this resource, you can create a promotion code - [Stripe API promotion code
 
 A Promotion Code represents a customer-redeemable code for a coupon. It can be used to create multiple codes for a single coupon.
 
-~> Removal of the promotion code isn't supported through the Stripe SDK.
+~> Removal of the promotion code isn't supported through the Stripe API.
 
 ## Example Usage
 

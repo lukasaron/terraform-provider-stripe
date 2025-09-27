@@ -2,8 +2,8 @@ package stripe
 
 import (
 	"context"
-	"log"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v78"
@@ -142,25 +142,8 @@ func resourceStripeEntitlementsFeatureUpdate(ctx context.Context, d *schema.Reso
 	return resourceStripeEntitlementsFeatureRead(ctx, d, m)
 }
 
-func resourceStripeEntitlementsFeatureDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe SDK doesn't support Entitlements Feature deletion through API! " +
-		"Entitlements Feature will be deactivated but not deleted")
-
-	c := m.(*client.API)
-	var err error
-
-	params := stripe.EntitlementsFeatureParams{
-		Active: stripe.Bool(false),
-	}
-
-	err = retryWithBackOff(func() error {
-		_, err = c.EntitlementsFeatures.Update(d.Id(), &params)
-		return err
-	})
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
+func resourceStripeEntitlementsFeatureDelete(ctx context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	tflog.Warn(ctx, "[WARN] Stripe API doesn't support deletion of entitlements feature")
 	d.SetId("")
 	return nil
 }

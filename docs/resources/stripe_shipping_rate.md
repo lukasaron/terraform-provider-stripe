@@ -13,9 +13,7 @@ With this resource, you can create a shipping rate - [Stripe API shipping rate d
 Shipping rates let you display various shipping options—like standard, express, and overnight—with more accurate delivery estimates. 
 Charge your customer for shipping using different Stripe products, some of which require coding.
 
-~> Removal of the shipping rate isn't supported through the Stripe SDK. The best practice, which this provider follows,
-is to archive the shipping rate by marking it as inactive on destroy, which indicates that the shipping rate is no longer
-available.
+~> Removal of the shipping rate isn't supported through the Stripe API.
 
 ## Example Usage
 

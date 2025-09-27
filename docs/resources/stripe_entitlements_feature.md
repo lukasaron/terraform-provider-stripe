@@ -12,7 +12,7 @@ With this resource, you can create Entitlements Feature for your products - [Str
 Entitlements Features can be assigned to products, and when those products are purchased, 
 Stripe will create an entitlement to the feature for the purchasing customer.
 
-~> Removal of the Entitlements Feature isn't supported through the Stripe SDK. Consequently, deactivation is applied instead.
+~> Removal of the Entitlements Feature isn't supported through the Stripe API.
 
 ## Example Usage
 
