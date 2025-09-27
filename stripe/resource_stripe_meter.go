@@ -289,21 +289,8 @@ func resourceStripeMeterUpdate(ctx context.Context, d *schema.ResourceData, m in
 	return resourceStripeMeterRead(ctx, d, m)
 }
 
-func resourceStripeMeterDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*client.API)
-	var err error
-
-	params := stripe.BillingMeterDeactivateParams{}
-
-	log.Println("[WARN] Stripe doesn't support deletion of billing meters. Billing meter will be deactivated but not deleted")
-	err = retryWithBackOff(func() error {
-		_, err = c.BillingMeters.Deactivate(d.Id(), &params)
-		return err
-	})
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
+func resourceStripeMeterDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	log.Println("[WARN] Stripe API doesn't support deletion of billing meters")
 	d.SetId("")
 	return nil
 }
