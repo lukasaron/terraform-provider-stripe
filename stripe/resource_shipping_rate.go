@@ -4,6 +4,7 @@ import (
 	"context"
 	"sort"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v78"
@@ -369,19 +370,8 @@ func resourceStripeShippingRateUpdate(ctx context.Context, d *schema.ResourceDat
 	return resourceStripeShippingRateRead(ctx, d, m)
 }
 
-func resourceStripeShippingRateDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*client.API)
-	var err error
-
-	params := &stripe.ShippingRateParams{
-		Active: stripe.Bool(false),
-	}
-
-	err = retryWithBackOff(func() error {
-		_, err = c.ShippingRates.Update(d.Id(), params)
-		return err
-	})
-
+func resourceStripeShippingRateDelete(ctx context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	tflog.Warn(ctx, "[WARN] Stripe API doesn't support deletion of shipping rate")
 	d.SetId("")
 	return nil
 }

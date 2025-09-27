@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v78"
@@ -852,22 +853,8 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 	return resourceStripePriceRead(ctx, d, m)
 }
 
-func resourceStripePriceDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*client.API)
-	var err error
-
-	params := stripe.PriceParams{
-		Active: stripe.Bool(false),
-	}
-
-	err = retryWithBackOff(func() error {
-		_, err = c.Prices.Update(d.Id(), &params)
-		return err
-	})
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
+func resourceStripePriceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	tflog.Warn(ctx, "[WARN] Stripe API doesn't support deletion of promotion code")
 	d.SetId("")
 	return nil
 }

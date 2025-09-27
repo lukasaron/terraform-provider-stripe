@@ -2,9 +2,9 @@ package stripe
 
 import (
 	"context"
-	"log"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stripe/stripe-go/v78"
@@ -265,8 +265,8 @@ func resourceStripePromotionCodeUpdate(ctx context.Context, d *schema.ResourceDa
 	return resourceStripePromotionCodeRead(ctx, d, m)
 }
 
-func resourceStripePromotionCodeDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	log.Println("[WARN] Stripe API doesn't support deletion of promotion code")
+func resourceStripePromotionCodeDelete(ctx context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	tflog.Warn(ctx, "[WARN] Stripe API doesn't support deletion of promotion code")
 	d.SetId("")
 	return nil
 }
