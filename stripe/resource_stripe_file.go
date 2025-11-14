@@ -186,8 +186,8 @@ func resourceStripeFileRead(_ context.Context, d *schema.ResourceData, m interfa
 		d.Set("filename", file.Filename),
 		d.Set("purpose", file.Purpose),
 		func() error {
+			var linkMapSlice []map[string]interface{}
 			if file.Links != nil && len(file.Links.Data) > 0 {
-				var linkMapSlice []map[string]interface{}
 				for _, linkData := range file.Links.Data {
 					linkMap := map[string]interface{}{
 						"id":         linkData.ID,
@@ -201,9 +201,8 @@ func resourceStripeFileRead(_ context.Context, d *schema.ResourceData, m interfa
 					}
 					linkMapSlice = append(linkMapSlice, linkMap)
 				}
-				return d.Set("links", linkMapSlice)
 			}
-			return nil
+			return d.Set("links", linkMapSlice)
 		}(),
 		d.Set("object", file.Object),
 		d.Set("created", file.Created),
