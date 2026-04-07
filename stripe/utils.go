@@ -90,6 +90,28 @@ func NonZeroFloat64(value interface{}) *float64 {
 	return &valueFloat64
 }
 
+// ZeroableInt64 converts a value to *int64, allowing 0 as a valid value.
+// Returns nil only for negative values. Use this for amount fields where 0
+// is a legitimate value (e.g. free prices).
+func ZeroableInt64(value interface{}) *int64 {
+	valueInt64 := ToInt64(value)
+	if valueInt64 < 0 {
+		return nil
+	}
+	return &valueInt64
+}
+
+// ZeroableFloat64 converts a value to *float64, allowing 0 as a valid value.
+// Returns nil only for negative values. Use this for amount fields where 0
+// is a legitimate value (e.g. free prices).
+func ZeroableFloat64(value interface{}) *float64 {
+	valueFloat64 := ToFloat64(value)
+	if valueFloat64 < 0 {
+		return nil
+	}
+	return &valueFloat64
+}
+
 func NonZeroString(value interface{}) *string {
 	valueString := ToString(value)
 	if len(valueString) == 0 {

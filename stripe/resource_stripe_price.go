@@ -566,7 +566,7 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	if unitAmount, set := d.GetOk("unit_amount"); set {
-		params.UnitAmount = NonZeroInt64(unitAmount)
+		params.UnitAmount = ZeroableInt64(unitAmount)
 	}
 	if unitAmountDecimal, set := d.GetOk("unit_amount_decimal"); set {
 		params.UnitAmountDecimal = stripe.Float64(ToFloat64(unitAmountDecimal))
@@ -605,25 +605,17 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 						priceTier.UpTo = stripe.Int64(ToInt64(v))
 					}
 				case k == "flat_amount":
-					priceTier.FlatAmount = NonZeroInt64(v)
+					priceTier.FlatAmount = ZeroableInt64(v)
 				case k == "flat_amount_decimal":
-					priceTier.FlatAmountDecimal = NonZeroFloat64(v)
+					priceTier.FlatAmountDecimal = ZeroableFloat64(v)
 				case k == "unit_amount":
-					priceTier.UnitAmount = NonZeroInt64(v)
+					priceTier.UnitAmount = ZeroableInt64(v)
 				case k == "unit_amount_decimal":
-					priceTier.UnitAmountDecimal = NonZeroFloat64(v)
+					priceTier.UnitAmountDecimal = ZeroableFloat64(v)
 				}
 			}
 			params.Tiers = append(params.Tiers, priceTier)
 		}
-	}
-	if len(params.Tiers) > 0 && // Fix for free first tier - unit_amount = 0
-		params.Tiers[0].UnitAmount == nil &&
-		params.Tiers[0].UnitAmountDecimal == nil &&
-		params.Tiers[0].FlatAmount == nil &&
-		params.Tiers[0].FlatAmountDecimal == nil {
-
-		params.Tiers[0].UnitAmount = stripe.Int64(0)
 	}
 	if tiersMode, set := d.GetOk("tiers_mode"); set {
 		params.TiersMode = stripe.String(ToString(tiersMode))
@@ -643,9 +635,9 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 				case "tax_behavior":
 					currencyOption.TaxBehavior = NonZeroString(v)
 				case "unit_amount":
-					currencyOption.UnitAmount = NonZeroInt64(v)
+					currencyOption.UnitAmount = ZeroableInt64(v)
 				case "unit_amount_decimal":
-					currencyOption.UnitAmountDecimal = NonZeroFloat64(v)
+					currencyOption.UnitAmountDecimal = ZeroableFloat64(v)
 				case "custom_unit_amount":
 					for _, cuaMap := range ToMapSlice(v) {
 						currencyOption.CustomUnitAmount = &stripe.PriceCurrencyOptionsCustomUnitAmountParams{}
@@ -675,13 +667,13 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 									priceTier.UpTo = stripe.Int64(ToInt64(v))
 								}
 							case k == "flat_amount":
-								priceTier.FlatAmount = NonZeroInt64(v)
+								priceTier.FlatAmount = ZeroableInt64(v)
 							case k == "flat_amount_decimal":
-								priceTier.FlatAmountDecimal = NonZeroFloat64(v)
+								priceTier.FlatAmountDecimal = ZeroableFloat64(v)
 							case k == "unit_amount":
-								priceTier.UnitAmount = NonZeroInt64(v)
+								priceTier.UnitAmount = ZeroableInt64(v)
 							case k == "unit_amount_decimal":
-								priceTier.UnitAmountDecimal = NonZeroFloat64(v)
+								priceTier.UnitAmountDecimal = ZeroableFloat64(v)
 							}
 						}
 						currencyOption.Tiers = append(currencyOption.Tiers, priceTier)
@@ -781,9 +773,9 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 				case "tax_behavior":
 					currencyOption.TaxBehavior = NonZeroString(v)
 				case "unit_amount":
-					currencyOption.UnitAmount = NonZeroInt64(v)
+					currencyOption.UnitAmount = ZeroableInt64(v)
 				case "unit_amount_decimal":
-					currencyOption.UnitAmountDecimal = NonZeroFloat64(v)
+					currencyOption.UnitAmountDecimal = ZeroableFloat64(v)
 				case "custom_unit_amount":
 					for _, cuaMap := range ToMapSlice(v) {
 						currencyOption.CustomUnitAmount = &stripe.PriceCurrencyOptionsCustomUnitAmountParams{}
@@ -813,13 +805,13 @@ func resourceStripePriceUpdate(ctx context.Context, d *schema.ResourceData, m in
 									priceTier.UpTo = stripe.Int64(ToInt64(v))
 								}
 							case k == "flat_amount":
-								priceTier.FlatAmount = NonZeroInt64(v)
+								priceTier.FlatAmount = ZeroableInt64(v)
 							case k == "flat_amount_decimal":
-								priceTier.FlatAmountDecimal = NonZeroFloat64(v)
+								priceTier.FlatAmountDecimal = ZeroableFloat64(v)
 							case k == "unit_amount":
-								priceTier.UnitAmount = NonZeroInt64(v)
+								priceTier.UnitAmount = ZeroableInt64(v)
 							case k == "unit_amount_decimal":
-								priceTier.UnitAmountDecimal = NonZeroFloat64(v)
+								priceTier.UnitAmountDecimal = ZeroableFloat64(v)
 							}
 						}
 						currencyOption.Tiers = append(currencyOption.Tiers, priceTier)
