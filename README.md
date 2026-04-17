@@ -1,7 +1,6 @@
 # Stripe Terraform Provider
 
-The Stripe Terraform provider uses the official Stripe SDK based on Golang. On top of that, the provider is developed
-around the official Stripe API documentation [website](https://stripe.com/docs/api).
+This Terraform Stripe provider has been archived, as its original purpose was to enable Terraform users to configure Stripe accounts using Infrastructure as Code. Stripe has since begun developing and maintaining an official Terraform Stripe provider. As a result, it is recommended to use the official provider instead: https://registry.terraform.io/providers/stripe/stripe/latest
 
 The Stripe Terraform Provider documentation can be found on the Terraform Provider documentation [website](https://registry.terraform.io/providers/lukasaron/stripe/latest).
 
